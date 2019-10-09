@@ -14,4 +14,5 @@ do
 	echo "value : ${assoc[$i]}"
 	echo "remainder/2 : ${assoc[$i]}"
 done
+#testing
 	
