@@ -7,16 +7,19 @@ Created on Wed Jul 31 22:16:12 2019
 
 class Node():
     
-    def __init__(self, data):
+    def __init__(self, data, color=None, parent=None):
         self.data = data
         self.left = None
         self.right = None
         self.parent = None
-        
+        self.color = color
+
+      
 class BinaryTree:
     
     def __init__(self):
         self.root = None
+        self.sentinel = Node(data=None, color="Black")
     '''    
     def insert(self, node):
         y = None
@@ -40,9 +43,8 @@ class BinaryTree:
             self.insert_recursion(self.root, node)
         else:
             self.root = node
-
-        
-        
+            self.root.parent = self.sentinel
+            
     def insert_recursion(self, node, value):
             if value.data < node.data:
                 if node.left:
@@ -65,15 +67,20 @@ class BinaryTree:
         
         return array 
     
+    def set_sentinels(self, node, data):
+        node = self.search(node, data);
+        if node.left is None:
+            node.left = self.sentinel
+        if node.right is None:
+            node.right = self.sentinel    
+        
+    
     def search(self, node, data):
         if data == node.data:
-            #print("1")
             return node
         if data < node.data and node.left:
-            #print("2")
             return self.search(node.left, data)
         elif data >= node.data and node.right:
-            #print("3")
             return self.search(node.right, data)
         return False
     
@@ -111,7 +118,7 @@ class BinaryTree:
         return y
     
     def transplant(self, u, v):
-        if u.parent == None:
+        if u.parent == None or u.parent == self.sentinel:
             self.root = v
         elif u == u.parent.left:
             u.parent.left = v
@@ -119,7 +126,7 @@ class BinaryTree:
             u.parent.right = v
         if v:
             v.parent = u.parent
-            
+    '''        
     def delete(self, node):
         node = self.search(self.root, node)
         if node:
@@ -138,26 +145,20 @@ class BinaryTree:
                y.left.parent = y
         else:
             print("Node not found")
+    '''
+
+       
  
 T = BinaryTree()  
-A = [12, 14, 6, 18, 16, 17, 20, 6, 3, 7, 4, 2, 13, 9]
+A = [7, 11, 4, 6, 3, 2, 9, 6, 18, 14, 12, 17, 19, 22, 20]
 
 for i in A:
     N = Node(i) # since we are not searching we creating the node here
-    T.insert(N)  
-    
-T.delete(14) # the method delete() creates the node
+    T.insert(N) 
+N.data
+#print(T.root.parent.color)
+print(T.search(T.root, 18).left.data)
 print(T.in_order(T.root, []))
-    
-T.in_order(T.root, [])
-T.search(T.root, 24)  
-T.minimum(T.root).data 
-T.minimum(T.search(T.root, 17)).data 
-T.get_successor(13).data
-T.get_predecessor(6).data    
-
-
-A = [14, 12, 6, 18, 16, 17, 20, 6, 3, 7, 4, 2, 13, 9]
-for i in A:
-    T.delete(i) # the method delete() creates the node
-    print(T.in_order(T.root, []))
+[T.set_sentinels(T.root, i) for i in A]
+print(T.search(T.root, 3).right.color)
+print(T.search(T.root, 12).left.color)
