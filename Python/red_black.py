@@ -13,6 +13,7 @@ class Node():
         self.right = None
         self.p = None
         self.color = color
+        self.size = 0
 
     
 class RBTree():
@@ -20,6 +21,8 @@ class RBTree():
     def __init__(self):
         self.sentinel = Node(key="T.nil", color="Black")
         self.root = self.sentinel
+        self.bh = 0;
+        
         
     def left_rotate(self, x):
         y = x.right
@@ -30,12 +33,14 @@ class RBTree():
         if x.p == self.sentinel:
             self.root = y
         elif x == x.p.left:
-            print("here")
             x.p.left = y
         else:
             x.p.right = y
         y.left = x
         x.p = y
+        y.size = x.size
+        x.size = x.left.size + x.right.size + 1
+        
     
     def right_rotate(self, y):
         x = y.left
@@ -51,29 +56,25 @@ class RBTree():
             y.p.left = x
         x.right = y
         y.p = x
+        x.size = y.size
+        y.size = y.right.size + y.left.size + 1
         
     def insert_fixup(self, z):
-        #print("No while Z:",z.key,z.p.key)
         while z.p.color == "Red":
-            #print("Z:",z.key,z.color)
             if z.p == z.p.p.left:
-                #print("z's p is z's gp's left child", z.key)
                 y = z.p.p.right
                 if y.color == "Red":
-                    #print("case 2", z.key)
+                    #print("case 1")
                     z.p.color = "Black"    # Case1
                     y.color = "Black"      # Case1
                     z.p.p.color = "Red"    # Case1
                     z = z.p.p              # Case1
-                    #print(z.p.key)
-                else:                       # Case ? 2, Case 3
+                else:                       # Case ? 2/3
                     if z == z.p.right:     
                         z = z.p             # Case 2
-                        #print("1Rotating Left for insert", z.key)
                         self.left_rotate(z) # Case 2
                     z.p.color = "Black"      # Case 3
                     z.p.p.color = "Red"      # Case 3
-                    #print("1Rotating Right for insert", z.p.p.key)
                     self.right_rotate(z.p.p) # Case 3
             else:
                 y = z.p.p.left
@@ -85,19 +86,21 @@ class RBTree():
                 else:
                     if z == z.p.left:
                         z = z.p
-                        #print("2Rotating Right for insert", z.key)
                         self.right_rotate(z)
                     z.p.color = "Black"
                     z.p.p.color = "Red"
-                    #print("2Rotating Left for insert", z.key)
                     self.left_rotate(z.p.p)
+        if self.root.color == "Red":
+            self.bh +=1
         self.root.color = "Black"
                     
         
     def insert(self, z):
+        z.size = 1
         y = self.sentinel
         x = self.root
         while x != self.sentinel:
+            x.size += 1
             y = x
             if z.key < x.key:
                 x = x.left
@@ -114,6 +117,7 @@ class RBTree():
         z.right = self.sentinel
         z.color = "Red"
         self.insert_fixup(z)
+        
       
     def in_order(self, x, array):
         if x:
@@ -132,12 +136,16 @@ class RBTree():
                 x = x.left
             else:
                 x = x.right
+                
         return x
+    
     
     def minimum(self, z):
         while z.left is not self.sentinel:
             z = z.left
+            
         return z
+    
     
     def transplant(self, u, v):
         if u.p == self.sentinel:
@@ -148,9 +156,10 @@ class RBTree():
             u.p.right = v
         v.p = u.p
     
+    
     def delete_fix(self, x):
-        print("x's color:", x.color, x.key)
         while x != self.root and x.color == "Black":
+            case1 = False;
             if x == x.p.left:
                 w = x.p.right
                 if w.color == "Red":  
@@ -158,11 +167,15 @@ class RBTree():
                     w.color = "Black"             # Case 1
                     x.p.color = "Red"             # Case 1
                     self.left_rotate(x.p)         # Case 1
-                    w = w.p.right                 # Case 1
+                    w = x.p.right                 # Case 1
+                    case1 = True
                 if w.left.color == "Black" and w.right.color == "Black":
                     print("L,entering case 2")
                     w.color = "Red"               # Case 2
                     x = x.p                       # Case 2
+                    print(x == self.root, x.key)
+                    if x == self.root and not case1:
+                        self.bh -= 1;
                 else:
                     if w.right.color == "Black":  
                         print("L,entering case 3")
@@ -179,52 +192,83 @@ class RBTree():
             else:
                 w = x.p.left
                 if w.color == "Red":  
-                    print("L,entering case 1")
+                    print("R,entering case 1")
                     w.color = "Black"             # Case 1
                     x.p.color = "Red"             # Case 1
                     self.right_rotate(x.p)         # Case 1
-                    w = w.p.left                 # Case 1
+                    w = x.p.left                 # Case 1
+             
                 if w.right.color == "Black" and w.left.color == "Black":
-                    print("L,entering case 2")
+                    print("R,entering case 2")
                     w.color = "Red"               # Case 2
                     x = x.p                       # Case 2
+                    print(x == self.root, x.key)
+                    if x == self.root:
+                        self.bh -= 1;
                 else:
                     if w.left.color == "Black":  
-                        print("L,entering case 3")
+                        print("R,entering case 3")
                         w.right.color == "Black"   # Case 3
                         w.color == "Red"          # Case 3
                         self.left_rotate(w)      # Case 3
                         w = x.p.left             # Case 3
-                    print("L,entering case 4")
+                    print("R,entering case 4")
                     w.color = x.p.color           # Case 4
                     x.p.color = "Black"           # Case 4
                     w.left.color = "Black"       # Case 4
                     self.right_rotate(x.p)         # Case 4
-                    x = self.root                 # Case 4
+                    x = self.root                   # Case 4
         x.color = "Black"
-
+    
+        return x.color
+    
+    def delete_search(self, x, k):
+        if None == x:
+            x = self.root
+        while x != self.sentinel and k != x.key:
+            x.size -= 1
+            if k < x.key:
+                x = x.left
+            else:
+                x = x.right
+        x.size -= 1
+        print("new size of deleted node", x.key, "is", x.size)        
+        return x
+    
     
     def delete(self, z):
-        z = self.search(self.root, z)
+        print("z", z)
+        z = self.delete_search(self.root, z)
+        if z == self.root and z.left == self.sentinel and z.right == self.sentinel:
+            self.bh -= 1;
         y = z
         y_orig_col = y.color
         if z.left == self.sentinel:
             x = z.right
             self.transplant(z, z.right)
         elif z.right == self.sentinel:
-            x = x.left
+            x = z.left
             self.transplant(z, z.left)
         else:
             y = self.minimum(z.right)
+            y.size = z.size          
             y_orig_col = y.color
             x = y.right
+            # update the parents of y until you get to where y replaced z
+            temp = y.p
+            y_p_is_z = False
             if y.p == z:
                 x.p = y
+                y_p_is_z = True
             else:
+                
                 self.transplant(y, y.right)
                 y.right = z.right
                 y.right.p = y
             self.transplant(z, y)
+            while temp != y and not y_p_is_z:
+                temp.size -= 1
+                temp = temp.p
             y.left = z.left
             y.left.p = y
             y.color = z.color
@@ -257,7 +301,7 @@ def write_tree_as_dot(t, f, show_nil=False):
         
         # NOTE GUY DID NOT DO node.key FOR HIS 2ND ARGUMENT JUST node
         print("  %s [label=\"%s\", color=\"%s\", fillcolor=\"%s\", style=filled, fontcolor=\"%s\"];" 
-              % (node_id(node), node.key, node_color(node), node_color(node), node_text_color(node)), file=f)
+              % (node_id(node), str(node.key) + ":" + str(node.size), node_color(node), node_color(node), node_text_color(node)), file=f)
         if node.left:
             if node.left != t.sentinel or show_nil:
                 visit_node(node.left)
@@ -269,8 +313,7 @@ def write_tree_as_dot(t, f, show_nil=False):
                 #print >> f, "  %s -> %s ;" % (node_id(node), node_id(node.right))
                 print("  %s -> %s ;" % (node_id(node), node_id(node.right)), file=f)
                 
-   
-             
+      
     #print >> f, "// Created by rbtree.write_dot()"
     print("// Created by rbtree.write_dot()", file=f)
     #print >> f, "digraph red_black_tree {"
@@ -282,7 +325,7 @@ def write_tree_as_dot(t, f, show_nil=False):
 
 
 if '__main__' == __name__:
-    import os, sys, numpy.random as R
+    import os, random
     def write_tree(t, filename):
         "Write the tree as an SVG file."
         f = open('%s.dot' % filename, 'w')
@@ -291,15 +334,34 @@ if '__main__' == __name__:
         os.system('dot %s.dot -Tsvg -o %s.svg' % (filename, filename))
         
         
-    #A = [41, 38, 31, 12, 19, 8]        
-    A = [50,22,70,5,60,54,55]
+    A = [1,2,3,4,5,6,7,8,9,10,12,13]
 
+    
     T = RBTree()
-
+    random.shuffle(A)
     for num in A:
         N = Node(key=num)
         T.insert(N)
-    write_tree(T, 'treeRB')    
-    T.delete(50)
+        print("Inserting node ", num, "Black height is&&&&&&", T.bh,)
+        #write_tree(T, 'treeRB' + str(num))  
+write_tree(T, 'treeRB' + str(num))  
+'''
+    random.shuffle(A)
+    for num in (A):
+        print("deleting", num, "bh**********************************=", T.bh)
+        T.delete(num)
+        
+        write_tree(T, 'treeRB_delete' + str(num))  
+'''
 
-    write_tree(T, 'treeRB_delete_50')
+num = 4
+T.delete(num)
+write_tree(T, 'treeRB_delete' + str(num))  
+
+num = 10
+T.delete(num)
+write_tree(T, 'treeRB_delete' + str(num))  
+
+num = 2
+T.delete(num)
+write_tree(T, 'treeRB_delete' + str(num))
