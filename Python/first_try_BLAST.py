@@ -4,7 +4,7 @@ Created on Thu Apr  5 00:24:09 2018
 
 @author: bjwil
 
-
+Trying to learn how to imeplement a BLAST.  This is old.
 """
 
 
