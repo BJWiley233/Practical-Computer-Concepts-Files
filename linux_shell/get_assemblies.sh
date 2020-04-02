@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+##############################################################
+<<COMMENT
+You could use this script to get assemblies from EBI's
+Genome assembly database if you have access to their database.  
+If you want to change the tax_id and status_id then it would 
+be better to use Python as it has an easier argparser
+COMMENT
+##############################################################
+
 accession_version=( $(awk 'BEGIN {FS=":"} { print $1 }' $1) ) 
 printf -v joined '"%s",' "${accession_version[@]}"     ## https://stackoverflow.com/questions/53839253/how-can-i-convert-an-array-to-a-comma-separated-list-in-bash
 accessions=$(echo "${joined%,}")
