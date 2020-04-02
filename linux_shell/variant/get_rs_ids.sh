@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+##################################################################
+
+
+## Uses Heng Li's batch query script in perl to make many calls
+
+
+###################################################################
+
 FILE=batchUCSC.pl
 if [[ ! -f "$FILE" ]]; then
    wget http://lh3lh3.users.sourceforge.net/download/batchUCSC.pl
