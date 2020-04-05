@@ -31,7 +31,7 @@ all_variant_dna <- strsplit(substr(hgvs, nchar(hgvs)-3+1, nchar(hgvs)), ">")
 variant <- sapply(all_variant_dna, function(x){paste0(x[1],">",x[2])})
 
 library(plyr)
-## get coding stra
+## get coding strand
 alleles <- lapply(all_variant_dna, function(x) {mapvalues(x,
                                                           from = c("A", "C", "G", "T"),
                                                           to = c("T", "G", "C", "A"),
