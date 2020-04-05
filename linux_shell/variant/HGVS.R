@@ -74,9 +74,10 @@ con_ucsc <- dbConnect(RMySQL::MySQL(),
                       user = "genome", 
                       host = "genome-mysql.soe.ucsc.edu")
 ## source to get reg2bin function
-sourceCpp("binFromRange.cpp")
+## modifies https://bamnostic.readthedocs.io/en/latest/_modules/bamnostic/bai.html#reg2bins
+sourceCpp("binFromRange.cpp")  
 
-## found coding snpCodingDb here http://genomewiki.ucsc.edu/genecats/index.php/SNP_Track_QA
+## found pep coding snpCodingDb here http://genomewiki.ucsc.edu/genecats/index.php/SNP_Track_QA
 ## below code fills in the amino acid residue creatively by matching the coding alleles
 ## that are complement to the template ref and alt bases.  Using a loop for readability.
 for(row in 1:nrow(data)) {
