@@ -84,7 +84,7 @@ for(row in 1:nrow(data)) {
   if (! is.na(data[row, "rs_id"])) {
     
     ## C++ function using binary shifting 
-    ## Source 
+    ## Source http://genomewiki.ucsc.edu/index.php/Bin_indexing_system
     bins <- reg2bins(data[row, "chromStart"], data[row, "chromEnd"])
     bin_string <- paste("(", paste0(paste0("bin=",bins), collapse = " OR "), ")", sep = "")
     coding <- dbGetQuery(conn = con_ucsc, 
@@ -93,7 +93,6 @@ for(row in 1:nrow(data)) {
                             FROM snp151CodingDbSnp
                             WHERE name='%s' AND %s", data[row, "rs_id"], bin_string)
     )
-    coding
     
     ## if we got a hit only need 1 row
     if (nrow(coding) >=1) {
