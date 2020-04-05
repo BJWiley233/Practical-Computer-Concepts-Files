@@ -1,16 +1,8 @@
 #!/usr/bin/env bash
 
-##################################################################
-
-
-## Uses Heng Li's batch query script in perl to make many calls
-
-
-###################################################################
-
 FILE=batchUCSC.pl
 if [[ ! -f "$FILE" ]]; then
-   wget http://lh3lh3.users.sourceforge.net/download/batchUCSC.pl
+   wget https://raw.githubusercontent.com/lh3/misc/master/biodb/batchUCSC.pl
    chmod u+x batchUCSC.pl
 fi
 
@@ -22,8 +14,17 @@ HGVS=( $(awk '{gsub(":",""); print $1}' $1) )
 
 ## set the chromosome and position 
 ## says end position but is the start position with 1 index and end with 0 index from UCSC
-chrs=( $(grep -oP '(?<=NC_0000).+?(?=.[0-9]+:)' $1) )
+## avoid look behind https://stackoverflow.com/questions/21077882/pattern-to-get-string-between-two-specific-words-characters-using-grep
+chrs=( $(grep -oP '(NC_[0]+\K).+?(?=.[0-9]+:)' $1) )
 endpos=( $(grep -oP '(?<=:[a-z]{1}\.).+?(?=[a-zA-Z])' $1) )
+ref=()
+for f in "${HGVS[@]}" ; do
+   ref+=( ${f: -3 : 1} )
+done 
+alt=()
+for f in "${HGVS[@]}" ; do
+   alt+=( ${f: -1 : 1} )
+done 
 
 ## loop though calls and make the HGVS the first column for every call in tsv file
 for i in "${!HGVS[@]}"; do
@@ -35,6 +36,7 @@ for i in "${!HGVS[@]}"; do
    echo chr"${chrs[$i]}" $startpos "${endpos[$i]}" | ./batchUCSC.pl -d hg19 -Cp $string >> $2
 done
 
-## add the colon (:) back in the HGVS
-sed -i -re 's/(.\.[0-9]+)([a-z]{1}\.)/\1:\2/' $2
 
+## example:
+## ./get_rs_ids.sh snps.txt rs_ids.tsv
+## download snps.txt from https://github.com/BJWiley233/Practical-Computer-Concepts-Files/blob/master/linux_shell/variant/snps.txt
