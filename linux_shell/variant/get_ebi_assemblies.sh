@@ -22,3 +22,6 @@ decode(is_patch,\"N\",\"Major release\", \"Minor release\") as \"Release Type\"
 from gc_assembly_set 
 where tax_id = 9606 and status_id = 4 and set_acc in ($accessions)
 order by set_chain, set_version;" > $2
+
+## examples
+## ./get_ebi_assemblies.sh NC_000011.9:g.534286C>A
