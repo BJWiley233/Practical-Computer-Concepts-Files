@@ -57,7 +57,7 @@ ensembl_pep <- getBM(attributes = attrs_pep,
                   mart = snpmart)
 ensembl_pep[1:10, ]
 
-## We get duplicate rows for ch_name and peptides and there is indication which is 
+## We get duplicate rows for ch_name and peptides and there isn't indication which is 
 ## the peptide mutation for our given variant, it lists rows for all variants
 ## we'd have to go into Ensemble to manually look at each variant.  Or
 ## we can get creative like below using mySQL interface into UCSC.  We also see
