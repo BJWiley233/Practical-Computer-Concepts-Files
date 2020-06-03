@@ -20,7 +20,10 @@
 
 
 library(argparser)
-plot_Ogly <- arg_parser('A program to plot NetOGlyc 2.0: predicted O-glycosylation sites')
+plot_Ogly <- arg_parser('A program to plot NetOGlyc 2.0: predicted O-glycosylation sites\
+  Examples:\n\
+  NetOglyc2.R -i vgp_ebov.txt -t txt -o vgp_ebov_glyc.pdf -k "25,90,210,328" -m line\n\
+  NetOglyc2.R -i CACNA1A_isoform1_A712T.html.html -t html -k "712" -m point')
 
 #' TODO add variant residue # for "No." to color different color for midterm
 p <- add_argument(plot_Ogly,
