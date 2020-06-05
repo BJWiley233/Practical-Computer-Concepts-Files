@@ -108,11 +108,26 @@ def prosite2regex(prosite):
                     
 
 ##############################################################################
+
 ## Tests
+
+##############################################################################
 import re
 protein = 'PPPALTAYVCCTMMW'
 prosite = '[ACTL](2,4)-x-V-x(2,4)-{ED}-[x(3),x(4)]'
 re.search(prosite2regex(prosite), protein)
+
+## Test unambiguities as in lecture 2 discussion pos
+protein = 'PPPALTAYVIGALMCCTMMW'
+prosite = '[ACTL](2,4)-x-VIGALM-x(2,4)-{ED}-[x(3),x(4)]'
+re.search(prosite2regex(prosite), protein)
+
+## Actually this is incorrect for PROSITE [x(3),x(4)] you can't have this!
+prosite = '[ACTL](2,4)-x-VIGALM-x(2,4)-{ED}-x(3,4)'  ## Can't have this either https://prosite.expasy.org/scanprosite/scanprosite_doc.html#mo_motifs_pattern_syntax
+prosite = '[ACTL](2,4)-x-VIGALM-x(2,4)-{ED}-x(3,4)>'  ## Must have an anchor
+## Now it works for option 3: https://prosite.expasy.org/cgi-bin/prosite/ScanView.cgi?scanfile=6875429115319.scan.gz&sig=[ACTL](2,4)-x-VIGALM-x(2,4)-{ED}-x(3,4)%3E
+re.search(prosite2regex(prosite), protein)
+
 
 ## Phosphorylation
     ## Aaa-Aaa-X-Aaa-Tyr = [ILVA](2)-x-[ILVA]-Y       :Aaa is aliphatic
@@ -137,15 +152,25 @@ def read_single_fa(file):
     return seq
 
 
-file = 'C:\\Users\\<home>\\JHU Classes\\Protein Bioinformatics\\Midterm\\CAC1A_1.fasta'
+file = 'C:\\Users\\*****\\JHU Classes\\Protein Bioinformatics\\Midterm\\CAC1A_1.fasta'
 protein_CACNA1A = read_single_fa(file)
 ## get sequence
 protein_CACNA1A_seq = [i for i in protein_CACNA1A.values()][0]
 # Motif for phoshorylation by Protein Kinase A (PKA)
 # Hydrophobic [AILMFWYV]
-prosite3 = 'x-R-[RL]-x-[ST]-Hydrophobic'
+# x-R-[RK]-x-[ST]-[AILMFWYV]
+prosite3 = 'x-R-[RK]-x-[ST]-Hydrophobic'
 regex3 = prosite2regex(prosite3)
+# TRDS S I      S1821
 re.search(regex3, protein_CACNA1A_seq)
+get_matches(prosite2regex('R-[DRK]-X-[S]'), protein_CACNA1A_seq)
+# N-glycosylation
+get_matches(prosite2regex('N-{P}-[ST]-{P}'), protein_CACNA1A_seq)
+file_variantA712T = 'C:\\Users\\bjwil\\JHU Classes\\Protein Bioinformatics\\Midterm\\CAC1A_1_mutation_A712T.fasta'
+protein_CACNA1A_A712 = read_single_fa(file_variantA712T)
+protein_CACNA1A_seq_A712T = [i for i in protein_CACNA1A_A712.values()][0]
+## protein_CACNA1A_seq_A712T[709:713]
+get_matches(prosite2regex('N-{P}-[ST]-{P}'), protein_CACNA1A_seq_A712T)
 
 # https://www.uniprot.org/uniprot/O00555
 for m in re.compile(regex3).finditer(protein_CACNA1A_seq):
@@ -160,7 +185,7 @@ def get_matches(pattern, protein):
                                                                        m.group()))
 
 ## https://www.uniprot.org/uniprot/P46020#ptm_processing
-file = 'C:\\Users\\<home>\\JHU Classes\\Protein Bioinformatics\\Code\\PHKA1.fasta'
+file = 'C:\\Users\\*****\\JHU Classes\\Protein Bioinformatics\\Code\\PHKA1.fasta'
 ## get sequence
 sequence_GPK_regulatory_subunit_alpha = [i for i in read_single_fa(file).values()][0]
 get_matches(regex3, sequence_GPK_regulatory_subunit_alpha)
@@ -168,3 +193,45 @@ get_matches(regex3, sequence_GPK_regulatory_subunit_alpha)
 sequence_GPK_regulatory_subunit_alpha[1013:1019]
 ## prints phoshoserine site 1018 of GPK (aka Phoshorylase b kinase)
 sequence_GPK_regulatory_subunit_alpha[1018-1]
+
+
+file = 'C:\\Users\\*****\\JHU Classes\\Protein Bioinformatics\\Code\\PDE3.fasta'
+## get sequence
+sequence_PDE = [i for i in read_single_fa(file).values()][0]
+get_matches(regex3, sequence_PDE)
+## this returns 1013-1018 with 0 index, i.e. residues 1014-1019
+sequence_PDE[1013:1019]
+## prints phoshoserine site 1018 of GPK (aka Phoshorylase b kinase)
+sequence_PDE[190-1]
+
+
+
+from Bio import Entrez
+from Bio import SeqIO
+Entrez.email = '******@jh.edu'
+
+def fetch2(ID):
+    handle = Entrez.efetch(db='protein', id=ID, 
+                           rettype='fasta', retmode='text')
+    seq_records = [rec for rec in SeqIO.parse(handle, "fasta")]
+    SeqIO.write(seq_records, 'out.fasta', 'fasta')
+    
+    return seq_records if len(ID) > 1 else seq_records[0]
+
+ID = {'1':'P27815', '2':'AAU82096', '7': 'NP_001230050'}
+ID_seqs = {}
+sequences = fetch2(list(ID.values()))
+if len(sequences) == len(ID):
+    print("Got all sequences")
+    for i, k in enumerate(ID.keys()):
+        ID_seqs[k] = sequences[i]
+
+for seq in [i.seq for i in sequences]:
+    get_matches(regex3, str(seq))
+    
+prosite2regex(prosite3)
+## It's actually MAPKAPK2 phosphorylation motif Hyd-X-R-X2-S for P27815 isoform 1
+# https://www.uniprot.org/uniprot/P49137
+get_matches(prosite2regex('Hydrophobic-X-R-X(2)-S'), str(sequences[0].seq))
+str(sequences[0].seq)[152-1]
+str(sequences[0].seq)[165-1]
