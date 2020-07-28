@@ -70,7 +70,8 @@ if __name__ == "__main__":
         rc("mm #0 #1 ss False")
             
 from chimera.tkgui import saveReplyLog
-saveReplyLog("{}_{}_match.txt".format(file_names[0], file_names[0]))
+## could probably strip extensions if you want shorter file name for reply log file
+saveReplyLog("{}_{}_match.txt".format(file_names[0], file_names[1]))
 
 """
 Not implemented Match > Align
