@@ -25,8 +25,6 @@ import os
 from chimera import runCommand as rc # use 'rc' as shorthand for runCommand
 from chimera import replyobj # for emitting status messages
 
-# change to folder with data files
-
 
 if __name__ == "__main__":
     """ Chain Matchmaker """
@@ -69,12 +67,12 @@ if __name__ == "__main__":
     else:
         rc("mm #0 #1 ss False")
             
-from chimera.tkgui import saveReplyLog
-## could probably strip extensions if you want shorter file name for reply log file
-try:
-    saveReplyLog("{}_{}_match.txt".format(file_names[0], file_names[1]))
-except IndexError:
-    print("Need 2 files")
+    from chimera.tkgui import saveReplyLog
+    ## could probably strip extensions if you want shorter file name for reply log file
+    try:
+        saveReplyLog("{}_{}_match.txt".format(file_names[0], file_names[1]))
+    except IndexError:
+        print("Need 2 files")
     
     
 """
