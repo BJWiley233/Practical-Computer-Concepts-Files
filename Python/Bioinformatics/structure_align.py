@@ -71,8 +71,12 @@ if __name__ == "__main__":
             
 from chimera.tkgui import saveReplyLog
 ## could probably strip extensions if you want shorter file name for reply log file
-saveReplyLog("{}_{}_match.txt".format(file_names[0], file_names[1]))
-
+try:
+    saveReplyLog("{}_{}_match.txt".format(file_names[0], file_names[1]))
+except IndexError:
+    print("Need 2 files")
+    
+    
 """
 Not implemented Match > Align
 
