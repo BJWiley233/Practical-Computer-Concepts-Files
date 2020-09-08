@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Proteins>
+  <UniProt id="Q16539">
+    <PDB id="4EH5">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3PG3">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3RIN">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2FST">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4KIN">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2RG6">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4E5B">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1OVE">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3HA8">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3MVL">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HV4">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2ZB1">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2ONL">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1WBO">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4E5A">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2RG5">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3OCG">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3UVR">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1BL7">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3MH2">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3MH1">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2FSL">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1W7H">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1KV2">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FC1">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3HP2">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3KQ7">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6QDZ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4EH8">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FMK">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FL4">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3QUD">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3IW6">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1OUK">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FKL">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3L8S">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4L8M">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2FSO">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="5ETC">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FLN">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="6HWV">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FML">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6M9L">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5XYY">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3BX5">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4KIP">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4EH4">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3LFB">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1W84">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3BV2">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FMH">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HVC">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2FSM">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5O8U">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="5N63">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3NNX">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3E93">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2ZB0">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2Y8O">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3KF7">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3O8U">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3ITZ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3ZYA">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4E6A">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1OUY">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3ZS5">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3ROC">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="6SFJ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2BAK">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2NPQ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="6SFO">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3LFD">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3FLS">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2ZAZ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5MZ3">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4AA5">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HUC">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3HUB">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1WBN">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4DLI">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FMN">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3ODZ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3GCQ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3BV3">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3GC7">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3HLL">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3IW7">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3HV7">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3IW8">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2BAJ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4AA0">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3O8P">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1BL6">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4E8A">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4KIQ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1OZ1">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3GCS">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4EWQ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1R3C">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4AA4">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3MGY">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3ZSI">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1WBV">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4F9W">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4EH2">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6HWT">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4EH6">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2GFS">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2BAL">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6OHD">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3U8W">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3C5U">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3ZSG">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3LHJ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1A9U">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3NNV">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5ML5">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1IAN">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4F9Y">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2BAQ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5N67">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="5N66">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3UVP">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6HWU">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FSK">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3LFE">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4EHV">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HV5">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1WBS">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2OKR">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1WFC">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5WJJ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5N68">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5ETI">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2LGC">
+      <property type="method" value="NMR"/>
+    </PDB>
+    <PDB id="3LFF">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5N64">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HV6">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3FMM">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3NEW">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3DT1">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3FKO">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2YIX">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6M95">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3D7Z">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="5TBE">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3HRB">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3GI3">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3OEF">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4GEO">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3IPH">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="6SFK">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3L8X">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3FKN">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3LFC">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5ETF">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4R3C">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4EH3">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3MW1">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1W82">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HP5">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="5N65">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5XYX">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3MPT">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4ZTH">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4DLJ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3QUE">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1ZYJ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3GCU">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3S3I">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2YIW">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3MH0">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3OBJ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1WBT">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HEC">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1YQJ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2YIS">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3MH3">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1DI9">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3LFA">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6QYX">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4AAC">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6QE1">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3MPA">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1W83">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1R39">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3OC1">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5TCO">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3NNW">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1ZZ2">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1M7Q">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1KV1">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5MTX">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1WBW">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3DS6">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="2I0H">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4A9Y">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FLQ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3OBG">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="2QD9">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5OMG">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3E92">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3OD6">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4EH7">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="5OMH">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FLZ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3NNU">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="5MTY">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3GCP">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="1ZZL">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4EH9">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="4FA2">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="4E6C">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FLW">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="6ANL">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FSF">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HV3">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3K3J">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3GCV">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3FLY">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HL7">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="5O8V">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3MVM">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="6SFI">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3O8T">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3NWW">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3ODY">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="5ETA">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FI4">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3CTQ">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3S4Q">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="1BMK">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3IW5">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3FMJ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3K3I">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3HEG">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3GFE">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3UVQ">
+      <property value="X-ray" type="method"/>
+    </PDB>
+    <PDB id="3D83">
+      <property type="method" value="X-ray"/>
+    </PDB>
+    <PDB id="3ZSH">
+      <property type="method" value="X-ray"/>
+    </PDB>
+  </UniProt>
+</Proteins>

@@ -1,0 +1,29 @@
+Proteins{P00000{1234{property => [
+								  { type => method,
+								    value => X-Ray
+								  }
+								 ]
+				     }
+				     
+				5555{property => [
+								  { type => method,
+								    value => NMR
+								  }
+								 ]
+				     }
+				}
+		Q123456{1234{property => [
+								  { type => method,
+								    value => X-Ray
+								  }
+								 ]
+				     }
+				     
+				5555{property => [
+								  { type => method,
+								    value => NMR
+								  }
+								 ]
+				     }
+				}
+	     }

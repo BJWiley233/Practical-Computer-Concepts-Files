@@ -1,0 +1,37 @@
+pk,accessionID,giID,feat/primTag,organism,molType,chromosome,
+	map,gene,geneSynonym(s),product,inference,exception,transcriptId,
+	codonStart,proteinId,translation,dbXref(s),ecNumber,evidence,note
+
+{incrementer}pk
+[1]accessionID (save)
+[2]giID (save)
+
+[3]$feat_object->primary_tag (if source and db_xref =~ "taxon" save taxon)
+	foreach my $tag ($feat_object->get_all_tags)
+	[ 4]organism (save if exists)
+	[ 5]mol_type (save if exists)
+	[ 6]chromosome (save if exists)
+	[ 7]map (save if exists)
+	[ 8]gene
+	[ 9]gene_synonym (1 string sep ;)
+	[10]product
+	[11]inference
+	[12]exception
+	[13]transcript_id
+	[14]codon_start
+	[15]protein_id
+	[16]translation
+	[17]db_xref (array ';' seperate)
+	[18]EC_number
+	[19]evidence
+	[20]note
+	
+
+										            
+1,NG_008847.2,1068937310,source,"Homo sapiens","genomic DNA","taxon:9606",NA,NA,NA,"7","7p13",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+2,NG_008847.2,1068937310,mRNA,NA,NA,"GeneID:10652","HGNC:HGNC:16959","MIM:606209",NA,NA,NA,"YKT6",NA,NA,"YKT6 v-SNARE homolog, transcript variant 1","similar to RNA sequence, mRNA (same
+                     species):RefSeq:NM_006555.4","annotated by transcript or proteomic data","NM_001363678.2",NA,NA,NA,NA
+
+
+
+

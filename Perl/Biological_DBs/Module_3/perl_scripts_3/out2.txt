@@ -1,0 +1,1554 @@
+$VAR1 = {
+          'entry' => {
+                       'reference' => {
+                                        '1' => {
+                                                 'source' => {
+                                                               'tissue' => 'Brain',
+                                                               'strain' => 'Wistar'
+                                                             },
+                                                 'citation' => {
+                                                                 'first' => '225',
+                                                                 'last' => '232',
+                                                                 'authorList' => {
+                                                                                   'person' => {
+                                                                                                 'Beaumont K.' => {},
+                                                                                                 'Herich J.' => {},
+                                                                                                 'Mull E.' => {},
+                                                                                                 'Moore C.X.' => {},
+                                                                                                 'Brady E.M.' => {},
+                                                                                                 'Albrandt K.G.' => {}
+                                                                                               }
+                                                                                 },
+                                                                 'name' => 'FEBS Lett.',
+                                                                 'type' => 'journal article',
+                                                                 'dbReference' => {
+                                                                                    '10.1016/0014-5793(93)81078-e' => {
+                                                                                                                        'type' => 'DOI'
+                                                                                                                      },
+                                                                                    '8391477' => {
+                                                                                                   'type' => 'PubMed'
+                                                                                                 }
+                                                                                  },
+                                                                 'title' => 'Molecular cloning of two receptors from rat brain with high affinity for salmon calcitonin.',
+                                                                 'date' => '1993',
+                                                                 'volume' => '325'
+                                                               },
+                                                 'scope' => 'NUCLEOTIDE SEQUENCE [MRNA]'
+                                               },
+                                        '2' => {
+                                                 'source' => {
+                                                               'tissue' => 'Brain'
+                                                             },
+                                                 'citation' => {
+                                                                 'dbReference' => {
+                                                                                    '8395656' => {
+                                                                                                   'type' => 'PubMed'
+                                                                                                 },
+                                                                                    '10.1210/mend.7.6.8395656' => {
+                                                                                                                    'type' => 'DOI'
+                                                                                                                  }
+                                                                                  },
+                                                                 'title' => 'Identification of brain isoforms of the rat calcitonin receptor.',
+                                                                 'date' => '1993',
+                                                                 'volume' => '7',
+                                                                 'authorList' => {
+                                                                                   'person' => {
+                                                                                                 'Findlay D.M.' => {},
+                                                                                                 'Hilton J.M.' => {},
+                                                                                                 'O\'Keeffe L.M.' => {},
+                                                                                                 'Center R.J.' => {},
+                                                                                                 'Gillespie M.T.' => {},
+                                                                                                 'Sexton P.M.' => {},
+                                                                                                 'Darcy P.' => {},
+                                                                                                 'Housammi S.' => {}
+                                                                                               }
+                                                                                 },
+                                                                 'type' => 'journal article',
+                                                                 'name' => 'Mol. Endocrinol.',
+                                                                 'first' => '815',
+                                                                 'last' => '821'
+                                                               },
+                                                 'scope' => 'NUCLEOTIDE SEQUENCE [MRNA]'
+                                               }
+                                      },
+                       'feature' => [
+                                      {
+                                        'type' => 'signal peptide',
+                                        'evidence' => '2',
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '1'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '24'
+                                                                 }
+                                                      }
+                                      },
+                                      {
+                                        'type' => 'chain',
+                                        'description' => 'Calcitonin receptor',
+                                        'id' => 'PRO_0000012810',
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '25'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '516'
+                                                                 }
+                                                      }
+                                      },
+                                      {
+                                        'description' => 'Extracellular',
+                                        'evidence' => '2',
+                                        'type' => 'topological domain',
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '153'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '25'
+                                                                   }
+                                                      }
+                                      },
+                                      {
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '154'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '173'
+                                                                 }
+                                                      },
+                                        'evidence' => '2',
+                                        'type' => 'transmembrane region',
+                                        'description' => 'Helical; Name=1'
+                                      },
+                                      {
+                                        'type' => 'topological domain',
+                                        'evidence' => '2',
+                                        'description' => 'Cytoplasmic',
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '174'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '180'
+                                                                 }
+                                                      }
+                                      },
+                                      {
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '181'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '200'
+                                                                 }
+                                                      },
+                                        'description' => 'Helical; Name=2',
+                                        'evidence' => '2',
+                                        'type' => 'transmembrane region'
+                                      },
+                                      {
+                                        'description' => 'Extracellular',
+                                        'type' => 'topological domain',
+                                        'evidence' => '2',
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '201'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '257'
+                                                                 }
+                                                      }
+                                      },
+                                      {
+                                        'description' => 'Helical; Name=3',
+                                        'evidence' => '2',
+                                        'type' => 'transmembrane region',
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '280'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '258'
+                                                                   }
+                                                      }
+                                      },
+                                      {
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '297'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '281'
+                                                                   }
+                                                      },
+                                        'evidence' => '2',
+                                        'type' => 'topological domain',
+                                        'description' => 'Cytoplasmic'
+                                      },
+                                      {
+                                        'type' => 'transmembrane region',
+                                        'evidence' => '2',
+                                        'description' => 'Helical; Name=4',
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '317'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '298'
+                                                                   }
+                                                      }
+                                      },
+                                      {
+                                        'type' => 'topological domain',
+                                        'evidence' => '2',
+                                        'description' => 'Extracellular',
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '318'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '333'
+                                                                 }
+                                                      }
+                                      },
+                                      {
+                                        'description' => 'Helical; Name=5',
+                                        'evidence' => '2',
+                                        'type' => 'transmembrane region',
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '334'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '357'
+                                                                 }
+                                                      }
+                                      },
+                                      {
+                                        'description' => 'Cytoplasmic',
+                                        'type' => 'topological domain',
+                                        'evidence' => '2',
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '380'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '358'
+                                                                   }
+                                                      }
+                                      },
+                                      {
+                                        'type' => 'transmembrane region',
+                                        'evidence' => '2',
+                                        'description' => 'Helical; Name=6',
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '381'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '398'
+                                                                 }
+                                                      }
+                                      },
+                                      {
+                                        'type' => 'topological domain',
+                                        'evidence' => '2',
+                                        'description' => 'Extracellular',
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '410'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '399'
+                                                                   }
+                                                      }
+                                      },
+                                      {
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '432'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '411'
+                                                                   }
+                                                      },
+                                        'evidence' => '2',
+                                        'type' => 'transmembrane region',
+                                        'description' => 'Helical; Name=7'
+                                      },
+                                      {
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '433'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '516'
+                                                                 }
+                                                      },
+                                        'description' => 'Cytoplasmic',
+                                        'type' => 'topological domain',
+                                        'evidence' => '2'
+                                      },
+                                      {
+                                        'description' => 'N-linked (GlcNAc...) asparagine',
+                                        'type' => 'glycosylation site',
+                                        'evidence' => '2',
+                                        'location' => {
+                                                        'position' => {
+                                                                        'position' => '28'
+                                                                      }
+                                                      }
+                                      },
+                                      {
+                                        'evidence' => '2',
+                                        'type' => 'glycosylation site',
+                                        'description' => 'N-linked (GlcNAc...) asparagine',
+                                        'location' => {
+                                                        'position' => {
+                                                                        'position' => '73'
+                                                                      }
+                                                      }
+                                      },
+                                      {
+                                        'evidence' => '2',
+                                        'type' => 'glycosylation site',
+                                        'description' => 'N-linked (GlcNAc...) asparagine',
+                                        'location' => {
+                                                        'position' => {
+                                                                        'position' => '125'
+                                                                      }
+                                                      }
+                                      },
+                                      {
+                                        'location' => {
+                                                        'position' => {
+                                                                        'position' => '130'
+                                                                      }
+                                                      },
+                                        'description' => 'N-linked (GlcNAc...) asparagine',
+                                        'evidence' => '2',
+                                        'type' => 'glycosylation site'
+                                      },
+                                      {
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '81'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '55'
+                                                                   }
+                                                      },
+                                        'type' => 'disulfide bond',
+                                        'evidence' => '1'
+                                      },
+                                      {
+                                        'location' => {
+                                                        'end' => {
+                                                                   'position' => '112'
+                                                                 },
+                                                        'begin' => {
+                                                                     'position' => '72'
+                                                                   }
+                                                      },
+                                        'evidence' => '1',
+                                        'type' => 'disulfide bond'
+                                      },
+                                      {
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '95'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '134'
+                                                                 }
+                                                      },
+                                        'evidence' => '1',
+                                        'type' => 'disulfide bond'
+                                      },
+                                      {
+                                        'type' => 'splice variant',
+                                        'evidence' => '3',
+                                        'description' => 'In isoform A.',
+                                        'id' => 'VSP_001995',
+                                        'location' => {
+                                                        'begin' => {
+                                                                     'position' => '217'
+                                                                   },
+                                                        'end' => {
+                                                                   'position' => '253'
+                                                                 }
+                                                      }
+                                      },
+                                      {
+                                        'variation' => 'S',
+                                        'description' => 'In Ref. 2; AAA03031/AAA03030.',
+                                        'evidence' => '3',
+                                        'original' => 'L',
+                                        'type' => 'sequence conflict',
+                                        'ref' => '2',
+                                        'location' => {
+                                                        'position' => {
+                                                                        'position' => '148'
+                                                                      }
+                                                      }
+                                      },
+                                      {
+                                        'description' => 'In Ref. 2; AAA03031/AAA03030.',
+                                        'evidence' => '3',
+                                        'type' => 'sequence conflict',
+                                        'location' => {
+                                                        'position' => {
+                                                                        'position' => '459'
+                                                                      }
+                                                      },
+                                        'ref' => '2'
+                                      },
+                                      {
+                                        'evidence' => '3',
+                                        'original' => 'L',
+                                        'type' => 'sequence conflict',
+                                        'description' => 'In Ref. 2; AAA03031/AAA03030.',
+                                        'variation' => 'R',
+                                        'ref' => '2',
+                                        'location' => {
+                                                        'position' => {
+                                                                        'position' => '479'
+                                                                      }
+                                                      }
+                                      }
+                                    ],
+                       'accession' => [
+                                        'P32214',
+                                        'P32213'
+                                      ],
+                       'proteinExistence' => {
+                                               'type' => 'evidence at transcript level'
+                                             },
+                       'comment' => [
+                                      {
+                                        'text' => 'This is a receptor for calcitonin. The activity of this receptor is mediated by G proteins which activate adenylyl cyclase. The calcitonin receptor is thought to couple to the heterotrimeric guanosine triphosphate-binding protein that is sensitive to cholera toxin.',
+                                        'type' => 'function'
+                                      },
+                                      {
+                                        'type' => 'subunit',
+                                        'text' => {
+                                                    'content' => 'Interacts with GPRASP2.',
+                                                    'evidence' => '1'
+                                                  }
+                                      },
+                                      {
+                                        'type' => 'subcellular location',
+                                        'subcellularLocation' => {
+                                                                   'location' => 'Cell membrane',
+                                                                   'topology' => 'Multi-pass membrane protein'
+                                                                 }
+                                      },
+                                      {
+                                        'type' => 'alternative products',
+                                        'isoform' => {
+                                                       'B' => {
+                                                                'id' => 'P32214-1',
+                                                                'sequence' => {
+                                                                                'type' => 'displayed'
+                                                                              }
+                                                              },
+                                                       'A' => {
+                                                                'id' => 'P32214-2',
+                                                                'sequence' => {
+                                                                                'ref' => 'VSP_001995',
+                                                                                'type' => 'described'
+                                                                              }
+                                                              }
+                                                     },
+                                        'event' => {
+                                                     'type' => 'alternative splicing'
+                                                   }
+                                      },
+                                      {
+                                        'type' => 'similarity',
+                                        'text' => {
+                                                    'evidence' => '3',
+                                                    'content' => 'Belongs to the G-protein coupled receptor 2 family.'
+                                                  }
+                                      }
+                                    ],
+                       'dataset' => 'Swiss-Prot',
+                       'organism' => {
+                                       'dbReference' => {
+                                                          'id' => '10116',
+                                                          'type' => 'NCBI Taxonomy'
+                                                        },
+                                       'name' => [
+                                                   {
+                                                     'content' => 'Rattus norvegicus',
+                                                     'type' => 'scientific'
+                                                   },
+                                                   {
+                                                     'type' => 'common',
+                                                     'content' => 'Rat'
+                                                   }
+                                                 ],
+                                       'lineage' => {
+                                                      'taxon' => [
+                                                                   'Eukaryota',
+                                                                   'Metazoa',
+                                                                   'Chordata',
+                                                                   'Craniata',
+                                                                   'Vertebrata',
+                                                                   'Euteleostomi',
+                                                                   'Mammalia',
+                                                                   'Eutheria',
+                                                                   'Euarchontoglires',
+                                                                   'Glires',
+                                                                   'Rodentia',
+                                                                   'Myomorpha',
+                                                                   'Muroidea',
+                                                                   'Muridae',
+                                                                   'Murinae',
+                                                                   'Rattus'
+                                                                 ]
+                                                    }
+                                     },
+                       'sequence' => {
+                                       'checksum' => '9B057B860E574378',
+                                       'mass' => '60292',
+                                       'version' => '1',
+                                       'content' => 'MRFLLLNRFTLLLLLLVSPTPVLQAPTNLTDSGLDQEPFLYLVGRKKLLDAQYKCYDRIQQLPPYEGEGPYCNRTWDGWMCWDDTPAGVMSYQHCPDYFPDFDPTEKVSKYCDENGEWFRHPDSNRTWSNYTLCNAFTPDKLHNAYVLYYLALVGHSMSIAALIASMGIFLFFKNLSCQRVTLHKNMFLTYILNSIIIIIHLVEVVPNGDLVRRDPMHIFHHNTYMWTMQWELSPPLPLSAHEGKMDPHDSEVISCKILHFFHQYMMACNYFWMLCEGIYLHTLIVMAVFTEDQRLRWYYLLGWGFPIVPTIIHAITRAVYYNDNCWLSTETHLLYIIHGPVMAALVVNFFFLLNIVRVLVTKMRQTHEAEAYMYLKAVKATMVLVPLLGIQFVVFPWRPSNKVLGKIYDYLMHSLIHFQGFFVATIYCFCNHEVQVTLKRQWAQFKIQWSHRWGRRRRPTNRVVSAPRAVAFAEPGGLPIYICHQEPRNPPVSNNEGEEGTEMIPMNVIQQDSSA',
+                                       'modified' => '1993-10-01',
+                                       'precursor' => 'true',
+                                       'length' => '516'
+                                     },
+                       'evidence' => {
+                                       '2' => {
+                                                'type' => 'ECO:0000255'
+                                              },
+                                       '3' => {
+                                                'type' => 'ECO:0000305'
+                                              },
+                                       '1' => {
+                                                'type' => 'ECO:0000250'
+                                              }
+                                     },
+                       'dbReference' => {
+                                          'GO:0007188' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'P:adenylate cyclase-modulating G protein-coupled receptor signaling pathway',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000314'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'PS50261' => {
+                                                         'type' => 'PROSITE',
+                                                         'property' => [
+                                                                         {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'G_PROTEIN_RECEP_F2_4'
+                                                                         },
+                                                                         {
+                                                                           'value' => '1',
+                                                                           'type' => 'match status'
+                                                                         }
+                                                                       ]
+                                                       },
+                                          'RGD:621001' => {
+                                                            'type' => 'UCSC',
+                                                            'molecule' => {
+                                                                            'id' => 'P32214-1'
+                                                                          },
+                                                            'property' => {
+                                                                            'value' => 'rat',
+                                                                            'type' => 'organism name'
+                                                                          }
+                                                          },
+                                          'CPX-249' => {
+                                                         'type' => 'ComplexPortal',
+                                                         'property' => {
+                                                                         'value' => 'Amylin receptor 3 complex',
+                                                                         'type' => 'entry name'
+                                                                       }
+                                                       },
+                                          'GO:0010628' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:positive regulation of gene expression'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'PTHR45620:SF8' => {
+                                                               'property' => [
+                                                                               {
+                                                                                 'type' => 'entry name',
+                                                                                 'value' => 'PTHR45620:SF8'
+                                                                               },
+                                                                               {
+                                                                                 'value' => '1',
+                                                                                 'type' => 'match status'
+                                                                               }
+                                                                             ],
+                                                               'type' => 'PANTHER'
+                                                             },
+                                          'KOG4564' => {
+                                                         'type' => 'eggNOG',
+                                                         'property' => {
+                                                                         'value' => 'Eukaryota',
+                                                                         'type' => 'taxonomic scope'
+                                                                       }
+                                                       },
+                                          'GO:0150057' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'C:amylin receptor complex 2',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'GO:1904645' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:response to amyloid-beta'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'GO:0051897' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'P:positive regulation of protein kinase B signaling',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          '4.10.1240.10' => {
+                                                              'type' => 'Gene3D',
+                                                              'property' => {
+                                                                              'value' => '1',
+                                                                              'type' => 'match status'
+                                                                            }
+                                                            },
+                                          'GO:0150056' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'C:amylin receptor complex 1'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          '799' => {
+                                                     'type' => 'CTD'
+                                                   },
+                                          'NP_446268.2' => {
+                                                             'property' => {
+                                                                             'value' => 'NM_053816.2',
+                                                                             'type' => 'nucleotide sequence ID'
+                                                                           },
+                                                             'type' => 'RefSeq'
+                                                           },
+                                          'GO:0097647' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:amylin receptor signaling pathway'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'GO:0150058' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'C:amylin receptor complex 3',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'R-RNO-419812' => {
+                                                              'type' => 'Reactome',
+                                                              'property' => {
+                                                                              'type' => 'pathway name',
+                                                                              'value' => 'Calcitonin-like ligand receptors'
+                                                                            }
+                                                            },
+                                          'GO:0051384' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:response to glucocorticoid'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'GO:0033138' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:positive regulation of peptidyl-serine phosphorylation'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'GO:0043488' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:regulation of mRNA stability'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          '621001' => {
+                                                        'type' => 'RGD',
+                                                        'property' => {
+                                                                        'type' => 'gene designation',
+                                                                        'value' => 'Calcr'
+                                                                      }
+                                                      },
+                                          'PR00249' => {
+                                                         'type' => 'PRINTS',
+                                                         'property' => {
+                                                                         'value' => 'GPCRSECRETIN',
+                                                                         'type' => 'entry name'
+                                                                       }
+                                                       },
+                                          'GO:0030279' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'P:negative regulation of ossification',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'PR00361' => {
+                                                         'type' => 'PRINTS',
+                                                         'property' => {
+                                                                         'type' => 'entry name',
+                                                                         'value' => 'CALCITONINR'
+                                                                       }
+                                                       },
+                                          'CPX-246' => {
+                                                         'type' => 'ComplexPortal',
+                                                         'property' => {
+                                                                         'value' => 'Amylin receptor 1 complex',
+                                                                         'type' => 'entry name'
+                                                                       }
+                                                       },
+                                          'L13040' => {
+                                                        'type' => 'EMBL',
+                                                        'property' => [
+                                                                        {
+                                                                          'type' => 'protein sequence ID',
+                                                                          'value' => 'AAA03031.1'
+                                                                        },
+                                                                        {
+                                                                          'type' => 'molecule type',
+                                                                          'value' => 'mRNA'
+                                                                        }
+                                                                      ]
+                                                      },
+                                          'L14617' => {
+                                                        'property' => [
+                                                                        {
+                                                                          'value' => 'AAA65964.1',
+                                                                          'type' => 'protein sequence ID'
+                                                                        },
+                                                                        {
+                                                                          'value' => 'mRNA',
+                                                                          'type' => 'molecule type'
+                                                                        }
+                                                                      ],
+                                                        'type' => 'EMBL'
+                                                      },
+                                          'GO:0005886' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'C:plasma membrane'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000318'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'GO_Central',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'UP000002494' => {
+                                                             'property' => {
+                                                                             'type' => 'component',
+                                                                             'value' => 'Unplaced'
+                                                                           },
+                                                             'type' => 'Proteomes'
+                                                           },
+                                          'GO:0070374' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:positive regulation of ERK1 and ERK2 cascade'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'IPR036445' => {
+                                                           'type' => 'InterPro',
+                                                           'property' => {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'GPCR_2_extracell_dom_sf'
+                                                                         }
+                                                         },
+                                          'GO:0005929' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'C:cilium'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'GO:0007166' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'P:cell surface receptor signaling pathway',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000501'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'InterPro'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'GO:0045762' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'P:positive regulation of adenylate cyclase activity',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          '250474' => {
+                                                        'type' => 'BioGRID',
+                                                        'property' => {
+                                                                        'value' => '1',
+                                                                        'type' => 'interactions'
+                                                                      }
+                                                      },
+                                          'IPR001879' => {
+                                                           'property' => {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'GPCR_2_extracellular_dom'
+                                                                         },
+                                                           'type' => 'InterPro'
+                                                         },
+                                          'rno:116506' => {
+                                                            'type' => 'KEGG'
+                                                          },
+                                          'I60800' => {
+                                                        'property' => {
+                                                                        'type' => 'entry name',
+                                                                        'value' => 'I60800'
+                                                                      },
+                                                        'type' => 'PIR'
+                                                      },
+                                          'GO:1905665' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:positive regulation of calcium ion import across plasma membrane'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'GO:0032841' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'F:calcitonin binding'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000314',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'GO:0043005' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'C:neuron projection',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000314'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'CHEMBL2204' => {
+                                                            'type' => 'ChEMBL'
+                                                          },
+                                          'PF00002' => {
+                                                         'type' => 'Pfam',
+                                                         'property' => [
+                                                                         {
+                                                                           'value' => '7tm_2',
+                                                                           'type' => 'entry name'
+                                                                         },
+                                                                         {
+                                                                           'value' => '1',
+                                                                           'type' => 'match status'
+                                                                         }
+                                                                       ]
+                                                       },
+                                          'GO:0038041' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'P:cross-receptor inhibition within G protein-coupled receptor heterodimer',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'IPR017983' => {
+                                                           'property' => {
+                                                                           'value' => 'GPCR_2_secretin-like_CS',
+                                                                           'type' => 'entry name'
+                                                                         },
+                                                           'type' => 'InterPro'
+                                                         },
+                                          'PS50227' => {
+                                                         'type' => 'PROSITE',
+                                                         'property' => [
+                                                                         {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'G_PROTEIN_RECEP_F2_3'
+                                                                         },
+                                                                         {
+                                                                           'value' => '1',
+                                                                           'type' => 'match status'
+                                                                         }
+                                                                       ]
+                                                       },
+                                          'R-RNO-418555' => {
+                                                              'property' => {
+                                                                              'value' => 'G alpha (s) signalling events',
+                                                                              'type' => 'pathway name'
+                                                                            },
+                                                              'type' => 'Reactome'
+                                                            },
+                                          'GO:0001635' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'F:calcitonin gene-related peptide receptor activity',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          '1005634at2759' => {
+                                                               'type' => 'OrthoDB'
+                                                             },
+                                          'GO:0001669' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'C:acrosomal vesicle',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'SSF111418' => {
+                                                           'type' => 'SUPFAM',
+                                                           'property' => [
+                                                                           {
+                                                                             'value' => 'SSF111418',
+                                                                             'type' => 'entry name'
+                                                                           },
+                                                                           {
+                                                                             'type' => 'match status',
+                                                                             'value' => '1'
+                                                                           }
+                                                                         ]
+                                                         },
+                                          'GO:0004948' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'F:calcitonin receptor activity'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000314',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'IPR001688' => {
+                                                           'type' => 'InterPro',
+                                                           'property' => {
+                                                                           'value' => 'GPCR_2_calcitonin_rcpt',
+                                                                           'type' => 'entry name'
+                                                                         }
+                                                         },
+                                          'GO:0007189' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:adenylate cyclase-activating G protein-coupled receptor signaling pathway'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'L14618' => {
+                                                        'property' => [
+                                                                        {
+                                                                          'type' => 'protein sequence ID',
+                                                                          'value' => 'AAA65965.1'
+                                                                        },
+                                                                        {
+                                                                          'value' => 'mRNA',
+                                                                          'type' => 'molecule type'
+                                                                        }
+                                                                      ],
+                                                        'type' => 'EMBL'
+                                                      },
+                                          'SM00008' => {
+                                                         'property' => [
+                                                                         {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'HormR'
+                                                                         },
+                                                                         {
+                                                                           'type' => 'match status',
+                                                                           'value' => '1'
+                                                                         }
+                                                                       ],
+                                                         'type' => 'SMART'
+                                                       },
+                                          'CLU_002753_4_2_1' => {
+                                                                  'type' => 'HOGENOM'
+                                                                },
+                                          '10116.ENSRNOP00000013910' => {
+                                                                          'type' => 'STRING'
+                                                                        },
+                                          'IPR017981' => {
+                                                           'type' => 'InterPro',
+                                                           'property' => {
+                                                                           'value' => 'GPCR_2-like',
+                                                                           'type' => 'entry name'
+                                                                         }
+                                                         },
+                                          'S33746' => {
+                                                        'type' => 'PIR',
+                                                        'property' => {
+                                                                        'value' => 'S33746',
+                                                                        'type' => 'entry name'
+                                                                      }
+                                                      },
+                                          'GO:0030424' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'C:axon'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000314',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'PR01350' => {
+                                                         'property' => {
+                                                                         'type' => 'entry name',
+                                                                         'value' => 'CTRFAMILY'
+                                                                       },
+                                                         'type' => 'PRINTS'
+                                                       },
+                                          'GO:0030316' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'P:osteoclast differentiation',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'PF02793' => {
+                                                         'property' => [
+                                                                         {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'HRM'
+                                                                         },
+                                                                         {
+                                                                           'type' => 'match status',
+                                                                           'value' => '1'
+                                                                         }
+                                                                       ],
+                                                         'type' => 'Pfam'
+                                                       },
+                                          '116506' => {
+                                                        'type' => 'GeneID'
+                                                      },
+                                          'A37430' => {
+                                                        'type' => 'PIR',
+                                                        'property' => {
+                                                                        'value' => 'A37430',
+                                                                        'type' => 'entry name'
+                                                                      }
+                                                      },
+                                          '43' => {
+                                                    'type' => 'GuidetoPHARMACOLOGY'
+                                                  },
+                                          'L13041' => {
+                                                        'type' => 'EMBL',
+                                                        'property' => [
+                                                                        {
+                                                                          'value' => 'AAA03030.1',
+                                                                          'type' => 'protein sequence ID'
+                                                                        },
+                                                                        {
+                                                                          'value' => 'mRNA',
+                                                                          'type' => 'molecule type'
+                                                                        }
+                                                                      ]
+                                                      },
+                                          'CPX-247' => {
+                                                         'property' => {
+                                                                         'value' => 'Amylin receptor 2 complex',
+                                                                         'type' => 'entry name'
+                                                                       },
+                                                         'type' => 'ComplexPortal'
+                                                       },
+                                          'GO:0097643' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'F:amylin receptor activity',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'GO:0008528' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'F:G protein-coupled peptide receptor activity'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000318',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'GO_Central'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'IPR000832' => {
+                                                           'property' => {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'GPCR_2_secretin-like'
+                                                                         },
+                                                           'type' => 'InterPro'
+                                                         },
+                                          'GO:0010739' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:positive regulation of protein kinase A signaling'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'P32214' => {
+                                                        'property' => {
+                                                                        'type' => 'organism ID',
+                                                                        'value' => 'RN'
+                                                                      },
+                                                        'type' => 'Genevisible'
+                                                      },
+                                          'PS00649' => {
+                                                         'property' => [
+                                                                         {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'G_PROTEIN_RECEP_F2_1'
+                                                                         },
+                                                                         {
+                                                                           'value' => '1',
+                                                                           'type' => 'match status'
+                                                                         }
+                                                                       ],
+                                                         'type' => 'PROSITE'
+                                                       },
+                                          'GO:0010942' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'type' => 'term',
+                                                                              'value' => 'P:positive regulation of cell death'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000266'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'IPR003287' => {
+                                                           'property' => {
+                                                                           'value' => 'GCPR_2_calcitonin_rcpt_fam',
+                                                                           'type' => 'entry name'
+                                                                         },
+                                                           'type' => 'InterPro'
+                                                         },
+                                          'PR:P32214' => {
+                                                           'type' => 'PRO'
+                                                         },
+                                          'GO:0043025' => {
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'C:neuronal cell body',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'evidence',
+                                                                              'value' => 'ECO:0000314'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'RGD',
+                                                                              'type' => 'project'
+                                                                            }
+                                                                          ],
+                                                            'type' => 'GO'
+                                                          },
+                                          'NP_001029187.1' => {
+                                                                'property' => {
+                                                                                'type' => 'nucleotide sequence ID',
+                                                                                'value' => 'NM_001034015.1'
+                                                                              },
+                                                                'type' => 'RefSeq'
+                                                              },
+                                          'GO:0007204' => {
+                                                            'type' => 'GO',
+                                                            'property' => [
+                                                                            {
+                                                                              'value' => 'P:positive regulation of cytosolic calcium ion concentration',
+                                                                              'type' => 'term'
+                                                                            },
+                                                                            {
+                                                                              'value' => 'ECO:0000266',
+                                                                              'type' => 'evidence'
+                                                                            },
+                                                                            {
+                                                                              'type' => 'project',
+                                                                              'value' => 'RGD'
+                                                                            }
+                                                                          ]
+                                                          },
+                                          'PS00650' => {
+                                                         'type' => 'PROSITE',
+                                                         'property' => [
+                                                                         {
+                                                                           'type' => 'entry name',
+                                                                           'value' => 'G_PROTEIN_RECEP_F2_2'
+                                                                         },
+                                                                         {
+                                                                           'value' => '1',
+                                                                           'type' => 'match status'
+                                                                         }
+                                                                       ]
+                                                       },
+                                          'K04576' => {
+                                                        'type' => 'KO'
+                                                      }
+                                        },
+                       'created' => '1993-10-01',
+                       'version' => '157',
+                       'modified' => '2020-08-12',
+                       'protein' => {
+                                      'alternativeName' => {
+                                                             'fullName' => 'C1A/C1B'
+                                                           },
+                                      'recommendedName' => {
+                                                             'fullName' => 'Calcitonin receptor',
+                                                             'shortName' => 'CT-R'
+                                                           }
+                                    },
+                       'keyword' => {
+                                      'KW-0807' => {
+                                                     'content' => 'Transducer'
+                                                   },
+                                      'KW-0812' => {
+                                                     'content' => 'Transmembrane'
+                                                   },
+                                      'KW-1015' => {
+                                                     'content' => 'Disulfide bond'
+                                                   },
+                                      'KW-0325' => {
+                                                     'content' => 'Glycoprotein'
+                                                   },
+                                      'KW-0472' => {
+                                                     'content' => 'Membrane'
+                                                   },
+                                      'KW-1185' => {
+                                                     'content' => 'Reference proteome'
+                                                   },
+                                      'KW-0297' => {
+                                                     'content' => 'G-protein coupled receptor'
+                                                   },
+                                      'KW-0025' => {
+                                                     'content' => 'Alternative splicing'
+                                                   },
+                                      'KW-0732' => {
+                                                     'content' => 'Signal'
+                                                   },
+                                      'KW-0675' => {
+                                                     'content' => 'Receptor'
+                                                   },
+                                      'KW-1003' => {
+                                                     'content' => 'Cell membrane'
+                                                   },
+                                      'KW-1133' => {
+                                                     'content' => 'Transmembrane helix'
+                                                   }
+                                    },
+                       'gene' => {
+                                   'name' => {
+                                               'content' => 'Calcr',
+                                               'type' => 'primary'
+                                             }
+                                 },
+                       'name' => 'CALCR_RAT'
+                     },
+          'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+          'xmlns' => 'http://uniprot.org/uniprot',
+          'xsi:schemaLocation' => 'http://uniprot.org/uniprot http://www.uniprot.org/support/docs/uniprot.xsd',
+          'copyright' => '
+Copyrighted by the UniProt Consortium, see https://www.uniprot.org/terms
+Distributed under the Creative Commons Attribution (CC BY 4.0) License
+'
+        };

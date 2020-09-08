@@ -1,0 +1,59 @@
+$VAR1 = {
+          'TranslationStack' => {
+                                  'TermSet' => [
+                                                 {
+                                                   'Count' => '15985514',
+                                                   'Field' => 'All Fields',
+                                                   'Explode' => 'N',
+                                                   'Term' => 'blood[All Fields]'
+                                                 },
+                                                 {
+                                                   'Term' => 'colon cancer[All Fields]',
+                                                   'Explode' => 'N',
+                                                   'Field' => 'All Fields',
+                                                   'Count' => '62744'
+                                                 },
+                                                 {
+                                                   'Field' => 'Filter',
+                                                   'Count' => '68706797',
+                                                   'Term' => 'refseq[Filter]',
+                                                   'Explode' => 'N'
+                                                 },
+                                                 {
+                                                   'Count' => '2308628',
+                                                   'Field' => 'Organism',
+                                                   'Explode' => 'Y',
+                                                   'Term' => '"Rattus norvegicus"[Organism]'
+                                                 }
+                                               ],
+                                  'OP' => [
+                                            'AND',
+                                            'GROUP',
+                                            'AND',
+                                            'AND'
+                                          ]
+                                },
+          'IdList' => {
+                        'Id' => [
+                                  '577019525',
+                                  '577019519',
+                                  '19924056',
+                                  '157823688',
+                                  '296923751',
+                                  '281604133',
+                                  '157823943'
+                                ]
+                      },
+          'Count' => '7',
+          'RetStart' => '0',
+          'RetMax' => '7',
+          'TranslationSet' => {
+                                'Translation' => {
+                                                   'To' => '"Rattus norvegicus"[Organism]',
+                                                   'From' => 'Rattus norvegicus[ORGN]'
+                                                 }
+                              },
+          'QueryKey' => '1',
+          'WebEnv' => 'MCID_5f5335dcfc2f30470f677811',
+          'QueryTranslation' => '(blood[All Fields] AND colon cancer[All Fields]) AND refseq[Filter] AND "Rattus norvegicus"[Organism]'
+        };

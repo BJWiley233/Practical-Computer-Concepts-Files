@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE eSearchResult PUBLIC "-//NLM//DTD esearch 20060628//EN" "https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd">
+<eSearchResult><Count>7</Count><RetMax>7</RetMax><RetStart>0</RetStart><QueryKey>1</QueryKey><WebEnv>MCID_5f53325b05294945213fbb61</WebEnv><IdList>
+<Id>577019525</Id>
+<Id>577019519</Id>
+<Id>19924056</Id>
+<Id>157823688</Id>
+<Id>296923751</Id>
+<Id>281604133</Id>
+<Id>157823943</Id>
+</IdList><TranslationSet><Translation>     <From>Rattus norvegicus[ORGN]</From>     <To>"Rattus norvegicus"[Organism]</To>    </Translation></TranslationSet><TranslationStack>   <TermSet>    <Term>blood[All Fields]</Term>    <Field>All Fields</Field>    <Count>15985514</Count>    <Explode>N</Explode>   </TermSet>   <TermSet>    <Term>colon cancer[All Fields]</Term>    <Field>All Fields</Field>    <Count>62744</Count>    <Explode>N</Explode>   </TermSet>   <OP>AND</OP>   <OP>GROUP</OP>   <TermSet>    <Term>refseq[Filter]</Term>    <Field>Filter</Field>    <Count>68706797</Count>    <Explode>N</Explode>   </TermSet>   <OP>AND</OP>   <TermSet>    <Term>"Rattus norvegicus"[Organism]</Term>    <Field>Organism</Field>    <Count>2308628</Count>    <Explode>Y</Explode>   </TermSet>   <OP>AND</OP>  </TranslationStack><QueryTranslation>(blood[All Fields] AND colon cancer[All Fields]) AND refseq[Filter] AND "Rattus norvegicus"[Organism]</QueryTranslation></eSearchResult>

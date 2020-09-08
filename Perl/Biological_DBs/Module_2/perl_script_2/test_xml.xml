@@ -1,0 +1,21 @@
+<Proteins>
+	<UniProt id="Q16539">
+		<PDB id="1A9U">
+			<property type="method" value="X-ray"/>
+			<property type="method" value="X-ray"/>
+		</PDB>
+		<PDB id="1BL6">
+			<property type="method" value="NMR"/>
+		</PDB>
+	</UniProt>
+</Proteins>
+
+
+<Proteins>
+	<UniProt id="Q16539">
+		<PDB id="1A9U">
+			<!--If theres not attribute don't need/have ending </PDB> on next line-->
+		</PDB>
+		<PDB id="1BL6"/>
+	</UniProt>
+</Proteins>
