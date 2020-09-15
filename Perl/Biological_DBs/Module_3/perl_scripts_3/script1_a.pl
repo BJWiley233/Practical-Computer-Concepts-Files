@@ -2,8 +2,8 @@
 
 =comment
 Script 1 (50 pts)
-See script1_a.pl for version using XML::LibXML
-currently named test1_2.pl
+Alternative for version using XML::LibXML
+with XML::LibXML::XPathContext for Namespaces
 =cut
 
 use strict;

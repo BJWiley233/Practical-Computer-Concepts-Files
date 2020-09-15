@@ -3,7 +3,6 @@
 =comment
 Script 1 (50 pts)
 See script1_a.pl for version using XML::LibXML
-currently named test1_2.pl
 =cut
 
 use strict;
