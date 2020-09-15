@@ -1,0 +1,301 @@
+---
+title: "Lab3_Brian_Wiley"
+output:
+  pdf_document:
+header-includes:
+    - \usepackage {hyperref}
+    - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+#### Brian Wiley
+### Lab 3: Power and sample size
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#q7) [8.](#q8) [9.](#q9)
+
+#### Summary
+In this lab, we are working with a data set from Alizadeh et al. at Stanford.  In this study, the investigators were evaluating diffuse large B-cell lymphoma (DLBCL).  Using expression profiling and hierarchical clustering (a topic that we will visit later in this class), they were able to identify 2 distinct forms of DLBCL that indicate different stages of B-cell differentiation.  “One type expressed genes characteristic of germinal centre B cells (‘germinal centre B-like DLBCL’); the second type expressed genes normally induced during in vitro activation of peripheral blood B cells (‘activated B-like DLBCL’).”  They also found that the germinal centre B-like DLBCL patients had a better survival rate.
+
+We will use this data set to evaluate the power and sample size in this experiment.  We will also look for the necessary number of samples to appropriately power the study.  First we will calculate the power and n required using a single gene calculation for illustration of the formula, then we will conduct a more multivariate summary that gives an idea of the power or n required for a specific percentage of genes/probes in the experiment.  Remember that when we calculate these statistics for a microarray, we are dealing with more than a single variable, so general power formulas do not apply when attempting to summarize all genes/probes on an array.
+
+The paper entitled “Distinct type of diffuse large B-cell lymphoma identified by gene expression profiling” can be found on the course website. [Link to Paper](https://www.nature.com/articles/35000501#:~:text=We%20identified%20two%20molecularly%20distinct,stages%20of%20B%2Dcell%20differentiation.&text=Patients%20with%20germinal%20centre%20B,with%20activated%20B%2Dlike%20DLBCL)
+
+
+##### **1.) Download the Eisen DLBCL data set and save as a text file (go to class web site or see syllabus for paper URL).** {#q1}
+```{r}
+# No Code required
+# Set working directory to ~/JHU_Fall_2020/Data_Analysis/Datasets in setup above
+```
+
+##### **2.) Load into R, using read.table and arguments:** {#q2}
+   `header=T`
+    `na.strings="NA"`
+    `blank.lines.skip=F`
+    `row.names=1`
+##### **There are missing values in this data frame because we’re working with cDNA data.**
+```{r}
+dlbcl <- read.table("eisen.txt", header=T, na.strings="NA", blank.lines.skip=F, row.names=1)
+head(dlbcl)
+names(dlbcl)
+```
+
+
+##### **3.) Get the class label file "eisenClasses.txt" from the class web site and read it into R.  Use the header=T argument.** {#q3}
+```{r}
+## class 1 = 
+class.labels <- read.table("eisenClasses.txt", header=T, stringsAsFactors=F)
+
+```
+
+
+
+##### **4.) Subset the data frame with the class labels and look at the positions so you know where one class ends and the other begins.  Remember that ‘subset’ means to re-index (i.e. reorder) the column headers.  If you look at the original column name order with dimnames(dat)[[2]] both before and after you reorder them, you will see what this has done.** {#q4}
+```{r}
+dlbcl.by.class <- dlbcl[, class.labels$sample]
+all(dlbcl.by.class$DLCL.0012[!is.na(dlbcl.by.class$DLCL.0012)] == 
+      dlbcl$DLCL.0012[!is.na(dlbcl$DLCL.0012)])
+
+## 'eisenClasses.txt' is missing a column
+dim(dlbcl)
+dim(dlbcl.by.class)
+
+## which column is missing from 'eisenClasses.txt'
+setdiff(names(dlbcl), names(dlbcl.by.class))
+
+### DLCL.0036 is missing from 'eisenClasses.txt', lets look it up
+```
+
+
+##### **5.) Pick a gene, remove cells that have "NAs", and plot the values for both classes with a:** {#q5}
+	- boxplot (use the argument `col=c(“red”,”blue”)` to color separate boxes)
+  - histogram (this should have 2 separate histogram plots on 1 page; use the `par(mfrow=c(2,1)`) function prior to plotting the first).
+
+##### **Color each class something different in the boxplot and histogram.**
+```{r}
+germ.cent <- dlbcl.by.class[, class.labels$class == 1]
+activ.B.like <- dlbcl.by.class[, class.labels$class == 2]
+
+gene <- 1111
+x <- as.numeric(germ.cent[gene, ])
+x <- x[!is.na(x)]
+y <- as.numeric(activ.B.like[gene, ])
+y <- y[!is.na(y)]
+
+## base plotting
+boxplot(x, y, names=c("germinal centre B-like DLBCL", "activated B-like DLBCL"),
+        col=c("red", "blue"), main="Probe 1111 for both types of DLBCL",
+        ylab="Normalized intensity")
+## 2 rows, 1 column
+## b l t r (bottom, left, top, right)
+par(mar=c(3.3, 4.5, 1.0, 4.2), mfrow=c(2,1),
+     oma = c(0, 2, 0.2, 2.2))
+hist(x, col="red", main="Germinal centre B-like",
+     xlab="")
+hist(y, col="blue", main="Activated B-like",
+     xlab="")
+title(xlab="Normalized intensisty", line=1.9)
+legend(0.28,5.9, "Probe\n#1111", bty='n', xpd=TRUE)
+
+
+## ggplot 
+library(ggplot2)
+# https://stackoverflow.com/questions/26918358/ggplot2-multiple-boxplots-from-sources-of-different-lengths
+## box
+x.df <- data.frame(group="germinal centre B-like", values=x)
+y.df <- data.frame(group="activated B-like DLBCL", values=y)
+plot.data <- rbind(x.df, y.df)
+ggplot(plot.data, aes(x=group, y=values, fill=group)) +
+  geom_boxplot() +
+  scale_fill_manual(values=c("red", "blue")) +
+  ggtitle("Probe 1111 for both types of DLBCL") +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.title = element_blank()) +
+  ylab("Normalized intensity") +
+  xlab("")
+
+## this is better since on same scale
+ggplot(plot.data, aes(x=values, fill=group)) +
+  geom_histogram(binwidth=0.2) +
+  scale_fill_manual(values=c("red", "blue")) +
+  facet_grid(rows = vars(group)) +
+  xlab("Normalized intensity") +
+  ylab("Frequency") +
+  labs(fill="Probe\n#1111")
+
+```
+
+
+##### **6.) Calculate the pooled variance as coded in the lecture notes, and calculate the minimum sample size necessary to detect a 1.5 fold difference (at 80% power and 99% confidence).** {#q6}
+```{r}
+nx <- length(x)
+ny <- length(y)
+
+pooled.var <- ((nx-1)*var(x) + (ny-1)*var(y))/(nx+ny+2)
+
+library(pwr)
+## log2 fold change
+## Sp = sqrt(pooled.var)
+diff.1.5.fold <- log2(1.5)/sqrt(pooled.var)
+## see Details under ?pwr.t.test
+samp.size.80.pwr <- pwr.t.test(d=diff.1.5.fold, sig.level=0.05, 
+                                 power=0.8, type="two.sample")
+print(paste0("Sample size required for 80% power: ", ceiling(samp.size.80.pwr$n)))
+
+samp.size.99.pwr <- pwr.t.test(d=diff.1.5.fold, sig.level=0.05, 
+                                 power=0.99, type="two.sample")
+print(paste0("Sample size required for 99% power: ", ceiling(samp.size.99.pwr$n)))
+```
+
+
+##### **7.) Now calculate the sample size required for the same gene selected in #5 using the empirically determined delta between the two groups, assuming 99% confidence and 80% power.** {#q7}
+```{r}
+diff <- abs(mean(x)-mean(y))/sqrt(pooled.var)
+ss <- pwr.t.test(d=diff, sig.level=0.01,
+                 power=0.80, type="two.sample")
+ceiling(ss$n)
+
+```
+
+
+##### **8.) Now load the ssize and gdata libraries, calculate the standard deviation for each gene in the matrix (Hint: use the na.rm=T argument), and plot a histogram of the standard deviations.  Label the plot accordingly.** {#q8}
+```{r}
+library(ssize)
+library(gdata)
+stdvs <- apply(dlbcl.by.class, 1, function(x) sd(x, na.rm=T))
+hist(stdvs, breaks=20, main="Probe Level Standard Deviations", xlab="Stand. Dev.")
+dens <- density(stdvs)
+## ok so par("usr")[4] will be the upper y boundary of the plot 
+## https://chitchatr.wordpress.com/2012/09/18/parusr-is-my-new-friend-for-inserting-legends-in-plots/
+ymax <- par("usr")[4] 
+lines(dens$x, dens$y*ymax/max(dens$y), col="red")
+
+
+## ggplot to plot standard deviations seperated by DLBCL subtype
+std.gc <- apply(germ.cent, 1, function(x) sd(x, na.rm=T))
+std.act <- apply(activ.B.like, 1, function(x) sd(x, na.rm=T))
+stdvs.data <- data.frame(type=c(rep("gc", length(std.gc)), rep("act", length(std.act))),
+                   values=c(std.gc, std.act))
+## this doesn't accomodate dual axes
+ggplot(stdvs.data, aes(x=values, fill=type)) +
+  geom_histogram(color="#e9ecef", 
+                 aes(y = ..density.., group=type, fill=type, alpha=0.6), 
+                 position="identity",
+                 bins=20) +
+  stat_density(aes(group=type, color=type), position="identity", geom="line", show.legend=F) +
+  labs(fill="DLBCL Subtype") +
+  ggtitle("Probe Level Standard Deviations") +
+  xlab("Stand. Dev.") +
+  ylab("Frequency") +
+  scale_alpha(guide="none")
+
+## this can do multiple axes but if you set the bins they won't match
+## only defualt bins=30 matches
+## https://www.datanovia.com/en/blog/ggplot-histogram-with-density-curve-in-r-using-secondary-y-axis/
+library(ggpubr)
+library(cowplot)
+
+## this way you can set bins but don't get secondary access
+## faster way to do the ggplot above
+p <- gghistogram(stdvs.data, x="values", y="..density..",
+            add="mean", fill="type",
+            bins=20, add_density=T) +
+  ggtitle("Probe Level Standard Deviations") +
+  xlab("Stand. Dev.") +
+  ylab("Frequency")
+ggpar(p, legend="right")
+
+
+## this way can't set bins or density won't match/overlay frequency
+phist <- gghistogram(stdvs.data, x="values",
+                     add="mean", fill="type", rug=T)+
+  ggtitle("Probe Level Standard Deviations") +
+  xlab("Stand. Dev.") +
+  ylab("Frequency")
+## don't need the expansion of secondary y like on website
+pdens <- ggdensity(stdvs.data, x="values", color="type", alpha=0) +
+              scale_y_continuous(position="right") +
+              theme_half_open(11, rel_small = 1) +
+              rremove("x.axis")+
+              rremove("xlab") +
+              rremove("x.text") +
+              rremove("x.ticks") +
+              rremove("legend") +
+              ylab("Density")
+## b l t r (bottom, left, top, right)
+par(mar=c(5.1, 4.1, 4.1, 6.1))
+paligned <- align_plots(ggpar(phist, legend=c(0.8, 0.8)), pdens, align="hv", axis="tblr")
+ggdraw(paligned[[1]]) + 
+  draw_plot(paligned[[2]]) 
+                
+  
+```
+
+
+##### **9.) Calculate and plot a proportion of genes vs. sample size graph to get an idea of the number of genes that have an adequate sample size for confidence=95%, effect size=3 (log2 transform for the function), and power=80%.** {#q9}
+```{r}
+fold.change=3
+power=0.8
+sig.level=0.05
+
+all.size <- ssize(sd=stdvs, delta=log2(fold.change), sig.level=sig.level, power=power)
+
+ssize.plot(all.size, marks=c(10, 20, 30))
+xmax <- par("usr")[2]-1
+ymin <- par("usr")[3]+.05
+
+legend(x=xmax, y=ymin, legend=strsplit(paste("fold change=",fold.change,",", "alpha=", sig.level,
+                                             ",", "power=",power,",", "# genes=", length(exp.sd),
+                                             sep=''),
+                                       "," )[[1]], 
+       xjust=1, yjust=0, cex=1.0) 
+title("Sample Size to Detect 2-Fold Change") 
+```
+
+
+##### **Bonus: Perform the `power.plot` from code in lecture, however using an apply function to use a different 'n' for each `pow` function.  We need to do this because not all genes have data for all 39 samples.** {#Bonus}
+
+Below is using 39 as 'n' for all genes which is not really valid
+```{r}
+## effect size is how large of effect, in our case log2 fold change of the means across sample groups
+fold.change=3
+power=0.8
+sig.level=0.05
+## this only check for samples in which have totally no data for all genes
+## no samples are completely blank for all genes
+n = ncol(dlbcl.by.class) - sum(sapply(dlbcl.by.class, function(x) all(is.na(x))))
+
+## below is different from pwr.t.test where...
+## Exactly one of the parameters 'd','n','power' and 'sig.level' must be passed as NULL
+## here we pass sd, n, sig.level to get % of genes that have power > <different levels>
+## only issue here is that not all genes have 39 samples
+all.power <- pow(sd=stdvs, n=dim(dlbcl.by.class)[2],
+                 delta=log2(fold.change), sig.level=sig.level)
+power.plot(all.power)
+## can't see number in graph, how many genes have power greater than
+sum(all.power > 0.8)/length(all.power)
+
+```
+
+Instead use `apply` functions to do different 'n' for each row where `n = number of non-NA samples of each gene`
+```{r}
+fold.change=3
+power=0.8
+sig.level=0.05
+
+power.by.gene.with.samples <- function(x) {
+  pow(sd=sd(x, na.rm=T), n=sum(!is.na(x)),
+      delta=log2(fold.change), sig.level=sig.level)
+}
+
+apply(dlbcl.by.class, 1, function(x) sum(!is.na(x)))
+
+all.power.per.gene <- apply(dlbcl.by.class, 1, power.by.gene.with.samples)
+power.plot(all.power.per.gene)
+## can't see number in graph, how many genes have power greater than
+sum(all.power.per.gene > 0.8)/length(all.power.per.gene)
+
+```

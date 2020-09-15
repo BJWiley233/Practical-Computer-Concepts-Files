@@ -1,0 +1,216 @@
+---
+title: "Lab2"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: null
+header-includes:
+- \usepackage {hyperref}
+- \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+#runtime: shiny
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+### Brian Wiley
+### Lab 2: Data visualization
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#q7) [8.](#q8) [Bonus](#Bonus)
+
+#### Summary
+In this lab, we are going to work with a very popular time course cDNA data set from Paul Spellman’s lab at Stanford.  This microarray was designed with probes from the yeast Saccharomyces cerevisiae genome.  The data set includes 3 different experiments, each with its own time course (each array is a different time point) for measuring transcript levels that are induced by various cyclins.  The transcripts that respond to this stimulus are seen to be regulated at the different stages of the cell cycle.  The 3 experiments differ by the method that the yeast cultures were synchronized: α factor arrest, elutriation, and arrest of a cdc15 temperature-sensitive mutant.  The cdc15 time course experiment is the one that we will use in this lab to conduct some simple mathematical manipulations and plots.
+
+The paper, “Comprehensive Identification of Cell Cycle–regulated Genes of the Yeast Saccharomyces cerevisiae by Microarray Hybridization” is available on the course website.
+
+##### **1.) Go to class website under Course Documents > Data Sets and download the Spellman yeast cell cycle dataset zip file.** {#q1}
+```{r }
+# No Code required
+# Set working directory to ~/JHU_Fall_2020/Data_Analysis/Datasets in setup above
+```
+
+
+##### **2.) Unzip the text file, and read into R (Hint: using the read.table() function with a “header=T” argument and “row.names=1” argument is one method to do this).** {#q2}
+```{r }
+cdc15_data <- read.table(file="spellman.txt", header=T, row.names=1)
+head(cdc15_data)
+```
+
+
+##### **3.) Look at the dimensions of the data frame and make sure that there are 6,178 genes and 77 arrays/sample.** {#q3}
+```{r }
+dim(cdc15_data)
+```
+
+
+##### **4.) Isolate only the cdc15 experiment (samples 23-46).** {#q4}
+```{r}
+cdc15_only <- cdc15_data[, grep("^cdc15.*", colnames(cdc15_data))]
+cat("dimensions:", dim(cdc15_only))
+
+## check how many is.na of each column
+apply(cdc15_only, 2, function(x) sum(is.na(x)))
+# sapply(cdc15_only, function(x) sum(is.na(x)))
+names(cdc15_only)
+```
+
+
+##### **5). Now calculate a correlation matrix between the time points (use Pearson’s correlation).  Make sure to title the plot, label the axes, and provide a legend of the color gradient.  In the correlation calculation, make sure to use the argument ‘use’ and value=pairwise.complete.obs since all of these arrays have at least one missing value.** {#q5}
+```{r plotting1, message=FALSE}
+## Way 1
+library(gplots)
+data_cor <- cor(cdc15_only, use="pairwise.complete.obs", method="pearson")
+## use absolute value to show correlation magnitude regardless of direction
+data_cor <- abs(data_cor)
+
+layout(matrix(c(1,1,1,1,1,1,1,1,2,2), 5, 2, byrow = TRUE))
+## https://www.r-graph-gallery.com/74-margin-and-oma-cheatsheet.html
+par(mar=c(3.4,6,2,6) + 0.1)
+par(oma=c(0,4,1,4))
+
+cx <- colorpanel(25, "yellow", "orange", "red")
+leg <- seq(min(data_cor, na.rm=T), max(data_cor, na.rm=T), length=10)
+image(data_cor, main="Cdc15 Samples Correlation Plot", axes=F, col=cx)
+## https://stat.ethz.ch/R-manual/R-patched/library/graphics/html/par.html for las (0,1,2,3)
+axis(1, at=seq(0, 1, length=ncol(cdc15_only)), labels=dimnames(cdc15_only)[[2]], cex.axis=0.9, las=2)
+axis(2, at=seq(0, 1, length=ncol(cdc15_only)), labels=dimnames(cdc15_only)[[2]], cex.axis=0.9, las=2)
+
+image(as.matrix(leg), col=cx, axes=F)
+axis(1, at=seq(0, 1, length=length(leg)), labels=round(leg, 2), cex.axis=1)
+
+## simpler corrplots below
+## b l t r (bottom, left, top, right)
+
+## Way 2
+library(corrplot)
+par(mar=c(0, 0, 2, 0) + 0.1)
+par(oma=c(2,1,2,1))
+## don't like labels on top, also goes from (-1-1); need gradient 0-1
+corrplot(data_cor, method = "color", col=cx, tl.cex=0.8, order="AOE",
+         title="Cdc15 Samples Correlation Plot", mar=c(0,0,1,0),
+         cl.lim=c(0,1))
+# found way around it, just take range from color 2 to color 3
+# i.e. yellow is 0 and red is 1 (no orange for 0.5)
+col <- colorRampPalette(c("white", "yellow", "red"))
+plot.new()
+corrplot(abs(data_cor), method = "color",  order = "AOE", tl.cex=0.8,
+         title="Cdc15 Samples Correlation Plot", mar=c(0,0,1,0),
+         cl.lim = c(0,1), col=col(200))
+
+## Way 3
+library(ggcorrplot)
+## only goes from -1-1; not sure how to change gradient to abs(0-1)
+## and angled text; worst of four
+ggcorrplot(data_cor, colors = c("yellow", "orange", "red"),
+           title="Cdc15 Samples Correlation Plot")
+```
+
+
+
+```{r, 5a}
+## Way 4
+library(ggplot2)
+library(reshape2)
+melt_data_cor <- melt(data_cor)
+par(mar=c(5, 4, 4, 1) + 0.1)
+## this is probably the best of the four
+
+ggplot(melt_data_cor, aes(x=Var1, y=Var2, fill=value)) +
+  geom_tile(color="white") +
+  scale_fill_gradient2(low="yellow", mid="orange", high="red",
+                       midpoint=0.5, limit=c(0,1),
+                       name="Pearson\nCorr.") +
+  theme(axis.text.x=element_text(angle=90),
+        axis.title=element_blank(),
+        plot.title=element_text(hjust=0.5)) +
+  ggtitle("Cdc15 Samples Correlation Plot\nBest Plot I Think")
+```
+
+
+##### **6.) Select the gene YAL002W, which is VPS8, a membrane-binding component of the CORVET complex; involved in endosomal vesicle tethering and fusion in the endosome to vacuole protein targeting pathway.  Impute the missing values with the row mean (save as something).  Make sure to cast the gene to numeric.** {#q6}
+```{r}
+## looks like aready normalized
+#cdc15_only <- cdc15_data[, grep("^cdc15.*", colnames(cdc15_data))]
+mean(cdc15_only["YAL002W", ], na.rm = T)
+min(rowMeans(cdc15_only, na.rm=T), na.rm=T)
+max(rowMeans(cdc15_only, na.rm=T), na.rm=T)
+
+## imput rowmean for YAL002W
+YAL002W_mean <- rowMeans(cdc15_only["YAL002W", ], na.rm = T)
+cdc15_only["YAL002W", ][is.na(cdc15_only["YAL002W", ])] <- YAL002W_mean
+sum(is.na(cdc15_only["YAL002W", ]))
+```
+
+
+##### **7.) Generate a profile plot of the same gene.  Title the plot, label the axes, and on the x-axis, provide the time points only for each array (no “cdc15_” prefix) so we can visualize the transcript pattern over time.  Use lwd in the plot command (lwd=line width).** {#q7}
+```{r plotting2}
+YAL002W <- as.data.frame(t(cdc15_only["YAL002W", ]))
+YAL002W$time <- gsub(".*_", "", colnames(cdc15_only))
+YAL002W$time <- factor(YAL002W$time, levels=YAL002W$time)
+ggplot(YAL002W, aes(x=time, y=YAL002W, group=1)) +
+  geom_line(stat="identity", lwd=1) +
+  theme(axis.text.x=element_text(angle=45),
+        axis.title=element_blank(),
+        plot.title=element_text(hjust=0.5)) +
+  ggtitle("Profile Plot for YAL002W")
+```
+
+
+##### **8.) Now let’s create a simple shiny app which allows the user to select and correlate any time point verse another time point across all genes. To do this, we can create a server and ui function within the same file, paste both into the R session, then call them with:** {#q8}
+
+`> shinyApp(ui = ui, server = server)`
+
+##### **Use the Iris dataset example from the lecture as a model. You can remove the kmeans clustering code and just focus on plotting the columns (time points) of the CDC15 data matrix against each other.**
+
+**Hints**
+*The ui function can start with:*
+`ui <- 	fluidPage(`
+		      `sidebarLayout(`
+		        `sidebarPanel(`
+                `selectInput('xcol', 'X Variable', dimnames(dat)[[2]]),`
+*The ui function can start with:*
+`server <- function(input, output) {`
+	          `selectedData <- reactive({`
+		          `dat[, c(input$xcol, input$ycol)]`
+	        `})`
+```{r}
+library(shiny)
+fluidPage()
+
+ui <- shinyUI(pageWithSidebar(
+            headerPanel('Spellman cdc15 Timeseries Data'),
+            sidebarPanel(
+                selectInput('xcol', 'X-Variable', names(cdc15_only), 
+                            selected=names(cdc15_only)[1]),
+                selectInput('ycol', 'Y-Variable', names(cdc15_only), 
+                            selected=names(cdc15_only)[10]),
+                selectInput('color', 'Point color', c("red", "blue", "green", "orange", "black"),
+                            selected="black")
+            ),
+            
+            mainPanel(plotOutput('plot1'))
+      )
+)
+
+server <- shinyServer(function(input, output, session) {
+                        selectedData <- reactive({
+                          cdc15_only[, c(input$xcol, input$ycol)]
+                        })
+                        
+                        output$plot1 <- renderPlot({
+                          par(mar=c(5.1, 4.1, 0, 1))
+                          plot(selectedData(), col=input$color, pch=20, cex=0.5)
+                        })
+      }
+)
+
+shinyApp(ui = ui, server = server)
+```
+
+
+
+
+
