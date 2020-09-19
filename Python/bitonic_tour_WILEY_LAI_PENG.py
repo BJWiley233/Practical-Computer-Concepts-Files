@@ -183,7 +183,7 @@ if __name__ == "__main__":
     #final = print_tour(mono_tour, tour_dist, points_dict, graph=True)
     if not len(sys.argv) > 1:
         eprint('No arguments passed or running from inside script')
-        eprint('If running from inside script please give points list above')
+        eprint('If running from inside script please give points listed in script')
     else:
         parser = argparse.ArgumentParser(description='List of points and graph boolean',
                                      add_help=True, prefix_chars='@')
