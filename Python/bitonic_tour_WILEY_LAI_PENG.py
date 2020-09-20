@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Oct  2 00:36:03 2019
+Created on Sat Sep 19 19:28:04 2020
 
-@author: bjwil
+@author: coyote
 """
+
 from __future__ import print_function
 import math
 import numpy as np
@@ -109,7 +111,7 @@ def graph_tour(final, points_dict):
 
     G.add_nodes_from(pos.keys())
     for n, p in pos.items():
-        G.node[n]['pos'] = p
+        G.nodes[n]['pos'] = p
     nx.draw_networkx(G, pos, node_size=600, )
     nx.draw_networkx_edges(G, pos, edgelist=edgelist, width=3)
     plt.show()
@@ -154,7 +156,9 @@ def coords(c):
         x, y = map(int, c.split(','))
         return x, y
     except:
-        raise argparse.ArgumentTypeError('Coordinates must be in "X,Y"')
+        raise argparse.ArgumentTypeError('\n\tCoordinates must be in "X,Y" \
+                                          \n\tas a space separeted list. Ex.\
+                                          \n\t1,6 -2,3')
 
 def str_bool(entry):
     upper_arg = str(entry).upper()
@@ -164,7 +168,7 @@ def str_bool(entry):
     elif upper_arg == 'F' or upper_arg == 'FALSE':
         return False
     else:
-        raise argparse.ArgumentTypeError('Enter either True(T)/False((F)')
+        raise argparse.ArgumentTypeError('Enter either True(T)/False(F)')
     
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -180,7 +184,7 @@ if __name__ == "__main__":
     # get monotonically increasing tour, shortest distance, order points dict by X coordinate
     #mono_tour, tour_dist, points_dict = find_full_tour(points_list)
     # get final tour and print results
-    #final = print_tour(mono_tour, tour_dist, points_dict, graph=True)
+    #final = print_tour(mono_tour, tour_dist, points_dict, graph=True, points_list=points_list)
     if not len(sys.argv) > 1:
         eprint('No arguments passed or running from inside script')
         eprint('If running from inside script please give points listed in script')
@@ -195,4 +199,3 @@ if __name__ == "__main__":
         mono_tour, tour_dist, points_dict = find_full_tour(args.points)
         # get final tour and print results
         final = print_tour(mono_tour, tour_dist, points_dict, graph=args.graph, points_list=args.points)
-    
