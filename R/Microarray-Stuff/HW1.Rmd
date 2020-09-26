@@ -291,8 +291,8 @@ ggplot(gene, aes(x=x, y=`206054_at`, group=1)) +
                     values = c("blue", "green", "red"),
                     labels = c("actual", "knn imputed", "svd imputed")) +
   theme(axis.text.x=element_text(angle=90),
-      plot.title=element_text(hjust=0.5),
-      axis.title.x=element_blank()) +
+        plot.title=element_text(hjust=0.5),
+        axis.title.x=element_blank()) +
   ylab("206054_at intensities") +
   ggtitle("Gene Profile Plot for 206054_at (KNG1)")
 ```
