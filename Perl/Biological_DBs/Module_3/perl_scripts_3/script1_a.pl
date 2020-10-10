@@ -53,12 +53,15 @@ while (<FHin>) {
 		my ($fullname) = $xc->findnodes("//$prefix:uniprot/$prefix:entry/$prefix:protein/$prefix:recommendedName/$prefix:fullName");
 		my ($seq) = $xc->findnodes("//$prefix:uniprot/$prefix:entry/$prefix:sequence");
 
-		
+		## open fasta
 		open(FHout, '>', "$_.fasta");
 		
 		## write to UniprotID.fasta information
 		print FHout ">sp|$_|". $name->textContent . " " . 
 			$fullname->textContent . "\n" . $seq->textContent;
+			
+		## close fasta
+		close(FHout);
 		
 	} else {
 		## print error
@@ -67,6 +70,7 @@ while (<FHin>) {
 	
 }
 
+## close HW2_1.txt
 close(FHin);
 
 
@@ -76,7 +80,7 @@ close(FHin);
 sub trim {
 	my $string = shift;
 	## regex substitution with g modifier
-	## need to dereference, I like to use '{}' for dereference
+	## need to dereference, I like to use '{}' for dereference if '$$'
 	${$string} =~ s/^\s+|\s+$//g; 
 
 }

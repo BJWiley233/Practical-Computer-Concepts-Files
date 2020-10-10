@@ -6,10 +6,10 @@ See script1_a.pl for version using XML::LibXML
 =cut
 
 use strict;
-#use warnings;
+#use warnings; ## suppresses all the warnings printed from XML::Simple
 use LWP::UserAgent;
 use XML::Simple;
-#use XML::LibXML;
+
 
 ## Open file with filehandle in
 open(FHin, "<:encoding(utf8)", "HW2_1.txt") or die $!;
@@ -48,16 +48,21 @@ while (<FHin>) {
 		my $fullname;
 		my $seq;
 		
+		## assign data
 		if (defined($entry_node)) {
 			$name = $entry_node->{name};
 			$fullname = $entry_node->{protein}->{recommendedName}{fullName};
 			$seq = $entry_node->{sequence}{content};
 		}
 		
+		## open fasta
 		open(FHout, '>', "$_.fasta");
 		
 		## write to UniprotID.fasta information
 		print FHout ">sp|$_|$name $fullname\n$seq";
+		
+		## close fasta
+		close(FHout);
 		
 	} else {
 		## print error
@@ -66,6 +71,7 @@ while (<FHin>) {
 	
 }
 
+## close HW2_1.txt
 close(FHin);
 
 
@@ -75,7 +81,7 @@ close(FHin);
 sub trim {
 	my $string = shift;
 	## regex substitution with g modifier
-	## need to dereference, I like to use '{}' for dereference
+	## need to dereference, I like to use '{}' for dereference if '$$'
 	${$string} =~ s/^\s+|\s+$//g; 
 
 }

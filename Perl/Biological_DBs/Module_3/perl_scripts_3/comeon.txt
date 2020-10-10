@@ -1,0 +1,54 @@
+$VAR1 = {
+          'QueryKey' => '1',
+          'QueryTranslation' => '(GCK[All Fields] AND glucose[All Fields]) AND refseq[Filter] AND "Homo sapiens"[Organism]',
+          'TranslationSet' => {
+                                'Translation' => {
+                                                   'To' => '"Homo sapiens"[Organism]',
+                                                   'From' => 'Homo sapiens[ORGN]'
+                                                 }
+                              },
+          'WebEnv' => 'MCID_5f5b4b02259e48196324cb53',
+          'IdList' => {
+                        'Id' => [
+                                  '1519242551',
+                                  '1444691817'
+                                ]
+                      },
+          'RetStart' => '0',
+          'RetMax' => '2',
+          'Count' => '45',
+          'TranslationStack' => {
+                                  'OP' => [
+                                            'AND',
+                                            'GROUP',
+                                            'AND',
+                                            'AND'
+                                          ],
+                                  'TermSet' => [
+                                                 {
+                                                   'Count' => '2386',
+                                                   'Term' => 'GCK[All Fields]',
+                                                   'Explode' => 'N',
+                                                   'Field' => 'All Fields'
+                                                 },
+                                                 {
+                                                   'Term' => 'glucose[All Fields]',
+                                                   'Count' => '2027547',
+                                                   'Field' => 'All Fields',
+                                                   'Explode' => 'N'
+                                                 },
+                                                 {
+                                                   'Term' => 'refseq[Filter]',
+                                                   'Count' => '68781199',
+                                                   'Field' => 'Filter',
+                                                   'Explode' => 'N'
+                                                 },
+                                                 {
+                                                   'Count' => '27676646',
+                                                   'Term' => '"Homo sapiens"[Organism]',
+                                                   'Explode' => 'Y',
+                                                   'Field' => 'Organism'
+                                                 }
+                                               ]
+                                }
+        };

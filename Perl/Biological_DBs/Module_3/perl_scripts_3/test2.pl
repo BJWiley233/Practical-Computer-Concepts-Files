@@ -8,14 +8,99 @@ use XML::Simple;
 use DBI;
 use List::MoreUtils qw(each_array); ## https://stackoverflow.com/questions/12528913/how-can-i-insert-data-from-three-perl-arrays-into-a-single-mysql-table
 use Data::Dumper;
+use DBIx::RunSQL;
 
 my $_id = "P29274";
 my $ua = LWP::UserAgent->new;
 
 ## create tables at beginning
 my $dbfile = "script2.db";
-my $dbconnect = DBI->connect("dbi:SQLite:dbname=$dbfile");
+my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile");
 
+
+## get list of tables
+my $sql = "SELECT name FROM sqlite_master WHERE type='table'";
+my $tables = $dbh->selectcol_arrayref($sql);
+
+## get count from each table and print
+foreach my $table (@$tables) {
+	my $prep = $dbh->prepare("SELECT COUNT(*) FROM $table");
+	$prep->execute;
+	my $length = $prep->fetchrow_arrayref->[0];
+	print "$length entries were added to the $table table.\n";
+}
+
+## print out 5 random
+print "\nHere are 5 random rows from each table:\n\n";
+
+foreach my $table (@$tables) {
+	print "'$table' table:\n";
+	my $result = $dbh->prepare("SELECT * FROM $table
+							    ORDER BY RANDOM() LIMIT 5"
+	);		
+	$result->execute;
+	
+	## https://stackoverflow.com/questions/2283065/how-can-i-get-column-names-and-row-data-in-order-with-dbi-in-perl
+	my $fields = $result->{NAME_lc};
+
+	my $ncol = scalar(@$fields);
+	
+	## set the formatting, easy only if very few columns
+	my $width_string = '';
+	for (my $i = 0; $i < 2; $i++) {
+		$width_string .= "%-15s"
+	}
+	$width_string .= "%-43s";
+	for (my $i = 3; $i < $ncol; $i++) {
+		$width_string .= "%-28s"
+	}
+	$width_string .= "\n";
+
+	## print the columns names and row data
+	printf($width_string, @$fields);
+	while (my $row = $result->fetchrow_arrayref) {
+		printf($width_string, @$row)
+	}
+	print "\n";
+}
+
+=comment
+my $pdb_select = $dbconnect->selectall_arrayref("
+	SELECT u.UniProtID, u.name, u.organism, s.PDBID, s.method
+	FROM UniProt u INNER JOIN Structures s
+		USING(UniProtID); 
+	"
+);
+
+
+# print first 5, starting to like terse perl
+my @c = (0..4);
+print "First 5 PDB entries:\n\n";
+printf("%-10s%-10s%-13s%-20s%-20s\n", 
+       "PDBID", "method", "UniProtID", "name", "organism");
+
+for (@c) {
+	my ($uniprotID, $name, $organism, $PDBID, $method) = @{$pdb_select->[$_]};
+	printf("%-10s%-10s%-13s%-20s%-20s\n", 
+           $PDBID, $method, $uniprotID, $name, $organism);
+}
+
+
+
+#####################################################################
+## testing creating db and tables with .sql file
+my $dbfile2 = "script2a.db";
+my $dbconnect2 = DBI->connect("dbi:SQLite:dbname=$dbfile2");
+
+for my $file (sort glob 'create_tbls_script2.sql') {
+	DBIx::RunSQL->run_sql_file(
+        verbose => 1,
+        dbh     => $dbconnect2,
+        sql     => $file,
+    );
+}
+
+=comment
 ## table 1
 $dbconnect->do("DROP TABLE IF EXISTS UniProt;") or die $dbconnect->errstr;
 $dbconnect->do("
@@ -51,7 +136,7 @@ $dbconnect->do("
 			FOREIGN KEY(UniProtID) REFERENCES UniProt(UniProtID)
 	);
 ") or die $dbconnect->errstr;
-
+=cut
 =comment
 my $response = $ua->get("https://www.uniprot.org/uniprot/$_id.xml",
 					'User-Agent' => 'Mozilla/4.0 (compatible; MSIE 7.0)');
@@ -62,6 +147,8 @@ unless ($response->is_success) {
 	' for ' . $response->request->uri . "\n";
 }
 =cut
+
+=comment
 my $xml = XML::Simple->new;
 #my $data = $xml->XMLin($response->content,
 #				   ForceArray=>[qw(dbReference)],
@@ -170,3 +257,4 @@ if (defined($entry_node)) {
 	print "taxid: $taxid\n";
 
 }
+=cut

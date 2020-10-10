@@ -1,0 +1,1405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uniprot xmlns="http://uniprot.org/uniprot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://uniprot.org/uniprot http://www.uniprot.org/support/docs/uniprot.xsd">
+<entry dataset="Swiss-Prot" created="1993-10-01" modified="2020-08-12" version="155">
+<accession>Q04631</accession>
+<name>FNTA_RAT</name>
+<protein>
+<recommendedName>
+<fullName>Protein farnesyltransferase/geranylgeranyltransferase type-1 subunit alpha</fullName>
+<ecNumber evidence="16 21 22 23">2.5.1.58</ecNumber>
+<ecNumber evidence="18 22">2.5.1.59</ecNumber>
+</recommendedName>
+<alternativeName>
+<fullName>CAAX farnesyltransferase subunit alpha</fullName>
+</alternativeName>
+<alternativeName>
+<fullName>FTase-alpha</fullName>
+</alternativeName>
+<alternativeName>
+<fullName>Ras proteins prenyltransferase subunit alpha</fullName>
+</alternativeName>
+<alternativeName>
+<fullName>Type I protein geranyl-geranyltransferase subunit alpha</fullName>
+<shortName>GGTase-I-alpha</shortName>
+</alternativeName>
+</protein>
+<gene>
+<name type="primary">Fnta</name>
+</gene>
+<organism>
+<name type="scientific">Rattus norvegicus</name>
+<name type="common">Rat</name>
+<dbReference type="NCBI Taxonomy" id="10116"/>
+<lineage>
+<taxon>Eukaryota</taxon>
+<taxon>Metazoa</taxon>
+<taxon>Chordata</taxon>
+<taxon>Craniata</taxon>
+<taxon>Vertebrata</taxon>
+<taxon>Euteleostomi</taxon>
+<taxon>Mammalia</taxon>
+<taxon>Eutheria</taxon>
+<taxon>Euarchontoglires</taxon>
+<taxon>Glires</taxon>
+<taxon>Rodentia</taxon>
+<taxon>Myomorpha</taxon>
+<taxon>Muroidea</taxon>
+<taxon>Muridae</taxon>
+<taxon>Murinae</taxon>
+<taxon>Rattus</taxon>
+</lineage>
+</organism>
+<reference key="1">
+<citation type="journal article" date="1991" name="Proc. Natl. Acad. Sci. U.S.A." volume="88" first="11368" last="11372">
+<title>Cloning and expression of a cDNA encoding the alpha subunit of rat p21ras protein farnesyltransferase.</title>
+<authorList>
+<person name="Chen W.-J."/>
+<person name="Andres D.A."/>
+<person name="Goldstein J.L."/>
+<person name="Brown M.S."/>
+</authorList>
+<dbReference type="PubMed" id="1763049"/>
+<dbReference type="DOI" id="10.1073/pnas.88.24.11368"/>
+</citation>
+<scope>NUCLEOTIDE SEQUENCE [MRNA]</scope>
+<scope>PARTIAL PROTEIN SEQUENCE</scope>
+<source>
+<tissue>Brain</tissue>
+</source>
+</reference>
+<reference key="2">
+<citation type="journal article" date="1997" name="Science" volume="275" first="1800" last="1804">
+<title>Crystal structure of protein farnesyltransferase at 2.25-A resolution.</title>
+<authorList>
+<person name="Park H.-W."/>
+<person name="Boduluri S.R."/>
+<person name="Mooomaw J.F."/>
+<person name="Casey P.J."/>
+<person name="Beese L.S."/>
+</authorList>
+<dbReference type="PubMed" id="9065406"/>
+<dbReference type="DOI" id="10.1126/science.275.5307.1800"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.25 ANGSTROMS)</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="3">
+<citation type="journal article" date="1997" name="Science" volume="276" first="21" last="21">
+<authorList>
+<person name="Park H.-W."/>
+<person name="Boduluri S.R."/>
+<person name="Mooomaw J.F."/>
+<person name="Casey P.J."/>
+<person name="Beese L.S."/>
+</authorList>
+</citation>
+<scope>ERRATUM OF PUBMED:9065406</scope>
+</reference>
+<reference key="4">
+<citation type="journal article" date="1998" name="Biochemistry" volume="37" first="7907" last="7912">
+<title>Protein farnesyltransferase: structure and implications for substrate binding.</title>
+<authorList>
+<person name="Dunten P."/>
+<person name="Kammlott U."/>
+<person name="Crowther R."/>
+<person name="Weber D."/>
+<person name="Palermo R."/>
+<person name="Birktoft J."/>
+</authorList>
+<dbReference type="PubMed" id="9609683"/>
+<dbReference type="DOI" id="10.1021/bi980531o"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.75 ANGSTROMS) OF 1-377 IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="5">
+<citation type="journal article" date="1998" name="Biochemistry" volume="37" first="9612" last="9618">
+<title>Cocrystal structure of protein farnesyltransferase complexed with a farnesyl diphosphate substrate.</title>
+<authorList>
+<person name="Long S.B."/>
+<person name="Casey P.J."/>
+<person name="Beese L.S."/>
+</authorList>
+<dbReference type="PubMed" id="9657673"/>
+<dbReference type="DOI" id="10.1021/bi980708e"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (3.4 ANGSTROMS)IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="6">
+<citation type="journal article" date="1998" name="Biochemistry" volume="37" first="16601" last="16611">
+<title>Crystal structure of farnesyl protein transferase complexed with a CaaX peptide and farnesyl diphosphate analogue.</title>
+<authorList>
+<person name="Strickland C.L."/>
+<person name="Windsor W.T."/>
+<person name="Syto R."/>
+<person name="Wang L."/>
+<person name="Bond R."/>
+<person name="Wu Z."/>
+<person name="Schwartz J."/>
+<person name="Le H.V."/>
+<person name="Beese L.S."/>
+<person name="Weber P.C."/>
+</authorList>
+<dbReference type="PubMed" id="9843427"/>
+<dbReference type="DOI" id="10.1021/bi981197z"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.40 ANGSTROMS) OF 45-377 IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="7">
+<citation type="journal article" date="1999" name="J. Med. Chem." volume="42" first="2125" last="2135">
+<title>Tricyclic farnesyl protein transferase inhibitors: crystallographic and calorimetric studies of structure-activity relationships.</title>
+<authorList>
+<person name="Strickland C.L."/>
+<person name="Weber P.C."/>
+<person name="Windsor W.T."/>
+<person name="Wu Z."/>
+<person name="Le H.V."/>
+<person name="Albanese M.M."/>
+<person name="Alvarez C.S."/>
+<person name="Cesarz D."/>
+<person name="del Rosario J."/>
+<person name="Deskus J."/>
+<person name="Mallams A.K."/>
+<person name="Njoroge F.G."/>
+<person name="Piwinski J.J."/>
+<person name="Remiszewski S."/>
+<person name="Rossman R.R."/>
+<person name="Taveras A.G."/>
+<person name="Vibulbhan B."/>
+<person name="Doll R.J."/>
+<person name="Girijavallabhan V.M."/>
+<person name="Ganguly A.K."/>
+</authorList>
+<dbReference type="PubMed" id="10377218"/>
+<dbReference type="DOI" id="10.1021/jm990030g"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.30 ANGSTROMS) OF 1-377 IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="8">
+<citation type="journal article" date="2000" name="Structure" volume="8" first="209" last="222">
+<title>The basis for K-Ras4B binding specificity to protein farnesyltransferase revealed by 2 A resolution ternary complex structures.</title>
+<authorList>
+<person name="Long S.B."/>
+<person name="Casey P.J."/>
+<person name="Beese L.S."/>
+</authorList>
+<dbReference type="PubMed" id="10673434"/>
+<dbReference type="DOI" id="10.1016/s0969-2126(00)00096-4"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.00 ANGSTROMS) OF 1-377 IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="9">
+<citation type="journal article" date="2001" name="Proc. Natl. Acad. Sci. U.S.A." volume="98" first="12948" last="12953">
+<title>The crystal structure of human protein farnesyltransferase reveals the basis for inhibition by CaaX tetrapeptides and their mimetics.</title>
+<authorList>
+<person name="Long S.B."/>
+<person name="Hancock P.J."/>
+<person name="Kral A.M."/>
+<person name="Hellinga H.W."/>
+<person name="Beese L.S."/>
+</authorList>
+<dbReference type="PubMed" id="11687658"/>
+<dbReference type="DOI" id="10.1073/pnas.241407898"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.3 ANGSTROMS) IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="10">
+<citation type="journal article" date="2002" name="Nature" volume="419" first="645" last="650">
+<title>Reaction path of protein farnesyltransferase at atomic resolution.</title>
+<authorList>
+<person name="Long S.B."/>
+<person name="Casey P.J."/>
+<person name="Beese L.S."/>
+</authorList>
+<dbReference type="PubMed" id="12374986"/>
+<dbReference type="DOI" id="10.1038/nature00986"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.10 ANGSTROMS) OF 1-377 IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="11">
+<citation type="journal article" date="2003" name="Biochemistry" volume="42" first="3716" last="3724">
+<title>Biochemical and structural studies with prenyl diphosphate analogues provide insights into isoprenoid recognition by protein farnesyl transferase.</title>
+<authorList>
+<person name="Turek-Etienne T.C."/>
+<person name="Strickland C.L."/>
+<person name="Distefano M.D."/>
+</authorList>
+<dbReference type="PubMed" id="12667062"/>
+<dbReference type="DOI" id="10.1021/bi0266838"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.10 ANGSTROMS) OF 1-377 IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="12">
+<citation type="journal article" date="2003" name="Bioorg. Med. Chem. Lett." volume="13" first="1359" last="1362">
+<title>Aryl tetrahydropyridine inhibitors of farnesyltransferase: glycine, phenylalanine and histidine derivatives.</title>
+<authorList>
+<person name="Gwaltney S.L."/>
+<person name="O'Connor S.J."/>
+<person name="Nelson L.T."/>
+<person name="Sullivan G.M."/>
+<person name="Imade H."/>
+<person name="Wang W."/>
+<person name="Hasvold L."/>
+<person name="Li Q."/>
+<person name="Cohen J."/>
+<person name="Gu W.Z."/>
+<person name="Tahir S.K."/>
+<person name="Bauch J."/>
+<person name="Marsh K."/>
+<person name="Ng S.C."/>
+<person name="Frost D.J."/>
+<person name="Zhang H."/>
+<person name="Muchmore S."/>
+<person name="Jakob C.G."/>
+<person name="Stoll V."/>
+<person name="Hutchins C."/>
+<person name="Rosenberg S.H."/>
+<person name="Sham H.L."/>
+</authorList>
+<dbReference type="PubMed" id="12657282"/>
+<dbReference type="DOI" id="10.1016/s0960-894x(03)00095-7"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.30 ANGSTROMS) OF 55-369 IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+<scope>CATALYTIC ACTIVITY</scope>
+</reference>
+<reference key="13">
+<citation type="journal article" date="2003" name="EMBO J." volume="22" first="5963" last="5974">
+<title>Structure of mammalian protein geranylgeranyltransferase type-I.</title>
+<authorList>
+<person name="Taylor J.S."/>
+<person name="Reid T.S."/>
+<person name="Terry K.L."/>
+<person name="Casey P.J."/>
+<person name="Beese L.S."/>
+</authorList>
+<dbReference type="PubMed" id="14609943"/>
+<dbReference type="DOI" id="10.1093/emboj/cdg571"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.40 ANGSTROMS) IN COMPLEX WITH PGGT1B</scope>
+<scope>SUBUNIT</scope>
+<scope>CATALYTIC ACTIVITY</scope>
+<scope>FUNCTION</scope>
+</reference>
+<reference key="14">
+<citation type="journal article" date="2004" name="Biochemistry" volume="43" first="6877" last="6884">
+<title>Crystal structures of the anticancer clinical candidates R115777 (Tipifarnib) and BMS-214662 complexed with protein farnesyltransferase suggest a mechanism of FTI selectivity.</title>
+<authorList>
+<person name="Reid T.S."/>
+<person name="Beese L.S."/>
+</authorList>
+<dbReference type="PubMed" id="15170324"/>
+<dbReference type="DOI" id="10.1021/bi049723b"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.60 ANGSTROMS) IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="15">
+<citation type="journal article" date="2004" name="J. Mol. Biol." volume="343" first="417" last="433">
+<title>Crystallographic analysis of CaaX prenyltransferases complexed with substrates defines rules of protein substrate selectivity.</title>
+<authorList>
+<person name="Reid T.S."/>
+<person name="Terry K.L."/>
+<person name="Casey P.J."/>
+<person name="Beese L.S."/>
+</authorList>
+<dbReference type="PubMed" id="15451670"/>
+<dbReference type="DOI" id="10.1016/j.jmb.2004.08.056"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.25 ANGSTROMS) IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+</reference>
+<reference key="16">
+<citation type="journal article" date="2008" name="Chem. Biol. Drug Des." volume="72" first="171" last="181">
+<title>Caged protein prenyltransferase substrates: tools for understanding protein prenylation.</title>
+<authorList>
+<person name="DeGraw A.J."/>
+<person name="Hast M.A."/>
+<person name="Xu J."/>
+<person name="Mullen D."/>
+<person name="Beese L.S."/>
+<person name="Barany G."/>
+<person name="Distefano M.D."/>
+</authorList>
+<dbReference type="PubMed" id="18844669"/>
+<dbReference type="DOI" id="10.1111/j.1747-0285.2008.00698.x"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.70 ANGSTROMS) IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+<scope>CATALYTIC ACTIVITY</scope>
+<scope>FUNCTION</scope>
+</reference>
+<reference key="17">
+<citation type="journal article" date="2009" name="Nat. Chem. Biol." volume="5" first="227" last="235">
+<title>Analysis of the eukaryotic prenylome by isoprenoid affinity tagging.</title>
+<authorList>
+<person name="Nguyen U.T."/>
+<person name="Guo Z."/>
+<person name="Delon C."/>
+<person name="Wu Y."/>
+<person name="Deraeve C."/>
+<person name="Franzel B."/>
+<person name="Bon R.S."/>
+<person name="Blankenfeldt W."/>
+<person name="Goody R.S."/>
+<person name="Waldmann H."/>
+<person name="Wolters D."/>
+<person name="Alexandrov K."/>
+</authorList>
+<dbReference type="PubMed" id="19219049"/>
+<dbReference type="DOI" id="10.1038/nchembio.149"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.75 ANGSTROMS)</scope>
+<scope>SUBUNIT</scope>
+<scope>CATALYTIC ACTIVITY</scope>
+<scope>FUNCTION</scope>
+</reference>
+<reference key="18">
+<citation type="journal article" date="2012" name="J. Med. Chem." volume="55" first="8330" last="8340">
+<title>Development of selective, potent RabGGTase inhibitors.</title>
+<authorList>
+<person name="Stigter E.A."/>
+<person name="Guo Z."/>
+<person name="Bon R.S."/>
+<person name="Wu Y.W."/>
+<person name="Choidas A."/>
+<person name="Wolf A."/>
+<person name="Menninger S."/>
+<person name="Waldmann H."/>
+<person name="Blankenfeldt W."/>
+<person name="Goody R.S."/>
+</authorList>
+<dbReference type="PubMed" id="22963166"/>
+<dbReference type="DOI" id="10.1021/jm300624s"/>
+</citation>
+<scope>X-RAY CRYSTALLOGRAPHY (2.15 ANGSTROMS) IN COMPLEX WITH FNTB</scope>
+<scope>SUBUNIT</scope>
+<scope>CATALYTIC ACTIVITY</scope>
+<scope>FUNCTION</scope>
+</reference>
+<comment type="function">
+<text evidence="18 21 22 23">Essential subunit of both the farnesyltransferase and the geranylgeranyltransferase complex. Contributes to the transfer of a farnesyl or geranylgeranyl moiety from farnesyl or geranylgeranyl diphosphate to a cysteine at the fourth position from the C-terminus of several proteins having the C-terminal sequence Cys-aliphatic-aliphatic-X. May positively regulate neuromuscular junction development downstream of MUSK via its function in RAC1 prenylation and activation.</text>
+</comment>
+<comment type="catalytic activity">
+<reaction evidence="16 21 22 23">
+<text>(2E,6E)-farnesyl diphosphate + L-cysteinyl-[protein] = diphosphate + S-(2E,6E)-farnesyl-L-cysteinyl-[protein]</text>
+<dbReference type="Rhea" id="RHEA:13345"/>
+<dbReference type="Rhea" id="RHEA-COMP:10131"/>
+<dbReference type="Rhea" id="RHEA-COMP:11535"/>
+<dbReference type="ChEBI" id="CHEBI:29950"/>
+<dbReference type="ChEBI" id="CHEBI:33019"/>
+<dbReference type="ChEBI" id="CHEBI:86019"/>
+<dbReference type="ChEBI" id="CHEBI:175763"/>
+<dbReference type="EC" id="2.5.1.58"/>
+</reaction>
+</comment>
+<comment type="catalytic activity">
+<reaction evidence="18 22">
+<text>geranylgeranyl diphosphate + L-cysteinyl-[protein] = diphosphate + S-geranylgeranyl-L-cysteinyl-[protein]</text>
+<dbReference type="Rhea" id="RHEA:21240"/>
+<dbReference type="Rhea" id="RHEA-COMP:10131"/>
+<dbReference type="Rhea" id="RHEA-COMP:11537"/>
+<dbReference type="ChEBI" id="CHEBI:29950"/>
+<dbReference type="ChEBI" id="CHEBI:33019"/>
+<dbReference type="ChEBI" id="CHEBI:57533"/>
+<dbReference type="ChEBI" id="CHEBI:86021"/>
+<dbReference type="EC" id="2.5.1.59"/>
+</reaction>
+</comment>
+<comment type="cofactor">
+<cofactor evidence="10">
+<name>Mg(2+)</name>
+<dbReference type="ChEBI" id="CHEBI:18420"/>
+</cofactor>
+</comment>
+<comment type="activity regulation">
+<text evidence="9">Activated by the AGRIN-induced phosphorylation which is mediated by MUSK.</text>
+</comment>
+<comment type="subunit">
+<text evidence="9 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27">Interacts with MUSK; the interaction is direct and mediates AGRIN-induced phosphorylation of FNTA (By similarity). Heterodimer of FNTA and FNTB (farnesyltransferase). Heterodimer of FNTA and PGGT1B (geranylgeranyltransferase).</text>
+</comment>
+<comment type="interaction">
+<interactant intactId="EBI-602447">
+<id>Q04631</id>
+</interactant>
+<interactant intactId="EBI-602454">
+<id>Q02293</id>
+<label>Fntb</label>
+</interactant>
+<organismsDiffer>false</organismsDiffer>
+<experiments>16</experiments>
+</comment>
+<comment type="interaction">
+<interactant intactId="EBI-602447">
+<id>Q04631</id>
+</interactant>
+<interactant intactId="EBI-7287667">
+<id>Q63604</id>
+<label>Ntrk2</label>
+</interactant>
+<organismsDiffer>false</organismsDiffer>
+<experiments>4</experiments>
+</comment>
+<comment type="interaction">
+<interactant intactId="EBI-602447">
+<id>Q04631</id>
+</interactant>
+<interactant intactId="EBI-602610">
+<id>P53610</id>
+<label>Pggt1b</label>
+</interactant>
+<organismsDiffer>false</organismsDiffer>
+<experiments>7</experiments>
+</comment>
+<comment type="interaction">
+<interactant intactId="EBI-602447">
+<id>Q04631</id>
+</interactant>
+<interactant intactId="EBI-367427">
+<id>P01116-2</id>
+<label>KRAS</label>
+</interactant>
+<organismsDiffer>true</organismsDiffer>
+<experiments>3</experiments>
+</comment>
+<comment type="PTM">
+<text evidence="9">Phosphorylated. Phosphorylation is mediated by MUSK upon AGRIN stimulation and results in the activation of FNTA (By similarity).</text>
+</comment>
+<comment type="similarity">
+<text evidence="28">Belongs to the protein prenyltransferase subunit alpha family.</text>
+</comment>
+<dbReference type="EC" id="2.5.1.58" evidence="16 21 22 23"/>
+<dbReference type="EC" id="2.5.1.59" evidence="18 22"/>
+<dbReference type="EMBL" id="M81225">
+<property type="protein sequence ID" value="AAA41833.1"/>
+<property type="molecule type" value="mRNA"/>
+</dbReference>
+<dbReference type="PIR" id="A41625">
+<property type="entry name" value="A41625"/>
+</dbReference>
+<dbReference type="RefSeq" id="NP_036979.1">
+<property type="nucleotide sequence ID" value="NM_012847.1"/>
+</dbReference>
+<dbReference type="PDB" id="1D8D">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.00"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1D8E">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="3.00"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1FPP">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.75"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1FT1">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.25"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1FT2">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="3.40"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="1FTI">
+<property type="method" value="Model"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="1HZ7">
+<property type="method" value="Model"/>
+<property type="chains" value="A=116-247"/>
+</dbReference>
+<dbReference type="PDB" id="1JCR">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.00"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1JCS">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.20"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1KZO">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.20"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1KZP">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.10"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1KZR">
+<property type="method" value="Model"/>
+<property type="chains" value="A=55-377"/>
+</dbReference>
+<dbReference type="PDB" id="1N4P">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.65"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1N4Q">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.40"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1N4R">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.80"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1N4S">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.60"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1N94">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="3.50"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="1N95">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.30"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="1N9A">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="3.20"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="1NI1">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.30"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="1NL4">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.70"/>
+<property type="chains" value="A=55-366"/>
+</dbReference>
+<dbReference type="PDB" id="1O1R">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.30"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1O1S">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.30"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1O1T">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.10"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1O5M">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.30"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1QBQ">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.40"/>
+<property type="chains" value="A=45-377"/>
+</dbReference>
+<dbReference type="PDB" id="1QE2">
+<property type="method" value="Model"/>
+<property type="chains" value="A=116-247"/>
+</dbReference>
+<dbReference type="PDB" id="1S64">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.55"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1SA5">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.60"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1TN7">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.30"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1TN8">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.25"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1TNB">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.85"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1TNO">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.70"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1TNU">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.70"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1TNY">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.70"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1TNZ">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.90"/>
+<property type="chains" value="A/C/E/G/I/K=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="1X81">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="3.50"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="2BED">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.70"/>
+<property type="chains" value="A=54-366"/>
+</dbReference>
+<dbReference type="PDB" id="2FTI">
+<property type="method" value="Model"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="2R2L">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.23"/>
+<property type="chains" value="A=54-368"/>
+</dbReference>
+<dbReference type="PDB" id="2ZIR">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.40"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="2ZIS">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.60"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3DPY">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.70"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3E30">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.45"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3E32">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.45"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3E33">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="1.90"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3E34">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.05"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3EU5">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.80"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3EUV">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.75"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3FTI">
+<property type="method" value="Model"/>
+<property type="chains" value="A=55-369"/>
+</dbReference>
+<dbReference type="PDB" id="3KSL">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.05"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3KSQ">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.10"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="3PZ4">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.10"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="4GTM">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.20"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="4GTO">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.15"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="4GTP">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.75"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="4GTQ">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.60"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDB" id="4GTR">
+<property type="method" value="X-ray"/>
+<property type="resolution" value="2.20"/>
+<property type="chains" value="A=1-377"/>
+</dbReference>
+<dbReference type="PDBsum" id="1D8D"/>
+<dbReference type="PDBsum" id="1D8E"/>
+<dbReference type="PDBsum" id="1FPP"/>
+<dbReference type="PDBsum" id="1FT1"/>
+<dbReference type="PDBsum" id="1FT2"/>
+<dbReference type="PDBsum" id="1FTI"/>
+<dbReference type="PDBsum" id="1HZ7"/>
+<dbReference type="PDBsum" id="1JCR"/>
+<dbReference type="PDBsum" id="1JCS"/>
+<dbReference type="PDBsum" id="1KZO"/>
+<dbReference type="PDBsum" id="1KZP"/>
+<dbReference type="PDBsum" id="1KZR"/>
+<dbReference type="PDBsum" id="1N4P"/>
+<dbReference type="PDBsum" id="1N4Q"/>
+<dbReference type="PDBsum" id="1N4R"/>
+<dbReference type="PDBsum" id="1N4S"/>
+<dbReference type="PDBsum" id="1N94"/>
+<dbReference type="PDBsum" id="1N95"/>
+<dbReference type="PDBsum" id="1N9A"/>
+<dbReference type="PDBsum" id="1NI1"/>
+<dbReference type="PDBsum" id="1NL4"/>
+<dbReference type="PDBsum" id="1O1R"/>
+<dbReference type="PDBsum" id="1O1S"/>
+<dbReference type="PDBsum" id="1O1T"/>
+<dbReference type="PDBsum" id="1O5M"/>
+<dbReference type="PDBsum" id="1QBQ"/>
+<dbReference type="PDBsum" id="1QE2"/>
+<dbReference type="PDBsum" id="1S64"/>
+<dbReference type="PDBsum" id="1SA5"/>
+<dbReference type="PDBsum" id="1TN7"/>
+<dbReference type="PDBsum" id="1TN8"/>
+<dbReference type="PDBsum" id="1TNB"/>
+<dbReference type="PDBsum" id="1TNO"/>
+<dbReference type="PDBsum" id="1TNU"/>
+<dbReference type="PDBsum" id="1TNY"/>
+<dbReference type="PDBsum" id="1TNZ"/>
+<dbReference type="PDBsum" id="1X81"/>
+<dbReference type="PDBsum" id="2BED"/>
+<dbReference type="PDBsum" id="2FTI"/>
+<dbReference type="PDBsum" id="2R2L"/>
+<dbReference type="PDBsum" id="2ZIR"/>
+<dbReference type="PDBsum" id="2ZIS"/>
+<dbReference type="PDBsum" id="3DPY"/>
+<dbReference type="PDBsum" id="3E30"/>
+<dbReference type="PDBsum" id="3E32"/>
+<dbReference type="PDBsum" id="3E33"/>
+<dbReference type="PDBsum" id="3E34"/>
+<dbReference type="PDBsum" id="3EU5"/>
+<dbReference type="PDBsum" id="3EUV"/>
+<dbReference type="PDBsum" id="3FTI"/>
+<dbReference type="PDBsum" id="3KSL"/>
+<dbReference type="PDBsum" id="3KSQ"/>
+<dbReference type="PDBsum" id="3PZ4"/>
+<dbReference type="PDBsum" id="4GTM"/>
+<dbReference type="PDBsum" id="4GTO"/>
+<dbReference type="PDBsum" id="4GTP"/>
+<dbReference type="PDBsum" id="4GTQ"/>
+<dbReference type="PDBsum" id="4GTR"/>
+<dbReference type="SMR" id="Q04631"/>
+<dbReference type="BioGRID" id="247357">
+<property type="interactions" value="1"/>
+</dbReference>
+<dbReference type="ComplexPortal" id="CPX-2181">
+<property type="entry name" value="Protein farnesyltransferase complex"/>
+</dbReference>
+<dbReference type="CORUM" id="Q04631"/>
+<dbReference type="DIP" id="DIP-6131N"/>
+<dbReference type="IntAct" id="Q04631">
+<property type="interactions" value="9"/>
+</dbReference>
+<dbReference type="STRING" id="10116.ENSRNOP00000019594"/>
+<dbReference type="BindingDB" id="Q04631"/>
+<dbReference type="ChEMBL" id="CHEMBL2095197"/>
+<dbReference type="ChEMBL" id="CHEMBL2111479"/>
+<dbReference type="iPTMnet" id="Q04631"/>
+<dbReference type="PhosphoSitePlus" id="Q04631"/>
+<dbReference type="jPOST" id="Q04631"/>
+<dbReference type="PaxDb" id="Q04631"/>
+<dbReference type="PRIDE" id="Q04631"/>
+<dbReference type="GeneID" id="25318"/>
+<dbReference type="KEGG" id="rno:25318"/>
+<dbReference type="UCSC" id="RGD:2625">
+<property type="organism name" value="rat"/>
+</dbReference>
+<dbReference type="CTD" id="2339"/>
+<dbReference type="RGD" id="2625">
+<property type="gene designation" value="Fnta"/>
+</dbReference>
+<dbReference type="eggNOG" id="KOG0530">
+<property type="taxonomic scope" value="Eukaryota"/>
+</dbReference>
+<dbReference type="InParanoid" id="Q04631"/>
+<dbReference type="KO" id="K05955"/>
+<dbReference type="OrthoDB" id="1527547at2759"/>
+<dbReference type="PhylomeDB" id="Q04631"/>
+<dbReference type="BRENDA" id="2.5.1.58">
+<property type="organism ID" value="5301"/>
+</dbReference>
+<dbReference type="Reactome" id="R-RNO-111465">
+<property type="pathway name" value="Apoptotic cleavage of cellular proteins"/>
+</dbReference>
+<dbReference type="Reactome" id="R-RNO-2514859">
+<property type="pathway name" value="Inactivation, recovery and regulation of the phototransduction cascade"/>
+</dbReference>
+<dbReference type="SABIO-RK" id="Q04631"/>
+<dbReference type="EvolutionaryTrace" id="Q04631"/>
+<dbReference type="PRO" id="PR:Q04631"/>
+<dbReference type="Proteomes" id="UP000002494">
+<property type="component" value="Unplaced"/>
+</dbReference>
+<dbReference type="GO" id="GO:0005953">
+<property type="term" value="C:CAAX-protein geranylgeranyltransferase complex"/>
+<property type="evidence" value="ECO:0000314"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0005737">
+<property type="term" value="C:cytoplasm"/>
+<property type="evidence" value="ECO:0000314"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0005875">
+<property type="term" value="C:microtubule associated complex"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0005965">
+<property type="term" value="C:protein farnesyltransferase complex"/>
+<property type="evidence" value="ECO:0000250"/>
+<property type="project" value="UniProtKB"/>
+</dbReference>
+<dbReference type="GO" id="GO:0030548">
+<property type="term" value="F:acetylcholine receptor regulator activity"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0043014">
+<property type="term" value="F:alpha-tubulin binding"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0004662">
+<property type="term" value="F:CAAX-protein geranylgeranyltransferase activity"/>
+<property type="evidence" value="ECO:0000501"/>
+<property type="project" value="UniProtKB-EC"/>
+</dbReference>
+<dbReference type="GO" id="GO:0008017">
+<property type="term" value="F:microtubule binding"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0004660">
+<property type="term" value="F:protein farnesyltransferase activity"/>
+<property type="evidence" value="ECO:0000314"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0004661">
+<property type="term" value="F:protein geranylgeranyltransferase activity"/>
+<property type="evidence" value="ECO:0000250"/>
+<property type="project" value="UniProtKB"/>
+</dbReference>
+<dbReference type="GO" id="GO:0004663">
+<property type="term" value="F:Rab geranylgeranyltransferase activity"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0030971">
+<property type="term" value="F:receptor tyrosine kinase binding"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0043066">
+<property type="term" value="P:negative regulation of apoptotic process"/>
+<property type="evidence" value="ECO:0000315"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0051771">
+<property type="term" value="P:negative regulation of nitric-oxide synthase biosynthetic process"/>
+<property type="evidence" value="ECO:0000315"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0045213">
+<property type="term" value="P:neurotransmitter receptor metabolic process"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0045787">
+<property type="term" value="P:positive regulation of cell cycle"/>
+<property type="evidence" value="ECO:0000315"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0008284">
+<property type="term" value="P:positive regulation of cell population proliferation"/>
+<property type="evidence" value="ECO:0000315"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0090045">
+<property type="term" value="P:positive regulation of deacetylase activity"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0051770">
+<property type="term" value="P:positive regulation of nitric-oxide synthase biosynthetic process"/>
+<property type="evidence" value="ECO:0000315"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0090044">
+<property type="term" value="P:positive regulation of tubulin deacetylation"/>
+<property type="evidence" value="ECO:0000266"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0018343">
+<property type="term" value="P:protein farnesylation"/>
+<property type="evidence" value="ECO:0000250"/>
+<property type="project" value="UniProtKB"/>
+</dbReference>
+<dbReference type="GO" id="GO:0018344">
+<property type="term" value="P:protein geranylgeranylation"/>
+<property type="evidence" value="ECO:0000250"/>
+<property type="project" value="UniProtKB"/>
+</dbReference>
+<dbReference type="GO" id="GO:0034097">
+<property type="term" value="P:response to cytokine"/>
+<property type="evidence" value="ECO:0000315"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0010035">
+<property type="term" value="P:response to inorganic substance"/>
+<property type="evidence" value="ECO:0000315"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="GO" id="GO:0014070">
+<property type="term" value="P:response to organic cyclic compound"/>
+<property type="evidence" value="ECO:0000315"/>
+<property type="project" value="RGD"/>
+</dbReference>
+<dbReference type="InterPro" id="IPR002088">
+<property type="entry name" value="Prenyl_trans_a"/>
+</dbReference>
+<dbReference type="Pfam" id="PF01239">
+<property type="entry name" value="PPTA"/>
+<property type="match status" value="5"/>
+</dbReference>
+<dbReference type="PROSITE" id="PS51147">
+<property type="entry name" value="PFTA"/>
+<property type="match status" value="5"/>
+</dbReference>
+<proteinExistence type="evidence at protein level"/>
+<keyword id="KW-0002">3D-structure</keyword>
+<keyword id="KW-0007">Acetylation</keyword>
+<keyword id="KW-0903">Direct protein sequencing</keyword>
+<keyword id="KW-0460">Magnesium</keyword>
+<keyword id="KW-0637">Prenyltransferase</keyword>
+<keyword id="KW-1185">Reference proteome</keyword>
+<keyword id="KW-0677">Repeat</keyword>
+<keyword id="KW-0808">Transferase</keyword>
+<feature type="initiator methionine" description="Removed" evidence="11">
+<location>
+<position position="1"/>
+</location>
+</feature>
+<feature type="chain" description="Protein farnesyltransferase/geranylgeranyltransferase type-1 subunit alpha" id="PRO_0000119748">
+<location>
+<begin position="2"/>
+<end position="377"/>
+</location>
+</feature>
+<feature type="repeat" description="PFTA 1">
+<location>
+<begin position="112"/>
+<end position="146"/>
+</location>
+</feature>
+<feature type="repeat" description="PFTA 2">
+<location>
+<begin position="147"/>
+<end position="181"/>
+</location>
+</feature>
+<feature type="repeat" description="PFTA 3">
+<location>
+<begin position="182"/>
+<end position="214"/>
+</location>
+</feature>
+<feature type="repeat" description="PFTA 4">
+<location>
+<begin position="215"/>
+<end position="249"/>
+</location>
+</feature>
+<feature type="repeat" description="PFTA 5">
+<location>
+<begin position="255"/>
+<end position="289"/>
+</location>
+</feature>
+<feature type="compositionally biased region" description="Pro-rich">
+<location>
+<begin position="22"/>
+<end position="30"/>
+</location>
+</feature>
+<feature type="modified residue" description="N-acetylalanine" evidence="11">
+<location>
+<position position="2"/>
+</location>
+</feature>
+<feature type="strand" evidence="3">
+<location>
+<begin position="58"/>
+<end position="60"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="66"/>
+<end position="68"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="70"/>
+<end position="72"/>
+</location>
+</feature>
+<feature type="strand" evidence="6">
+<location>
+<begin position="73"/>
+<end position="75"/>
+</location>
+</feature>
+<feature type="strand" evidence="7">
+<location>
+<begin position="87"/>
+<end position="90"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="94"/>
+<end position="109"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="114"/>
+<end position="126"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="131"/>
+<end position="143"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="148"/>
+<end position="161"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="166"/>
+<end position="179"/>
+</location>
+</feature>
+<feature type="turn" evidence="4">
+<location>
+<begin position="182"/>
+<end position="184"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="185"/>
+<end position="195"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="200"/>
+<end position="213"/>
+</location>
+</feature>
+<feature type="helix" evidence="1">
+<location>
+<begin position="216"/>
+<end position="218"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="219"/>
+<end position="229"/>
+</location>
+</feature>
+<feature type="turn" evidence="3">
+<location>
+<begin position="230"/>
+<end position="232"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="234"/>
+<end position="246"/>
+</location>
+</feature>
+<feature type="strand" evidence="8">
+<location>
+<begin position="250"/>
+<end position="252"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="253"/>
+<end position="269"/>
+</location>
+</feature>
+<feature type="strand" evidence="2">
+<location>
+<begin position="270"/>
+<end position="272"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="274"/>
+<end position="284"/>
+</location>
+</feature>
+<feature type="turn" evidence="7">
+<location>
+<begin position="285"/>
+<end position="287"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="289"/>
+<end position="291"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="293"/>
+<end position="300"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="303"/>
+<end position="306"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="309"/>
+<end position="324"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="330"/>
+<end position="346"/>
+</location>
+</feature>
+<feature type="turn" evidence="5">
+<location>
+<begin position="347"/>
+<end position="349"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="350"/>
+<end position="352"/>
+</location>
+</feature>
+<feature type="helix" evidence="7">
+<location>
+<begin position="353"/>
+<end position="367"/>
+</location>
+</feature>
+<feature type="turn" evidence="7">
+<location>
+<begin position="369"/>
+<end position="372"/>
+</location>
+</feature>
+<evidence key="1" type="ECO:0000244">
+<source>
+<dbReference type="PDB" id="1FPP"/>
+</source>
+</evidence>
+<evidence key="2" type="ECO:0000244">
+<source>
+<dbReference type="PDB" id="1N4P"/>
+</source>
+</evidence>
+<evidence key="3" type="ECO:0000244">
+<source>
+<dbReference type="PDB" id="1N94"/>
+</source>
+</evidence>
+<evidence key="4" type="ECO:0000244">
+<source>
+<dbReference type="PDB" id="1NL4"/>
+</source>
+</evidence>
+<evidence key="5" type="ECO:0000244">
+<source>
+<dbReference type="PDB" id="1TN7"/>
+</source>
+</evidence>
+<evidence key="6" type="ECO:0000244">
+<source>
+<dbReference type="PDB" id="2ZIS"/>
+</source>
+</evidence>
+<evidence key="7" type="ECO:0000244">
+<source>
+<dbReference type="PDB" id="3E33"/>
+</source>
+</evidence>
+<evidence key="8" type="ECO:0000244">
+<source>
+<dbReference type="PDB" id="4GTR"/>
+</source>
+</evidence>
+<evidence key="9" type="ECO:0000250"/>
+<evidence key="10" type="ECO:0000250">
+<source>
+<dbReference type="UniProtKB" id="P29703"/>
+</source>
+</evidence>
+<evidence key="11" type="ECO:0000250">
+<source>
+<dbReference type="UniProtKB" id="P49354"/>
+</source>
+</evidence>
+<evidence key="12" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="10377218"/>
+</source>
+</evidence>
+<evidence key="13" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="10673434"/>
+</source>
+</evidence>
+<evidence key="14" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="11687658"/>
+</source>
+</evidence>
+<evidence key="15" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="12374986"/>
+</source>
+</evidence>
+<evidence key="16" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="12657282"/>
+</source>
+</evidence>
+<evidence key="17" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="12667062"/>
+</source>
+</evidence>
+<evidence key="18" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="14609943"/>
+</source>
+</evidence>
+<evidence key="19" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="15170324"/>
+</source>
+</evidence>
+<evidence key="20" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="15451670"/>
+</source>
+</evidence>
+<evidence key="21" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="18844669"/>
+</source>
+</evidence>
+<evidence key="22" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="19219049"/>
+</source>
+</evidence>
+<evidence key="23" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="22963166"/>
+</source>
+</evidence>
+<evidence key="24" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="9065406"/>
+</source>
+</evidence>
+<evidence key="25" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="9609683"/>
+</source>
+</evidence>
+<evidence key="26" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="9657673"/>
+</source>
+</evidence>
+<evidence key="27" type="ECO:0000269">
+<source>
+<dbReference type="PubMed" id="9843427"/>
+</source>
+</evidence>
+<evidence key="28" type="ECO:0000305"/>
+<sequence length="377" mass="44049" checksum="DFFFECC1B88BC080" modified="1993-10-01" version="1">MAATEGVGESAPGGEPGQPEQPPPPPPPPPAQQPQEEEMAAEAGEAAASPMDDGFLSLDSPTYVLYRDRAEWADIDPVPQNDGPSPVVQIIYSEKFRDVYDYFRAVLQRDERSERAFKLTRDAIELNAANYTVWHFRRVLLRSLQKDLQEEMNYIIAIIEEQPKNYQVWHHRRVLVEWLKDPSQELEFIADILNQDAKNYHAWQHRQWVIQEFRLWDNELQYVDQLLKEDVRNNSVWNQRHFVISNTTGYSDRAVLEREVQYTLEMIKLVPHNESAWNYLKGILQDRGLSRYPNLLNQLLDLQPSHSSPYLIAFLVDIYEDMLENQCDNKEDILNKALELCEILAKEKDTIRKEYWRYIGRSLQSKHSRESDIPASV</sequence>
+</entry>
+<copyright>
+Copyrighted by the UniProt Consortium, see https://www.uniprot.org/terms
+Distributed under the Creative Commons Attribution (CC BY 4.0) License
+</copyright>
+</uniprot>

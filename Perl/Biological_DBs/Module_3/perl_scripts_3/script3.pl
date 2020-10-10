@@ -12,18 +12,21 @@ use strict;
 use warnings;
 use DBI;
 
+## connect database
 my $dbfile = "script2.db";
 my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile");
 
+## get PDB ID
 print "Enter a PDBID:\n";
 my $entry = <STDIN>;
+## hitting 'Enter' on keyboard is captured in stdin
 chomp $entry;
 
 ## prepare select statement for pdb ID
 my $up_result = $dbh->prepare("SELECT u.UniProtID, u.name, s.PDBID
-							   FROM Structures s
-								    INNER JOIN UniProt u ON s.UniProtID = u.UniProtID
-							   WHERE s.PDBID = (?)"
+									    FROM Structures s
+								       INNER JOIN UniProt u ON s.UniProtID = u.UniProtID
+										 WHERE s.PDBID = (?)"
 ) or die $dbh->errstr;
 ## execute with entry
 $up_result->execute($entry);
@@ -32,22 +35,31 @@ $up_result->execute($entry);
 my $up_data = $up_result->fetchall_arrayref;
 
 ## if no results print warning
-## else if single result print info and GOID:term pairs
+## else if single result print info and 'GOID:term' pairs
 ## if more than 1 entry just warn and proceed with first
 if (scalar(@$up_data) == 0) {
 	warn "PDB ID is not in database.\n"
 } elsif (scalar(@$up_data) == 1) {
+	## $up_data is 2D array reference
+	## of first entry array the first entry is UniProtID
 	print "UniProtID => " . $up_data->[0][0] . "\n";
+	## of first entry array the second entry is UniProt name
 	print "Name => " . $up_data->[0][1] . "\n";
+	
+	## Set UniProtID to query
 	my $uid = $up_data->[0][0];
 	
+	## Query join UniProtID with, probably don't need a join
+	## but confirms data integrity
 	my $go_result = $dbh->prepare("SELECT g.GOID, g.term, u.UniProtID
-							       FROM UniProt u
-								        INNER JOIN GO g ON u.UniProtID = g.UniProtID
-							       WHERE u.UniProtID = (?)"
+											 FROM UniProt u
+								          INNER JOIN GO g ON u.UniProtID = g.UniProtID
+											 WHERE u.UniProtID = (?)"
 	) or die $dbh->errstr;
+	## execute
 	$go_result->execute($uid);
 	
+	## get data
 	my $go_data = $go_result->fetchall_arrayref;
 	print "Here are a list of GOID:term pairs for your UniProtID\n";
 	printf("%-15s%-20s\n", "GOID", "term");
@@ -55,7 +67,9 @@ if (scalar(@$up_data) == 0) {
 	foreach my $row (@$go_data) {
 		printf("%-15s%-20s\n", $row->[0], $row->[1]);
 	}
-	
+  ## else more than 1 UniProt ID for PDB entry
+  ## this occurs when there is a multi -rotien or multisubunit protein 
+  ## in the structure from PDB
 } else {
 	warn "You have an interesting PDB ID that has more " .
 	     "than 1 associated UniProt ID.  Here is first one:\n";
@@ -65,9 +79,9 @@ if (scalar(@$up_data) == 0) {
 	my $uid = $up_data->[0][0];
 	
 	my $go_result = $dbh->prepare("SELECT g.GOID, g.term, u.UniProtID
-							       FROM UniProt u
-								        INNER JOIN GO g ON u.UniProtID = g.UniProtID
-							       WHERE u.UniProtID = '$uid'"
+											 FROM UniProt u
+								          INNER JOIN GO g ON u.UniProtID = g.UniProtID
+											 WHERE u.UniProtID = '$uid'"
 	) or die $dbh->errstr;
 	$go_result->execute;
 	

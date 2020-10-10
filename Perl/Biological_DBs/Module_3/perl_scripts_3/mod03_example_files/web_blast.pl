@@ -93,6 +93,7 @@ foreach $query (@ARGV)
 
 # build the request
 $args = "CMD=Put&PROGRAM=$program&DATABASE=$database&QUERY=" . $encoded_query;
+print $encoded_query . "\n";
 
 $req = new HTTP::Request POST => 'https://www.ncbi.nlm.nih.gov/blast/Blast.cgi';
 $req->content_type('application/x-www-form-urlencoded');

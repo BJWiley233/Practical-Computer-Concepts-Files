@@ -10,20 +10,21 @@ use warnings;
 use LWP::UserAgent;
 use XML::Simple;
 use DBI;
-#use List::MoreUtils qw(each_array); ## https://stackoverflow.com/questions/12528913/how-can-i-insert-data-from-three-perl-arrays-into-a-single-mysql-table
 
 
 ## Open file with filehandle in
+## no reason to create db and tables unless valid file
 open(FHin, "<:encoding(utf8)", "HW2_2.txt") or die $!;
 
 ## set UserAgent
 my $ua = LWP::UserAgent->new;
 
-## create tables at beginning
+## create database and tables at beginning
 my $dbfile = "script2.db";
 my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile");
 
-## table 1
+## table 1, drop table if exists to overwrite
+## won't being dropping and creating for next homework
 $dbh->do("DROP TABLE IF EXISTS UniProt;") or die $dbh->errstr;
 $dbh->do("
 	CREATE TABLE IF NOT EXISTS UniProt (
@@ -59,6 +60,7 @@ $dbh->do("
 	);"
 ) or die $dbh->errstr;
 
+
 ## prepare entries for table 1 before entering loop
 ## stackoverflow indicates best to use the (?) placeholders
 ## since entries may be more than one word with spaces
@@ -73,9 +75,11 @@ while (<FHin>) {
 	## trim white space
 	trim(\$_);
 	
+	## if valid identifier proceed
 	if ($_ =~ /^[a-zA-Z](\d+){5}/) {
 		print "Processing $_ ...\n";
 		
+		## get Uniprot response
 		my $response = $ua->get("https://www.uniprot.org/uniprot/$_.xml",
 					'User-Agent' => 'Mozilla/4.0 (compatible; MSIE 7.0)');
 		unless ($response->is_success) {
@@ -84,7 +88,7 @@ while (<FHin>) {
 			    " for " . $response->request->uri . "\n";
 		}
 		
-		
+		## get XML
 		my $xml = XML::Simple->new;
 		my $data = $xml->XMLin($response->content,
 					           ForceArray=>[qw(dbReference)],
@@ -103,6 +107,11 @@ while (<FHin>) {
 			$name = $entry_node->{name};
 			$fullname = $entry_node->{protein}->{recommendedName}{fullName};
 			
+			## there may be attributes for fullname such as 'evidence'
+			if (ref $fullname eq "HASH") {
+				$fullname = $entry_node->{protein}->{recommendedName}{fullName}{content};
+			}
+			
 			## organism->name is an array need to loop for type="scientific"
 			foreach my $name_entry (@{ $entry_node->{organism}->{name} }) {
 				if ($name_entry->{type} eq 'scientific') {
@@ -113,7 +122,7 @@ while (<FHin>) {
 
 			## check if there is NCBI Taxonomy entry
 			## should always have one; therefore making NOT NULL in db
-			## might eventually catch Uniprot entry without it and can email UniProt
+			## can eventually catch Uniprot entry without it and can email UniProt
 			if ($entry_node->{organism}->{dbReference}) {
 				foreach my $entry (@{ $entry_node->{organism}->{dbReference} }) {
 					if ($entry->{type} =~ 'NCBI Taxonomy') {
@@ -122,12 +131,12 @@ while (<FHin>) {
 				}
 			} else {
 				warn "There is not a taxonomy reference for $_. " .
-					 "May want to email UniProt about it.";
+					  "May want to email UniProt about it.";
 			}
 
-			## get PDBs and if method = 'X-ray' store in PDBID:method hash
-			## loop also which check if else db reference is GO and also
-			## saves in a GOID:term hash
+			## get PDBs and if method = 'X-ray' store in 'PDBID:method' hash
+			## loop also which check "if else" db reference is GO and also
+			## saves in a 'GOID:term' hash
 			my $dbref = $entry_node->{dbReference};
 			if (defined($dbref)) {
 				foreach my $val (@$dbref) {
@@ -139,6 +148,9 @@ while (<FHin>) {
 								## Check if X-ray (no examples have 'NMR' but some have 'Model')
 								if ($prop->{type} eq 'method' && $prop->{value} eq 'X-ray') {
 									$pdbs{$val->{id}} = 'X-ray';
+									## exit nested property loop
+									## A last statement can be used inside a nested loop where it will be applicable to the nearest loop if a LABEL is not specified.
+									## https://www.tutorialspoint.com/perl/perl_last_statement.htm
 									last;								
 								}
 							}

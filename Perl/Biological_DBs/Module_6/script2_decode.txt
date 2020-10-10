@@ -1,0 +1,702 @@
+$VAR1 = {
+          'refine' => [
+                        {
+                          'details' => 'THE COORDINATES GIVEN HERE ARE IN THE ORTHOGONAL ANGSTROM
+SYSTEM STANDARD FOR HEMOGLOBINS. THE Y AXIS IS THE
+(NON CRYSTALLOGRAPHIC) MOLECULAR DIAD AND THE X AXIS IS THE
+PSEUDO DIAD WHICH RELATES THE ALPHA-1 AND BETA-1 CHAINS.
+THE TRANSFORMATION GIVEN IN THE *MTRIX* RECORDS BELOW
+WILL GENERATE COORDINATES FOR THE *C* AND *D* CHAINS FROM
+THE *A* AND *B* CHAINS RESPECTIVELY.',
+                          'ls_rfactor_rwork' => '0.135',
+                          'ls_dres_high' => '1.74',
+                          'pdbx_refine_id' => 'X-RAY DIFFRACTION',
+                          'pdbx_diffrn_id' => [
+                                                '1'
+                                              ]
+                        }
+                      ],
+          'cell' => {
+                      'length_c' => '53.8',
+                      'zpdb' => 4,
+                      'angle_beta' => '99.34',
+                      'length_a' => '63.15',
+                      'length_b' => '83.59',
+                      'angle_alpha' => '90',
+                      'angle_gamma' => '90'
+                    },
+          'refine_hist' => [
+                             {
+                               'number_atoms_total' => 4779,
+                               'number_atoms_solvent' => 221,
+                               'pdbx_number_atoms_ligand' => 174,
+                               'pdbx_refine_id' => 'X-RAY DIFFRACTION',
+                               'pdbx_number_atoms_nucleic_acid' => 0,
+                               'dres_high' => '1.74',
+                               'pdbx_number_atoms_protein' => 4384,
+                               'cycle_id' => 'LAST'
+                             }
+                           ],
+          'diffrn' => [
+                        {
+                          'id' => '1',
+                          'crystal_id' => '1'
+                        }
+                      ],
+          'rcsb_entry_info' => {
+                                 'na_polymer_entity_types' => 'Other',
+                                 'disulfide_bond_count' => 0,
+                                 'experimental_method' => 'X-ray',
+                                 'polymer_entity_count_dna' => 0,
+                                 'deposited_unmodeled_polymer_monomer_count' => 0,
+                                 'polymer_monomer_count_maximum' => 146,
+                                 'inter_mol_covalent_bond_count' => 0,
+                                 'selected_polymer_entity_types' => 'Protein (only)',
+                                 'polymer_entity_count_protein' => 2,
+                                 'branched_entity_count' => 0,
+                                 'inter_mol_metalic_bond_count' => 4,
+                                 'polymer_molecular_weight_minimum' => '15.15',
+                                 'entity_count' => 5,
+                                 'assembly_count' => 1,
+                                 'deposited_polymer_entity_instance_count' => 4,
+                                 'polymer_molecular_weight_maximum' => '15.89',
+                                 'nonpolymer_entity_count' => 2,
+                                 'polymer_composition' => 'heteromeric protein',
+                                 'deposited_nonpolymer_entity_instance_count' => 6,
+                                 'polymer_entity_count' => 2,
+                                 'diffrn_resolution_high' => {
+                                                               'provenance_source' => 'From refinement resolution cutoff',
+                                                               'value' => '1.74'
+                                                             },
+                                 'nonpolymer_bound_components' => [
+                                                                    'HEM'
+                                                                  ],
+                                 'experimental_method_count' => 1,
+                                 'molecular_weight' => '64.74',
+                                 'resolution_combined' => [
+                                                            '1.74'
+                                                          ],
+                                 'deposited_modeled_polymer_monomer_count' => 574,
+                                 'deposited_atom_count' => 4779,
+                                 'polymer_entity_taxonomy_count' => 1,
+                                 'nonpolymer_molecular_weight_minimum' => '0.09',
+                                 'deposited_model_count' => 1,
+                                 'cis_peptide_count' => 0,
+                                 'nonpolymer_molecular_weight_maximum' => '0.62',
+                                 'solvent_entity_count' => 1,
+                                 'deposited_polymer_monomer_count' => 574,
+                                 'deposited_solvent_atom_count' => 221,
+                                 'polymer_entity_count_rna' => 0,
+                                 'polymer_entity_count_nucleic_acid_hybrid' => 0,
+                                 'polymer_entity_count_nucleic_acid' => 0,
+                                 'polymer_monomer_count_minimum' => 141
+                               },
+          'pdbx_audit_revision_category' => [
+                                              {
+                                                'ordinal' => 1,
+                                                'category' => 'atom_site',
+                                                'data_content_type' => 'Structure model',
+                                                'revision_ordinal' => 4
+                                              },
+                                              {
+                                                'category' => 'database_PDB_caveat',
+                                                'ordinal' => 2,
+                                                'data_content_type' => 'Structure model',
+                                                'revision_ordinal' => 4
+                                              },
+                                              {
+                                                'revision_ordinal' => 4,
+                                                'category' => 'entity',
+                                                'ordinal' => 3,
+                                                'data_content_type' => 'Structure model'
+                                              },
+                                              {
+                                                'revision_ordinal' => 4,
+                                                'ordinal' => 4,
+                                                'category' => 'entity_name_com',
+                                                'data_content_type' => 'Structure model'
+                                              },
+                                              {
+                                                'revision_ordinal' => 4,
+                                                'category' => 'entity_src_gen',
+                                                'ordinal' => 5,
+                                                'data_content_type' => 'Structure model'
+                                              },
+                                              {
+                                                'revision_ordinal' => 4,
+                                                'ordinal' => 6,
+                                                'data_content_type' => 'Structure model',
+                                                'category' => 'pdbx_database_status'
+                                              },
+                                              {
+                                                'data_content_type' => 'Structure model',
+                                                'ordinal' => 7,
+                                                'category' => 'pdbx_validate_rmsd_angle',
+                                                'revision_ordinal' => 4
+                                              },
+                                              {
+                                                'revision_ordinal' => 4,
+                                                'ordinal' => 8,
+                                                'category' => 'pdbx_validate_rmsd_bond',
+                                                'data_content_type' => 'Structure model'
+                                              },
+                                              {
+                                                'revision_ordinal' => 4,
+                                                'ordinal' => 9,
+                                                'category' => 'struct_ref',
+                                                'data_content_type' => 'Structure model'
+                                              },
+                                              {
+                                                'revision_ordinal' => 4,
+                                                'data_content_type' => 'Structure model',
+                                                'ordinal' => 10,
+                                                'category' => 'struct_ref_seq'
+                                              }
+                                            ],
+          'rcsb_primary_citation' => {
+                                       'rcsb_journal_abbrev' => 'J Mol Biol',
+                                       'journal_id_astm' => 'JMOBAK',
+                                       'country' => 'UK',
+                                       'id' => 'primary',
+                                       'journal_id_csd' => '0070',
+                                       'page_last' => '174',
+                                       'title' => 'The crystal structure of human deoxyhaemoglobin at 1.74 A resolution',
+                                       'pdbx_database_id_doi' => '10.1016/0022-2836(84)90472-8',
+                                       'pdbx_database_id_pub_med' => 6726807,
+                                       'journal_abbrev' => 'J.Mol.Biol.',
+                                       'journal_volume' => '175',
+                                       'journal_id_issn' => '0022-2836',
+                                       'year' => 1984,
+                                       'page_first' => '159',
+                                       'rcsb_authors' => [
+                                                           'Fermi, G.',
+                                                           'Perutz, M.F.',
+                                                           'Shaanan, B.',
+                                                           'Fourme, R.'
+                                                         ]
+                                     },
+          'exptl_crystal' => [
+                               {
+                                 'density_percent_sol' => '45.48',
+                                 'density_matthews' => '2.26',
+                                 'id' => '1'
+                               }
+                             ],
+          'rcsb_id' => '4HHB',
+          'citation' => [
+                          {
+                            'pdbx_database_id_doi' => '10.1016/0022-2836(84)90472-8',
+                            'rcsb_journal_abbrev' => 'J Mol Biol',
+                            'year' => 1984,
+                            'rcsb_authors' => [
+                                                'Fermi, G.',
+                                                'Perutz, M.F.',
+                                                'Shaanan, B.',
+                                                'Fourme, R.'
+                                              ],
+                            'pdbx_database_id_pub_med' => 6726807,
+                            'journal_volume' => '175',
+                            'title' => 'The crystal structure of human deoxyhaemoglobin at 1.74 A resolution',
+                            'page_last' => '174',
+                            'journal_id_astm' => 'JMOBAK',
+                            'country' => 'UK',
+                            'id' => 'primary',
+                            'journal_id_csd' => '0070',
+                            'page_first' => '159',
+                            'rcsb_is_primary' => 'Y',
+                            'journal_abbrev' => 'J.Mol.Biol.',
+                            'journal_id_issn' => '0022-2836'
+                          },
+                          {
+                            'rcsb_journal_abbrev' => 'Nature',
+                            'journal_id_astm' => 'NATUAS',
+                            'country' => 'UK',
+                            'id' => '1',
+                            'journal_id_csd' => '0006',
+                            'title' => 'Stereochemistry of Iron in Deoxyhaemoglobin',
+                            'rcsb_is_primary' => 'N',
+                            'journal_abbrev' => 'Nature',
+                            'journal_volume' => '295',
+                            'journal_id_issn' => '0028-0836',
+                            'year' => 1982,
+                            'page_first' => '535',
+                            'rcsb_authors' => [
+                                                'Perutz, M.F.',
+                                                'Hasnain, S.S.',
+                                                'Duke, P.J.',
+                                                'Sessler, J.L.',
+                                                'Hahn, J.E.'
+                                              ]
+                          },
+                          {
+                            'journal_id_astm' => 'ARBOAW',
+                            'rcsb_journal_abbrev' => 'Annu Rev Biochem',
+                            'country' => 'US',
+                            'id' => '3',
+                            'journal_id_csd' => '0413',
+                            'title' => 'Regulation of Oxygen Affinity of Hemoglobin. Influence of Structure of the Globin on the Heme Iron',
+                            'rcsb_is_primary' => 'N',
+                            'journal_abbrev' => 'Annu.Rev.Biochem.',
+                            'journal_volume' => '48',
+                            'journal_id_issn' => '0066-4154',
+                            'year' => 1979,
+                            'page_first' => '327',
+                            'rcsb_authors' => [
+                                                'Perutz, M.F.'
+                                              ]
+                          },
+                          {
+                            'rcsb_journal_abbrev' => 'J Mol Biol',
+                            'journal_id_astm' => 'JMOBAK',
+                            'country' => 'UK',
+                            'id' => '4',
+                            'journal_id_csd' => '0070',
+                            'title' => 'Three-Dimensional Fourier Synthesis of Human Deoxyhemoglobin at 2.5 Angstroms Resolution, I.X-Ray Analysis',
+                            'rcsb_is_primary' => 'N',
+                            'journal_abbrev' => 'J.Mol.Biol.',
+                            'journal_volume' => '100',
+                            'journal_id_issn' => '0022-2836',
+                            'year' => 1976,
+                            'page_first' => '3',
+                            'rcsb_authors' => [
+                                                'Teneyck, L.F.',
+                                                'Arnone, A.'
+                                              ]
+                          },
+                          {
+                            'title' => 'Three-Dimensional Fourier Synthesis of Human Deoxyhaemoglobin at 2.5 Angstroms Resolution, Refinement of the Atomic Model',
+                            'rcsb_journal_abbrev' => 'J Mol Biol',
+                            'journal_id_astm' => 'JMOBAK',
+                            'country' => 'UK',
+                            'id' => '5',
+                            'journal_id_csd' => '0070',
+                            'year' => 1975,
+                            'page_first' => '237',
+                            'rcsb_authors' => [
+                                                'Fermi, G.'
+                                              ],
+                            'rcsb_is_primary' => 'N',
+                            'journal_abbrev' => 'J.Mol.Biol.',
+                            'journal_volume' => '97',
+                            'journal_id_issn' => '0022-2836'
+                          },
+                          {
+                            'title' => 'Three-Dimensional Fourier Synthesis of Human Deoxyhaemoglobin at 3.5 Angstroms Resolution',
+                            'journal_id_csd' => '0006',
+                            'id' => '6',
+                            'country' => 'UK',
+                            'rcsb_journal_abbrev' => 'Nature',
+                            'journal_id_astm' => 'NATUAS',
+                            'rcsb_authors' => [
+                                                'Muirhead, H.',
+                                                'Greer, J.'
+                                              ],
+                            'page_first' => '516',
+                            'year' => 1970,
+                            'journal_volume' => '228',
+                            'journal_id_issn' => '0028-0836',
+                            'journal_abbrev' => 'Nature',
+                            'rcsb_is_primary' => 'N'
+                          },
+                          {
+                            'rcsb_journal_abbrev' => 'Haemoglobin And Myoglobin Atlas Of Molecular Structures In Biology',
+                            'id' => '2',
+                            'journal_id_csd' => '0986',
+                            'rcsb_is_primary' => 'N',
+                            'journal_abbrev' => 'Haemoglobin and Myoglobin. Atlas of Molecular Structures in Biology',
+                            'journal_id_issn' => '0-19-854706-4',
+                            'journal_volume' => '2',
+                            'year' => 1981,
+                            'rcsb_authors' => [
+                                                'Fermi, G.',
+                                                'Perutz, M.F.'
+                                              ],
+                            'book_publisher' => 'Oxford University Press'
+                          },
+                          {
+                            'book_publisher' => 'National Biomedical Research Foundation, Silver Spring,Md.',
+                            'year' => 1972,
+                            'page_first' => '56',
+                            'journal_abbrev' => 'Atlas of Protein Sequence and Structure (Data Section)',
+                            'journal_volume' => '5',
+                            'journal_id_issn' => '0-912466-02-2',
+                            'rcsb_is_primary' => 'N',
+                            'id' => '7',
+                            'journal_id_csd' => '0435',
+                            'rcsb_journal_abbrev' => 'Atlas Of Protein Sequence And Structure (data Section)'
+                          },
+                          {
+                            'rcsb_journal_abbrev' => 'Atlas Of Protein Sequence And Structure (data Section)',
+                            'id' => '8',
+                            'journal_id_csd' => '0435',
+                            'rcsb_is_primary' => 'N',
+                            'journal_abbrev' => 'Atlas of Protein Sequence and Structure (Data Section)',
+                            'journal_id_issn' => '0-912466-02-2',
+                            'journal_volume' => '5',
+                            'year' => 1972,
+                            'page_first' => '64',
+                            'book_publisher' => 'National Biomedical Research Foundation, Silver Spring,Md.'
+                          }
+                        ],
+          'struct_keywords' => {
+                                 'pdbx_keywords' => 'OXYGEN TRANSPORT',
+                                 'text' => 'OXYGEN TRANSPORT'
+                               },
+          'audit_author' => [
+                              {
+                                'name' => 'Fermi, G.',
+                                'pdbx_ordinal' => 1
+                              },
+                              {
+                                'pdbx_ordinal' => 2,
+                                'name' => 'Perutz, M.F.'
+                              }
+                            ],
+          'exptl' => [
+                       {
+                         'method' => 'X-RAY DIFFRACTION'
+                       }
+                     ],
+          'pdbx_audit_revision_details' => [
+                                             {
+                                               'provider' => 'repository',
+                                               'type' => 'Initial release',
+                                               'ordinal' => 1,
+                                               'data_content_type' => 'Structure model',
+                                               'revision_ordinal' => 1
+                                             }
+                                           ],
+          'pdbx_vrpt_summary' => {
+                                   'restypes_notchecked_for_bond_angle_geometry' => [
+                                                                                      'HEM',
+                                                                                      'PO4'
+                                                                                    ],
+                                   'num_hreduce' => '4456',
+                                   'high_resol_relative_percentile_percent_ramachandran_outliers' => '1.72',
+                                   'absolute_percentile_percent_ramachandran_outliers' => '12.8',
+                                   'attempted_validation_steps' => 'molprobity,validation-pack,mogul,buster-report,percentiles,writexml',
+                                   'relative_percentile_percent_rotamer_outliers' => '1.1',
+                                   'high_resol_relative_percentile_percent_rotamer_outliers' => '1.72',
+                                   'num_pdbids_relative_percentile_percent_rotamer_outliers' => 3878,
+                                   'pdbdeposition_date' => '1984-03-06T16:00:00-0800',
+                                   'num_angles_rmsz' => 6114,
+                                   'pdbrevision_number' => '4',
+                                   'absolute_percentile_clashscore' => '0.1',
+                                   'angles_rmsz' => '7.15',
+                                   'relative_percentile_percent_ramachandran_outliers' => '2.6',
+                                   'low_resol_relative_percentile_percent_ramachandran_outliers' => '1.76',
+                                   'pdbr' => '0.14',
+                                   'num_pdbids_absolute_percentile_clashscore' => 141614,
+                                   'relative_percentile_clashscore' => '0',
+                                   'pdbrevision_date' => '2020-06-16T17:00:00-0700',
+                                   'bonds_rmsz' => '9.7',
+                                   'high_resol_relative_percentile_clashscore' => '1.72',
+                                   'absolute_percentile_percent_rotamer_outliers' => '9.9',
+                                   'low_resol_relative_percentile_percent_rotamer_outliers' => '1.76',
+                                   'percent_ramachandran_outliers' => '1.24',
+                                   'percent_rotamer_outliers' => '8.66',
+                                   'num_bonds_rmsz' => 4500,
+                                   'pdbresolution' => '1.74',
+                                   'ligands_for_buster_report' => 'yes',
+                                   'num_pdbids_absolute_percentile_percent_rotamer_outliers' => 138945,
+                                   'num_pdbids_relative_percentile_percent_ramachandran_outliers' => 3878,
+                                   'num_pdbids_relative_percentile_clashscore' => 3923,
+                                   'report_creation_date' => 'Aug  7, 2020 -- 11:08 AM BST',
+                                   'num_pdbids_absolute_percentile_percent_ramachandran_outliers' => 138981,
+                                   'protein_dnarnaentities' => '1,2',
+                                   'clashscore' => '140.67',
+                                   'percentilebins' => [
+                                                         'all',
+                                                         '1.74',
+                                                         'xray'
+                                                       ],
+                                   'low_resol_relative_percentile_clashscore' => '1.76'
+                                 },
+          'rcsb_accession_info' => {
+                                     'revision_date' => '2020-06-16T17:00:00-0700',
+                                     'major_revision' => 2,
+                                     'minor_revision' => 0,
+                                     'status_code' => 'REL',
+                                     'has_released_experimental_data' => 'N',
+                                     'deposit_date' => '1984-03-06T16:00:00-0800',
+                                     'initial_release_date' => '1984-07-16T17:00:00-0700'
+                                   },
+          'struct' => {
+                        'pdbx_descriptor' => 'HEMOGLOBIN (DEOXY)',
+                        'title' => 'THE CRYSTAL STRUCTURE OF HUMAN DEOXYHAEMOGLOBIN AT 1.74 ANGSTROMS RESOLUTION'
+                      },
+          'pdbx_audit_revision_history' => [
+                                             {
+                                               'revision_date' => '1984-07-16T17:00:00-0700',
+                                               'major_revision' => 1,
+                                               'ordinal' => 1,
+                                               'minor_revision' => 0,
+                                               'data_content_type' => 'Structure model'
+                                             },
+                                             {
+                                               'major_revision' => 1,
+                                               'ordinal' => 2,
+                                               'data_content_type' => 'Structure model',
+                                               'minor_revision' => 1,
+                                               'revision_date' => '2008-03-02T16:00:00-0800'
+                                             },
+                                             {
+                                               'revision_date' => '2011-07-12T17:00:00-0700',
+                                               'data_content_type' => 'Structure model',
+                                               'ordinal' => 3,
+                                               'minor_revision' => 2,
+                                               'major_revision' => 1
+                                             },
+                                             {
+                                               'major_revision' => 2,
+                                               'ordinal' => 4,
+                                               'data_content_type' => 'Structure model',
+                                               'minor_revision' => 0,
+                                               'revision_date' => '2020-06-16T17:00:00-0700'
+                                             }
+                                           ],
+          'pdbx_audit_revision_group' => [
+                                           {
+                                             'revision_ordinal' => 2,
+                                             'group' => 'Version format compliance',
+                                             'ordinal' => 1,
+                                             'data_content_type' => 'Structure model'
+                                           },
+                                           {
+                                             'group' => 'Advisory',
+                                             'ordinal' => 2,
+                                             'data_content_type' => 'Structure model',
+                                             'revision_ordinal' => 3
+                                           },
+                                           {
+                                             'data_content_type' => 'Structure model',
+                                             'ordinal' => 3,
+                                             'group' => 'Version format compliance',
+                                             'revision_ordinal' => 3
+                                           },
+                                           {
+                                             'revision_ordinal' => 4,
+                                             'group' => 'Advisory',
+                                             'ordinal' => 4,
+                                             'data_content_type' => 'Structure model'
+                                           },
+                                           {
+                                             'group' => 'Atomic model',
+                                             'ordinal' => 5,
+                                             'data_content_type' => 'Structure model',
+                                             'revision_ordinal' => 4
+                                           },
+                                           {
+                                             'revision_ordinal' => 4,
+                                             'group' => 'Data collection',
+                                             'data_content_type' => 'Structure model',
+                                             'ordinal' => 6
+                                           },
+                                           {
+                                             'revision_ordinal' => 4,
+                                             'ordinal' => 7,
+                                             'data_content_type' => 'Structure model',
+                                             'group' => 'Database references'
+                                           },
+                                           {
+                                             'revision_ordinal' => 4,
+                                             'data_content_type' => 'Structure model',
+                                             'ordinal' => 8,
+                                             'group' => 'Other'
+                                           },
+                                           {
+                                             'revision_ordinal' => 4,
+                                             'group' => 'Source and taxonomy',
+                                             'ordinal' => 9,
+                                             'data_content_type' => 'Structure model'
+                                           },
+                                           {
+                                             'revision_ordinal' => 4,
+                                             'group' => 'Structure summary',
+                                             'data_content_type' => 'Structure model',
+                                             'ordinal' => 10
+                                           }
+                                         ],
+          'rcsb_entry_container_identifiers' => {
+                                                  'model_ids' => [
+                                                                   1
+                                                                 ],
+                                                  'pubmed_id' => 6726807,
+                                                  'rcsb_id' => '4HHB',
+                                                  'entry_id' => '4HHB',
+                                                  'assembly_ids' => [
+                                                                      '1'
+                                                                    ],
+                                                  'polymer_entity_ids' => [
+                                                                            '1',
+                                                                            '2'
+                                                                          ],
+                                                  'entity_ids' => [
+                                                                    '1',
+                                                                    '2',
+                                                                    '3',
+                                                                    '4',
+                                                                    '5'
+                                                                  ],
+                                                  'non_polymer_entity_ids' => [
+                                                                                '3',
+                                                                                '4'
+                                                                              ]
+                                                },
+          'pdbx_database_pdbobs_spr' => [
+                                          {
+                                            'date' => '1984-07-16T17:00:00-0700',
+                                            'replace_pdb_id' => '1HHB',
+                                            'pdb_id' => '4HHB',
+                                            'id' => 'SPRSDE'
+                                          }
+                                        ],
+          'pdbx_database_status' => {
+                                      'status_code' => 'REL',
+                                      'pdb_format_compatible' => 'Y',
+                                      'recvd_initial_deposition_date' => '1984-03-06T16:00:00-0800',
+                                      'process_site' => 'BNL'
+                                    },
+          'pdbx_audit_revision_item' => [
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'item' => '_atom_site.B_iso_or_equiv',
+                                            'ordinal' => 1,
+                                            'data_content_type' => 'Structure model'
+                                          },
+                                          {
+                                            'ordinal' => 2,
+                                            'item' => '_atom_site.Cartn_x',
+                                            'data_content_type' => 'Structure model',
+                                            'revision_ordinal' => 4
+                                          },
+                                          {
+                                            'ordinal' => 3,
+                                            'item' => '_atom_site.Cartn_y',
+                                            'data_content_type' => 'Structure model',
+                                            'revision_ordinal' => 4
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'ordinal' => 4,
+                                            'item' => '_atom_site.Cartn_z',
+                                            'data_content_type' => 'Structure model'
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'ordinal' => 5,
+                                            'data_content_type' => 'Structure model',
+                                            'item' => '_entity.pdbx_description'
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'item' => '_entity_src_gen.gene_src_common_name',
+                                            'ordinal' => 6,
+                                            'data_content_type' => 'Structure model'
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'ordinal' => 7,
+                                            'item' => '_entity_src_gen.pdbx_beg_seq_num',
+                                            'data_content_type' => 'Structure model'
+                                          },
+                                          {
+                                            'data_content_type' => 'Structure model',
+                                            'ordinal' => 8,
+                                            'item' => '_entity_src_gen.pdbx_end_seq_num',
+                                            'revision_ordinal' => 4
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'item' => '_entity_src_gen.pdbx_gene_src_gene',
+                                            'ordinal' => 9,
+                                            'data_content_type' => 'Structure model'
+                                          },
+                                          {
+                                            'data_content_type' => 'Structure model',
+                                            'ordinal' => 10,
+                                            'item' => '_entity_src_gen.pdbx_seq_type',
+                                            'revision_ordinal' => 4
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'ordinal' => 11,
+                                            'data_content_type' => 'Structure model',
+                                            'item' => '_pdbx_database_status.process_site'
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'ordinal' => 12,
+                                            'item' => '_pdbx_validate_rmsd_angle.angle_deviation',
+                                            'data_content_type' => 'Structure model'
+                                          },
+                                          {
+                                            'ordinal' => 13,
+                                            'data_content_type' => 'Structure model',
+                                            'item' => '_pdbx_validate_rmsd_angle.angle_value',
+                                            'revision_ordinal' => 4
+                                          },
+                                          {
+                                            'item' => '_pdbx_validate_rmsd_bond.bond_deviation',
+                                            'ordinal' => 14,
+                                            'data_content_type' => 'Structure model',
+                                            'revision_ordinal' => 4
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'item' => '_pdbx_validate_rmsd_bond.bond_value',
+                                            'ordinal' => 15,
+                                            'data_content_type' => 'Structure model'
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'ordinal' => 16,
+                                            'data_content_type' => 'Structure model',
+                                            'item' => '_struct_ref.pdbx_align_begin'
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'ordinal' => 17,
+                                            'data_content_type' => 'Structure model',
+                                            'item' => '_struct_ref_seq.db_align_beg'
+                                          },
+                                          {
+                                            'revision_ordinal' => 4,
+                                            'ordinal' => 18,
+                                            'item' => '_struct_ref_seq.db_align_end',
+                                            'data_content_type' => 'Structure model'
+                                          }
+                                        ],
+          'symmetry' => {
+                          'int_tables_number' => 4,
+                          'space_group_name_hm' => 'P 1 21 1'
+                        },
+          'entry' => {
+                       'id' => '4HHB'
+                     },
+          'pdbx_database_related' => [
+                                       {
+                                         'content_type' => 'unspecified',
+                                         'details' => 'REFINED BY THE METHOD OF JACK AND LEVITT.  THIS
+        ENTRY PRESENTS THE BEST ESTIMATE OF THE
+        COORDINATES.',
+                                         'db_name' => 'PDB',
+                                         'db_id' => '2HHB'
+                                       },
+                                       {
+                                         'db_id' => '3HHB',
+                                         'db_name' => 'PDB',
+                                         'content_type' => 'unspecified',
+                                         'details' => 'SYMMETRY AVERAGED ABOUT THE (NON-CRYSTALLOGRAPHIC)
+        MOLECULAR AXIS AND THEN RE-REGULARIZED BY THE
+        ENERGY REFINEMENT METHOD OF LEVITT.  THIS ENTRY
+        PRESENTS COORDINATES THAT ARE ADEQUATE FOR MOST
+        PURPOSES, SUCH AS COMPARISON WITH OTHER STRUCTURES.'
+                                       },
+                                       {
+                                         'content_type' => 'unspecified',
+                                         'db_id' => '1GLI',
+                                         'db_name' => 'PDB'
+                                       }
+                                     ]
+        };

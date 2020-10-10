@@ -206,7 +206,7 @@ and nuccore db and CDS for protein db.
 Only allows for 'nucleotide', 'nuccore', or 'protein'.
 I figured a way to get NG and NC reference number from 'gene' database
 but it requires parsing the Entrezgene file for the genomic accessions.
-It's a pain in the butt.
+It's a pain so not included.
 
 =head1 SYNOPSIS
 
