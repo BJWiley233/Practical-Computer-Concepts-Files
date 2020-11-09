@@ -16,7 +16,7 @@ import re
 
 
 user='root'
-password='Swimgolf1212**'
+password="********"
 host='127.0.0.1'
 db_name = "protTest"
 
