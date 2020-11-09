@@ -33,7 +33,7 @@ up_tbl_cols = ["id", "entry name", "reviewed", "protein names", "genes(PREFERRED
 
 
 user='root'
-password='Swimgolf1212**'
+password="********"
 host='127.0.0.1'
 db_name = "protTest"
 
