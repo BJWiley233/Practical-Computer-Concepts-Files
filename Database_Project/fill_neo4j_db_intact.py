@@ -228,7 +228,7 @@ if __name__ == "__main__":
     uri = "neo4j://localhost:7687"
     user = "neo4j"
     # you'll need a password after you start 
-    password = "Swimgolf1212**"
+    password = "********"
     database = "protein-test-real"
   
     prot_db = ProteinExample(uri, user, password)
