@@ -18,9 +18,10 @@ import json
 import xml.etree.ElementTree as ET
 import re
 
-db_name = "protTest"
 
-# humans, rodents, Escherichia coli, Saccharomyces cerevisiae, Arabidopsis,
+
+# humans, mouse, rat, chinese hamster, Escherichia coli, Saccharomyces cerevisiae, 
+# Arabidopsis, drosophila
 # 
 organisms = [9606, 10090, 10116, 10029, 83333, 559292, 3702, 7227]
 # growth factors??
@@ -29,7 +30,6 @@ families = ['kinase', 'phosphatase', 'transferase', 'methyltransferase',
 up_tbl_cols = ["id", "entry name", "reviewed", "protein names", "genes(PREFERRED)",
                "genes(ALTERNATIVE)", "genes" , "interactor", "organism-id", "organism", 
                "families", "length", "database(MEROPS)"]
-
 
 
 user='root'
@@ -41,11 +41,10 @@ cnx = connect(user, password, host)
 cursor = cnx.cursor()
 
 create_database(cursor, db_name)
-#_drop_database(cursor, db_name)
 use_database(cnx, cursor, db_name)
 
 #cursor.execute("DROP TABLE IF EXISTS proteins")
-#cursor.execute("DROP TABLE IF EXISTS proteins")
+
 TABLES = {}
 TABLES['proteinsUniprot'] = (
     "CREATE TABLE proteinsUniprot ("
@@ -250,7 +249,7 @@ for i in range(0, len(urls)):
                     print("Something went wrong: {}".format(err))
                     print(uniProtID, k, v)
                     with open(pdb_log, 'a') as f:
-                        f.write(f"{k:   v}\n")  
+                        f.write(f"{k}:   {v}\n")  
                     break
         n += 1 
         if n == 500:
