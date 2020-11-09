@@ -3,7 +3,7 @@ library(magrittr)
 con <- neo4j_api$new(
   url = "http://localhost:7474",
   user = "neo4j", 
-  password = "Swimgolf1212**"
+  password = "********"
 )
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
