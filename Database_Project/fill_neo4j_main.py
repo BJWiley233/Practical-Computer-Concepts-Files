@@ -21,7 +21,7 @@ merops & intact
 
 
 userMySQL='root'
-passwordMySQL='Swimgolf1212**'
+passwordMySQL='**'
 hostMySQL='127.0.0.1'
 dbMySQL = 'protTest'
 
@@ -110,7 +110,7 @@ WHERE interactionID IN (%s)
 uri = 'neo4j://localhost:7687'
 user = 'neo4j'
 # you'll need a password after you start 
-password = 'Swimgolf1212**'
+password = '**'
 db = 'protTest'
 
 
