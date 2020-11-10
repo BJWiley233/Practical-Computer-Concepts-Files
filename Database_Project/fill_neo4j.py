@@ -11,6 +11,8 @@ import neo4j
 import logging
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
+import numpy as np
+import json
 
 
 class ProteinExample:
@@ -45,7 +47,7 @@ class ProteinExample:
 
     def create_proteins(self, proteins):
         if not self.database:
-            return "Need to call ProteinExample.use_database"
+            return "Need to call ProteinExample.use_database(database)"
         for protein in proteins:
             self.create_protein(protein)
         
@@ -57,32 +59,51 @@ class ProteinExample:
                 result = session.write_transaction(
                     self._create_protein, protein)
                 for res in result:
-                    print("Created: ", [res["uniprot ID"], 
-                                        res["name"],
-                                        res["full name"]])
+                    if res["merged"]:
+                        print("Merged: ", [res["uniprot ID"], 
+                                            res["name"],
+                                            res["full name"]])
+                    else:
+                        print("Created: ", [res["uniprot ID"], 
+                                            res["name"],
+                                            res["full name"]])
     
     
     @staticmethod
     def _create_protein(tx, protein):
+        altGeneNames = None if not protein['geneNamesAlternative'] else json.loads(protein['geneNamesAlternative'])
+        altProtNames = None if not protein['alternateNames'] else json.loads(protein['alternateNames'])
+        
         query = ("""
                  MERGE (a:Protein{name: $name, 
                 				  uniprotID: $uniprotID, 
                 				  organism: $organism, 
                 				  taxid: $taxid})
                     ON CREATE SET a.proteinName = $proteinName,  
-                                  a.altGeneNames = $altGeneNames, 
-                                  a.altProtNames = $altProtNames
+                                  a.altGeneNames = CASE $altGeneNames
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $altGeneNames
+                                                     END,
+                                  a.altProtNames = CASE $altProtNames
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $altProtNames
+                                                     END,
+                                  a.proteinFamily = $proteinFamily,
+                                  a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
                 	ON MATCH SET  a.altGeneNames = CASE a.altGeneNames
-                                                    WHEN null
-                                                    THEN $altGeneNames
-                                                    ELSE apoc.coll.toSet(a.altGeneNames + $altGeneNames)
-                                                    END,
+                                                     WHEN null
+                                                     THEN $altGeneNames
+                                                     ELSE apoc.coll.toSet(a.altGeneNames + $altGeneNames)
+                                                     END,
                                   a.altProtNames = CASE a.altProtNames
-                                                    WHEN null
-                                                    THEN $altProtNames
-                                                    ELSE  apoc.coll.toSet(a.altProtNames + $altProtNames)
-                                                    END
-                RETURN a.uniprotID, a.name, a.proteinName
+                                                     WHEN null
+                                                     THEN $altProtNames
+                                                     ELSE apoc.coll.toSet(a.altProtNames + $altProtNames)
+                                                     END,
+                                  a.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                RETURN a.uniprotID, a.name, a.proteinName, exists(a.lastModified) as onMerge
         """)
         
         result = tx.run(query, name=protein['geneNamePreferred'], 
@@ -90,12 +111,14 @@ class ProteinExample:
                         proteinName=protein['proteinName'], 
                         organism=protein['organism'],
                         taxid=protein['taxid'],
-                        altGeneNames=protein['geneNamesAlternative'],
-                        altProtNames=protein['alternateNames'])
+                        proteinFamily=protein['headProteinFamily'],
+                        altGeneNames=altGeneNames,
+                        altProtNames=altProtNames)
         try:
             return [{"uniprot ID": record["a.uniprotID"], 
                      "name": record["a.name"],
-                     "full name": record["a.proteinName"]} 
+                     "full name": record["a.proteinName"],
+                     "merged": record["onMerge"]} 
                     for record in result]
         except ServiceUnavailable as exception:
             logging.error("{} raised an error: \n {}".format(query, exception))
@@ -114,6 +137,251 @@ class ProteinExample:
             for res in result:
                 return res["n.uniprotID"] 
 
+    def create_intact_interactions(self, interactions):
+        if not self.database:
+            return "Need to call ProteinExample.use_database(database)"
+        for interaction in interactions:
+            direct = str.split(interaction['direction'], "->")
+            if len(np.unique(direct)) == 1:
+                with self.driver.session(database=self.database) as session:   
+                    result = session.write_transaction(
+                        self._create_intact_self_interaction, interaction, direct[0], direct[0])
+                for res in result:
+                    if res["merged"]:
+                        print("Merged: ", [res["from"],
+                                           res["interaction"],
+                                           res["to"]])
+                    else:
+                        print("Created: ", [res["from"],
+                                            res["interaction"],
+                                            res["to"]])
+                   
+            else:
+                
+                result = session.write_transaction(
+                        self._create_intact_a_b_interaction, interaction, direct[0], direct[1])
+            
+    @staticmethod
+    def _create_intact_self_interaction(tx, interaction, from_, to_):
+        altGeneNamesA = None if not interaction['altGeneNamesA'] else json.loads(interaction['altGeneNamesA'])
+        altProtNamesA = None if not interaction['altProtNamesA'] else json.loads(interaction['altProtNamesA'])
+        query = ("""
+                 MERGE (a:%s{uniprotID: $interactorA, 
+                                   taxid: $taxidA})
+                	ON CREATE SET a.name = $nameA,
+                				  a.organism = $organismA,
+                				  a.altGeneNames = CASE $altGeneNamesA
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $altGeneNamesA
+                                                     END,
+                				  a.altProtNames = CASE $altProtNamesA
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $altProtNamesA
+                                                     END,
+                                  a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                    ON MATCH SET  a.altGeneNames = CASE a.altGeneNames
+                                                     WHEN null
+                                                       THEN CASE $altGeneNamesA
+                                                          WHEN null
+                                                          THEN NULL
+                                                          ELSE $altGeneNamesA
+                                                          END
+                                                     ELSE apoc.coll.toSet(a.altGeneNames + $altGeneNamesA)
+                                                     END,
+                                  a.altProtNames = CASE a.altProtNames
+                                                     WHEN null
+                                                       THEN CASE $altProtNamesA
+                                                          WHEN null
+                                                          THEN NULL
+                                                          ELSE $altProtNamesA
+                                                          END
+                                                     ELSE apoc.coll.toSet(a.altProtNames + $altProtNamesA)
+                                                     END,
+                                  a.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                WITH a, $interactionID AS identifier, $pubmedID AS pub, $detectionMethod as method,
+                    $intact_null as site, $sourceDB as db
+                MERGE (%s)-[i:INTERACTION {name: $interactionType}]->(%s)
+                	ON CREATE SET i.entries = [apoc.convert.toSortedJsonMap({
+                                                    interactionID:identifier,
+                                                    publicationID:pub,
+                                                    detectionMethod:method,
+                                                    site:NULL,
+                                                    sourceDB:db})],
+                                  i.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                    ON MATCH  SET i.entries = apoc.coll.toSet(i.entries + 
+                                              apoc.convert.toSortedJsonMap({
+                                                    interactionID:identifier,
+                                                    publicationID:pub,
+                                                    detectionMethod:method,
+                                                    site:NULL,
+                                                    sourceDB:db})),
+                                  i.updated = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')                              
+                RETURN %s.uniprotID as from, i.name, %s.uniprotID as to, exists(i.updated) as onMerge
+        """ % (interaction['nodeTypeA'], from_, to_, from_, to_))
+        
+        result = tx.run(query, 
+                        #nodeTypeA=interaction['nodeTypeA'],
+                        interactorA=interaction['interactorA'],
+                        taxidA=interaction['taxidA'],
+                        nameA=interaction['nameA'],
+                        organismA=interaction['organismA'],
+                        altGeneNamesA=altGeneNamesA,
+                        altProtNamesA=altProtNamesA,
+                        interactionID=interaction['interactionID'],
+                        pubmedID=interaction['pubmedID'],
+                        detectionMethod=interaction['detectionMethod'],
+                        intact_null="IntAct(null)",
+                        sourceDB=interaction['sourceDB'],
+                        directionFrom=from_, directionTo=to_,
+                        interactionType=interaction['interactionType'])
+        try:
+            return [{"from": record["from"],
+                     "interaction": record["i.name"],
+                     "to": record["to"],
+                     "merged": record["onMerge"]} 
+                    for record in result]
+        except ServiceUnavailable as exception:
+            logging.error("{} raised an error: \n {}".format(query, exception))
+            raise
+    
+
+    @staticmethod
+    def _create_intact_a_b_interaction(tx, interaction, from_, to_):
+        altGeneNamesA = None if not interaction['altGeneNamesA'] else json.loads(interaction['altGeneNamesA'])
+        altProtNamesA = None if not interaction['altProtNamesA'] else json.loads(interaction['altProtNamesA'])
+        altGeneNamesB = None if not interaction['altGeneNamesB'] else json.loads(interaction['altGeneNamesB'])
+        altProtNamesB = None if not interaction['altProtNamesB'] else json.loads(interaction['altProtNamesB'])
+        
+        query = ("""
+                 MERGE (a:%s{uniprotID: $interactorA, 
+                                   taxid: $taxidA})
+                	ON CREATE SET a.name = $nameA,
+                				  a.organism = $organismA,
+                				  a.altGeneNames = CASE $altGeneNamesA
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $altGeneNamesA
+                                                     END,
+                				  a.altProtNames = CASE $altProtNamesA
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $altProtNamesA
+                                                     END,
+                                  a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                    ON MATCH SET  a.altGeneNames = CASE a.altGeneNames
+                                                     WHEN null
+                                                       THEN CASE $altGeneNamesA
+                                                          WHEN null
+                                                          THEN NULL
+                                                          ELSE [$altGeneNamesA]
+                                                          END
+                                                     ELSE apoc.coll.toSet(a.altGeneNames + $altGeneNamesA)
+                                                     END,
+                                  a.altProtNames = CASE a.altProtNames
+                                                     WHEN null
+                                                       THEN CASE $altProtNamesA
+                                                          WHEN null
+                                                          THEN NULL
+                                                          ELSE $altProtNamesA
+                                                          END
+                                                     ELSE apoc.coll.toSet(a.altProtNames + $altProtNamesA)
+                                                     END,
+                                  a.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+
+                 MERGE (b:%s{uniprotID: $interactorB, 
+                                   taxid: $taxidB})
+                	ON CREATE SET b.name = $nameB,
+                				  b.organism = $organismB,
+                				  b.altGeneNames = CASE $altGeneNamesB
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $altGeneNamesB
+                                                     END,
+                				  b.altProtNames = CASE $altProtNamesB
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $altProtNamesB
+                                                     END,
+                                  b.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                    ON MATCH SET  b.altGeneNames = CASE b.altGeneNames
+                                                     WHEN null
+                                                       THEN CASE $altGeneNamesB
+                                                          WHEN null
+                                                          THEN NULL
+                                                          ELSE $altGeneNamesB
+                                                          END
+                                                     ELSE apoc.coll.toSet(b.altGeneNames + $altGeneNamesB)
+                                                     END,
+                                  a.altProtNames = CASE b.altProtNames
+                                                     WHEN null
+                                                       THEN CASE $altProtNamesB
+                                                          WHEN null
+                                                          THEN NULL
+                                                          ELSE $altProtNamesB
+                                                          END
+                                                     ELSE apoc.coll.toSet(b.altProtNames + $altProtNamesB)
+                                                     END,
+                                  b.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                 
+                
+                WITH a, b, $interactionID AS identifier, $pubmedID AS pub, $detectionMethod as method,
+                    $intact_null as site, $sourceDB as db
+                MERGE (%s)-[i:INTERACTION {name: $interactionType}]->(%s)
+                	ON CREATE SET i.entries = [apoc.convert.toSortedJsonMap({
+                                                    interactionID:identifier,
+                                                    publicationID:pub,
+                                                    detectionMethod:method,
+                                                    site:NULL,
+                                                    sourceDB:db})],
+                                  i.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                    ON MATCH  SET i.entries = apoc.coll.toSet(i.entries + 
+                                              apoc.convert.toSortedJsonMap({
+                                                    interactionID:identifier,
+                                                    publicationID:pub,
+                                                    detectionMethod:method,
+                                                    site:NULL,
+                                                    sourceDB:db})),
+                                  i.updated = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')                              
+                RETURN %s.uniprotID as from, i.name, %s.uniprotID as to, exists(i.updated) as onMerge
+        """ % (interaction['nodeTypeA'], interaction['nodeTypeB'], from_, to_, from_, to_))
+        
+        result = tx.run(query, 
+                        interactorA=interaction['interactorA'],
+                        taxidA=interaction['taxidA'],
+                        nameA=interaction['nameA'],
+                        organismA=interaction['organismA'],
+                        altGeneNamesA=altGeneNamesA,
+                        altProtNamesA=altProtNamesA,
+                        interactorB=interaction['interactorB'],
+                        taxidB=interaction['taxidB'],
+                        nameB=interaction['nameB'],
+                        organismB=interaction['organismB'],
+                        altGeneNamesB=altGeneNamesB,
+                        altProtNamesB=altProtNamesB,
+                        interactionID=interaction['interactionID'],
+                        pubmedID=interaction['pubmedID'],
+                        detectionMethod=interaction['detectionMethod'],
+                        intact_null="IntAct(null)",
+                        sourceDB=interaction['sourceDB'],
+                        directionFrom=from_, directionTo=to_,
+                        interactionType=interaction['interactionType'])
+        try:
+            return [{"from": record["from"],
+                     "interaction": record["i.name"],
+                     "to": record["to"],
+                     "merged": record["onMerge"]} 
+                    for record in result]
+        except ServiceUnavailable as exception:
+            logging.error("{} raised an error: \n {}".format(query, exception))
+            raise    
+    
+    
+    
+    
+    
+    
     
     def create_interactions(self, database, interaction_set):
     
@@ -188,7 +456,7 @@ if __name__ == "__main__":
     uri = "neo4j://localhost:7687"
     user = "neo4j"
     # you'll need a password after you start 
-    password = "********"
+    password = "Swimgolf1212**"
     database = "protein-test"
   
     prot_db = ProteinExample(uri, user, password)
