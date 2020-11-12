@@ -33,7 +33,7 @@ up_tbl_cols = ["id", "entry name", "reviewed", "protein names", "genes(PREFERRED
 
 
 user='root'
-password="********"
+password='Swimgolf1212**'
 host='127.0.0.1'
 db_name = "protTest"
 
@@ -87,6 +87,7 @@ TABLES['uniprotPdbJoin'] = (
     ") ENGINE=InnoDB"
 );
 
+TABLES['meropsSubsUniprot']
 for table in TABLES:
     drop_table(cursor, db_name, table)
 
@@ -125,6 +126,7 @@ for i in range(0, len(urls)):
         ## pandas is good but need to pass None to MySQL
         df_final = protein_df.replace({np.nan: None})
     else:
+        req.raise_for_status()
         break
     
 

@@ -137,6 +137,7 @@ class ProteinExample:
             for res in result:
                 return res["n.uniprotID"] 
 
+###############################################################################
     def create_intact_interactions(self, interactions):
         if not self.database:
             return "Need to call ProteinExample.use_database(database)"
@@ -165,6 +166,7 @@ class ProteinExample:
     def _create_intact_self_interaction(tx, interaction, from_, to_):
         altGeneNamesA = None if not interaction['altGeneNamesA'] else json.loads(interaction['altGeneNamesA'])
         altProtNamesA = None if not interaction['altProtNamesA'] else json.loads(interaction['altProtNamesA'])
+        
         query = ("""
                  MERGE (a:%s{uniprotID: $interactorA, 
                                    taxid: $taxidA})
@@ -275,7 +277,7 @@ class ProteinExample:
                                                        THEN CASE $altGeneNamesA
                                                           WHEN null
                                                           THEN NULL
-                                                          ELSE [$altGeneNamesA]
+                                                          ELSE $altGeneNamesA
                                                           END
                                                      ELSE apoc.coll.toSet(a.altGeneNames + $altGeneNamesA)
                                                      END,
@@ -376,12 +378,127 @@ class ProteinExample:
         except ServiceUnavailable as exception:
             logging.error("{} raised an error: \n {}".format(query, exception))
             raise    
+###############################################################################    
+    def create_merops_interactions(self, interactions):
+        if not self.database:
+            return "Need to call ProteinExample.use_database(database)"
+        for interaction in interactions:
+            with self.driver.session(database=self.database) as session:   
+                 result = session.write_transaction(
+                     self._create_merops_a_b_interaction, interaction)
+            for res in result:
+                if res["merged"]:
+                    print("Merged: ", [res["from"],
+                                       res["interaction"],
+                                       res["to"]])
+                else:
+                    print("Created: ", [res["from"],
+                                        res["interaction"],
+                                        res["to"]])
+                   
+
+    @staticmethod
+    def _create_merops_a_b_interaction(tx, interaction):
+        subGeneAlt = None if not interaction['subGeneAlt'] else json.loads(interaction['subGeneAlt'])
+
+        # Only doing proteases from UniProt that have merops IDs
+        # so a will always be in database initially
+        query = ("""
+                 MERGE (a:Protein{uniprotID: $proteaseUniprot, 
+                                   taxid: $proteaseTaxId})
+                    ON MATCH SET  a.meropsID = $meropsID
+                 
+                MERGE (b:Protein{uniprotID: $substrateUniprot})
+                	ON CREATE SET b.name = CASE $substrateGenePreferred
+                                             WHEN null
+                                             THEN $substrateUniprot
+                                             ELSE $substrateGenePreferred
+                                             END,
+                                  b.altGeneNames = CASE $subGeneAlt
+                                                     WHEN null
+                                                     THEN NULL
+                                                     ELSE $subGeneAlt
+                                                     END,
+                				  b.organism = $substrateOrganism,
+                                  b.taxid = CASE $substrateTax
+                                              WHEN null
+                                              THEN $proteaseTaxId
+                                              ELSE $substrateTax
+                                              END,
+                                  b.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                    ON MATCH SET  b.altGeneNames = CASE b.altGeneNames
+                                                     WHEN null
+                                                       THEN CASE $subGeneAlt
+                                                          WHEN null
+                                                          THEN NULL
+                                                          ELSE $subGeneAlt
+                                                          END
+                                                     ELSE apoc.coll.toSet(b.altGeneNames + $subGeneAlt)
+                                                     END,
+                                  b.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                 
+                WITH a, b, $cleavageID AS identifier, $Ref AS pub, $cleavage_type as method,
+                    $Substrate_formula as subsite, 'MEROPS' as db
+                MERGE (a)-[i:INTERACTION {name: $interactionType}]->(b)
+                	ON CREATE SET i.entries = [apoc.convert.toSortedJsonMap({
+                                                    interactionID:identifier,
+                                                    publicationID:pub,
+                                                    detectionMethod:method,
+                                                    site:subsite,
+                                                    sourceDB:db})],
+                                  i.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
+                    ON MATCH  SET i.entries = apoc.coll.toSet(i.entries + 
+                                              apoc.convert.toSortedJsonMap({
+                                                    interactionID:identifier,
+                                                    publicationID:pub,
+                                                    detectionMethod:method,
+                                                    site:subsite,
+                                                    sourceDB:db})),
+                                  i.updated = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')                              
+                RETURN a.uniprotID as from, i.name, b.uniprotID as to, exists(i.updated) as onMerge
+        """)
+        
+        result = tx.run(query, 
+                        proteaseUniprot=interaction['proteaseUniprot'],
+                        proteaseTaxId=interaction['proteaseTaxId'],
+                        meropsID=interaction['meropsID'],
+                        substrateUniprot=interaction['substrateUniprot'],
+                        substrateGenePreferred=interaction['substrateGenePreferred'],
+                        subGeneAlt=subGeneAlt,
+                        substrateOrganism=interaction['substrateOrganism'],
+                        substrateTax=interaction['substrateTax'],
+                        cleavageID=interaction['cleavageID'],
+                        Ref=interaction['Ref'],
+                        cleavage_type=interaction['cleavage_type'],
+                        Substrate_formula=interaction['Substrate_formula'],
+                        interactionType="proteolysis")
+        try:
+            return [{"from": record["from"],
+                     "interaction": record["i.name"],
+                     "to": record["to"],
+                     "merged": record["onMerge"]} 
+                    for record in result]
+        except ServiceUnavailable as exception:
+            logging.error("{} raised an error: \n {}".format(query, exception))
+            raise       
     
     
-    
-    
-    
-    
+###############################################################################
+#PSP
+
+
+
+
+
+###############################################################################
+#Ppase
+
+
+
+
+
+###############################################################################
+
     
     def create_interactions(self, database, interaction_set):
     
@@ -403,7 +520,7 @@ class ProteinExample:
                 print([res["a.name"], res["r.direction"], res["b.name"]])
 
     
-    def delete_interaction(self, db, prot_a, up_or_down, prot_b):
+    def _delete_interaction(self, db, prot_a, up_or_down, prot_b):
         if up_or_down not in ["+", "-"]:
             return "up_or_down only takes '+' or '-'"
         
@@ -420,7 +537,7 @@ class ProteinExample:
                 return [res["a.name"], res["direction"], res["b.name"]] 
             
           
-    def get_recursive_n_interactions(self, db, protein, n_edges):
+    def get_recursive_n_interactions(self, protein, n_edges):
         """
         MATCH p = (n:Protein { name:'C' })<-[:REGULATES*1..2]->(b:Protein) 
         WITH *, relationships(p) as rs
@@ -429,7 +546,7 @@ class ProteinExample:
             endNode(last(rs)).name as Protein2, 
             length(p)
         """   
-        with self.driver.session(database=db) as session:
+        with self.driver.session(database=self.database) as session:
             result = session.run("MATCH p = (n:Protein { name:$prot })<-[:REGULATES*1..%d]->(b:Protein) \
                                   WITH *, relationships(p) AS rs \
                                   RETURN \
