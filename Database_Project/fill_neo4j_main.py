@@ -19,7 +19,7 @@ import json
 
 
 userMySQL='root'
-passwordMySQL='**'
+passwordMySQL='Swimgolf1212**'
 hostMySQL='127.0.0.1'
 dbMySQL = 'protTest'
 
@@ -201,7 +201,7 @@ for idx, row in reviewed.iterrows():
 uri = 'neo4j://localhost:7687'
 user = 'neo4j'
 # you'll need a password after you start 
-password = '**'
+password = 'Swimgolf1212**'
 db = 'protTest'
 
 
@@ -241,23 +241,24 @@ merops_data = cursor.fetchall()
 len(merops_data)
 
 # get query for fill psp neo4j
-format_strings_psp = ','.join(['%s'] * len(np.unique(psp['interactorB'])))
-cursor.execute(query_psp2 % format_strings_psp, tuple(np.unique(psp['interactorB'])))
+#format_strings_psp = ','.join(['%s'] * len(np.unique(psp['interactorB'])))
+#cursor.execute(query_psp2 % format_strings_psp, tuple(np.unique(psp['interactorB'])))
+cursor.execute(query_psp2)
 psp_data = cursor.fetchall()
 len(psp_data)
 
 # get query for fill ppase neo4j
-format_strings_ppase = ','.join(['%s'] * len(np.unique(ppase['interactorB'])))
-cursor.execute(query_ppase2 % format_strings_ppase, tuple(np.unique(ppase['interactorB'])))
+#format_strings_ppase = ','.join(['%s'] * len(np.unique(ppase['interactorB'])))
+#cursor.execute(query_ppase2 % format_strings_ppase, tuple(np.unique(ppase['interactorB'])))
+cursor.execute(query_ppase2)
 ppase_data = cursor.fetchall()
 len(ppase_data)
 
 
 
 
-#prot_db.create_proteins(uniprot_data)
-prot_db.create_intact_interactions(intact_data)
-prot_db.create_merops_interactions(merops_data)
-
-prot_db.create_psp_interactions(psp_data)
-prot_db.create_depod_interactions(ppase_data)
+prot_db.create_proteins(uniprot_data[0:100])
+prot_db.create_intact_interactions(intact_data[0:100])
+prot_db.create_merops_interactions(merops_data[0:100])
+prot_db.create_psp_interactions(psp_data[0:100])
+prot_db.create_depod_interactions(ppase_data[0:100])
