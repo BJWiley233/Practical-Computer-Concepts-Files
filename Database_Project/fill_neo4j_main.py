@@ -9,7 +9,6 @@ Created on Mon Nov  9 01:43:17 2020
 import logging
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
-
 import create_mysql_db
 from create_mysql_db import *
 import pandas as pd
@@ -17,13 +16,10 @@ import numpy as np
 import requests
 import re
 import json
-"""
-merops & intact
-"""
 
 
 userMySQL='root'
-passwordMySQL='**'
+passwordMySQL='Swimgolf1212**'
 hostMySQL='127.0.0.1'
 dbMySQL = 'protTest'
 
@@ -31,6 +27,7 @@ cnx = connect(userMySQL, passwordMySQL, hostMySQL)
 cursor = cnx.cursor(dictionary=True)
 use_database(cnx, cursor, dbMySQL)
 
+## testing data and queries for loading into neo4j
 from queries import query_merops
 cursor.execute(query_merops)
 merops_sel = cursor.fetchall()
@@ -60,7 +57,9 @@ ppase.columns = ['interactorA','interactorB',"interactionID", 'uniProtID']
 
 np.unique([merops['interactorA'], merops['interactorB']])
 np.unique([psp['interactorA'], psp['interactorB']])
+np.unique(psp['interactorB'])
 np.unique([ppase['interactorA'], ppase['interactorB']])
+np.unique(ppase['interactorB'])
 
 get_uniprot = np.unique((merops['interactorA'].tolist() + 
                          merops['interactorB'].tolist() +
@@ -79,52 +78,11 @@ get_intact = np.unique((merops['interactionID'].tolist() +
 len(get_uniprot)
 len(get_intact)
 
-query_up = """
-    SELECT u.geneNamePreferred, u.uniProtID, u.proteinName, u.organism,
-    	u.taxid, u.geneNamesAlternative, u.alternateNames, u.headProteinFamily
-    FROM proteinsUniprot u
-    WHERE u.uniProtID IN (%s);
-"""
-
-
-query_intact = """
-SELECT i.interactionID, i.interactorA, i.interactorB, i.taxidA, i.taxidB,
-	i.geneNamePreferredA as nameA, i.geneNamePreferredB as nameB, i.organismA, i.organismB,
-    i.alternateNamesA as altProtNamesA, i.alternateNamesB as altProtNamesB, 
-    i.geneNamesAlternativeA as altGeneNamesA, i.geneNamesAlternativeB as altGeneNamesB,
-    i.pubmedID, i.detectionMethod, i.interactionType, sourceDB,
-    CASE
-		WHEN i.interactorA REGEXP "^EBI-" THEN "Molecule"
-        WHEN i.interactorA REGEXP "^[0-9]" THEN "Molecule"
-        ELSE "Protein"
-	END as nodeTypeA,
-    CASE
-		WHEN i.interactorB REGEXP "^EBI-" THEN "Molecule"
-        WHEN i.interactorB REGEXP "^[0-9]" THEN "Molecule"
-        ELSE "Protein"
-	END as nodeTypeB, lower(i.direction) as direction
-FROM protTest.intact i
-WHERE interactionID IN (%s)
-"""
-
-
-
-
-
-#https://stackoverflow.com/questions/589284/imploding-a-list-for-use-in-a-python-mysqldb-in-clause
-format_strings = ','.join(['%s'] * len(get_uniprot))
-cursor.execute(query_up % format_strings, tuple(get_uniprot))
-uniprot_data = cursor.fetchall()
-
-format_strings_intact = ','.join(['%s'] * len(get_intact))
-cursor.execute(query_intact % format_strings_intact, tuple(get_intact))
-intact_data = cursor.fetchall()
-
-
-
 
 
 ## Need to get merops substrate genes names from UniProt
+## Merops only had a description column which was hard to 
+## get gene names for nodes. Do this with batch request
 query_merops3 = """
 SELECT DISTINCT s.Uniprot AS substrateUniprot
 FROM protTest.Substrate_search s
@@ -133,6 +91,8 @@ INNER JOIN
     ON p.meropsID = s.`code` AND s.organism LIKE CONCAT('%%', p.organism, '%%')
 WHERE s.Uniprot IS NOT NULL
 """
+## non dict cursor
+cursor = cnx.cursor()
 cursor.execute(query_merops3)
 merops_subs = cursor.fetchall()
 len(merops_subs)
@@ -140,7 +100,11 @@ merops_subs2 = [i[0][0:6] for i in merops_subs]
 up_tbl_cols = ["id", "reviewed", "entry name", "genes(PREFERRED)",
                "genes(ALTERNATIVE)", "organism-id", "organism"]
 
+# Uniprot batch request docs!
 #https://www.biostars.org/p/304247/
+#https://www.ebi.ac.uk/training/online/sites/ebi.ac.uk.training.online/files/UniProt_programmatically_py3.pdf
+BASE = "http://www.uniprot.org"
+TOOL_ENDPOINT = "/uploadlists/"
 def map_retrieve(ids2map, source_fmt='ACC+ID',target_fmt='ACC', output_fmt='tab'):
     if hasattr(list(ids2map), 'pop'):
         ids2map = ' '.join(ids2map)
@@ -162,13 +126,12 @@ def map_retrieve(ids2map, source_fmt='ACC+ID',target_fmt='ACC', output_fmt='tab'
     else:
         print(response.raise_for_status())
 
-chunks = np.array_split(merops_subs2, 8)
-
+chunks = np.array_split(merops_subs2, 10)
 frames = [map_retrieve(i) for i in chunks]
 merops_up_sub_tbl = pd.concat(frames)
 reviewed = merops_up_sub_tbl[merops_up_sub_tbl['Status'] == 'reviewed']
 
-
+## add new table to database for merops substrate gene names
 TABLES = {}
 TABLES['meropsSubsUniprot'] = """
 CREATE TABLE meropsSubsUniprot (
@@ -195,7 +158,7 @@ log_file = "uniprot_merops_subs_not_entered.log"
 open(log_file, 'w').close()
 
 for idx, row in reviewed.iterrows():
-for idx, row in row.iterrows():    
+#for idx, row in row.iterrows():    
     print("*****************************",  row['Entry'])
     uniProtID = row['Entry']
     entryName = row['Entry name']
@@ -218,7 +181,7 @@ for idx, row in row.iterrows():
     
     try:
         cursor.execute(
-            "REPLACE INTO meropsSubsUniprot VALUES (%s,%s,%s,%s,%s,%s)",
+            "INSERT IGNORE INTO meropsSubsUniprot VALUES (%s,%s,%s,%s,%s,%s)",
             (uniProtID, entryName, geneNamePreferred, geneNamesAlternative_,  
              organismID, organism))
         cnx.commit()
@@ -228,33 +191,7 @@ for idx, row in row.iterrows():
             f.write(f"{row['Entry']}\n")
 
 
-query_merops2 = """
-SELECT sel.cleavageID, sel.Ref, sel.cleavage_type, sel.Substrate_formula,
-	sel.Substrate_name as substrateName, m.geneNamePreferred as substrateGenePreferred,
-    m.geneNamesAlternative as subGeneAlt, m.taxid as substrateTax,
-	sel.substrateUniprot, sel.substrateOrganism, 
-	sel.protease, sel.`code`, sel.proteaseUniprot, sel.geneNamePreferred as proteaseGenePreferred,
-    sel.proteinName as proteaseName, sel.alternateNames as proteaseAltNames, 
-    sel.taxid as proteaseTaxId, sel.organism as proteaseOrganism, sel.meropsID
-FROM
-(SELECT s.cleavageID, s.Ref, s.cleavage_type, s.Substrate_formula,
-	s.Substrate_name, SUBSTRING(s.Uniprot, 1, 6) AS substrateUniprot, s.organism as substrateOrganism, 
-	s.protease, s.`code`, p.uniProtID as proteaseUniprot, p.geneNamePreferred, p.proteinName, 
-    p.alternateNames, p.taxid, p.organism, p.meropsID
-FROM protTest.Substrate_search s
-INNER JOIN 
-	protTest.proteinsUniprot p
-    ON p.meropsID = s.`code` AND s.organism LIKE CONCAT('%%', p.organism, '%%')) as sel
-LEFT JOIN
-	meropsSubsUniprot m
-    ON sel.substrateUniprot = m.uniProtID
-WHERE sel.cleavageID IN (%s)
-"""
-cursor = cnx.cursor(dictionary=True)
-format_strings_merops = ','.join(['%s'] * len(merops_IDs))
-cursor.execute(query_merops2 % format_strings_merops, tuple(merops_IDs))
-merops_data = cursor.fetchall()
-len(merops_data)
+
 
 
 ##############################################################################
@@ -264,7 +201,7 @@ len(merops_data)
 uri = 'neo4j://localhost:7687'
 user = 'neo4j'
 # you'll need a password after you start 
-password = '**'
+password = 'Swimgolf1212**'
 db = 'protTest'
 
 
@@ -275,10 +212,52 @@ prot_db = ProteinExample(uri, user, password)
 prot_db.use_database(db)
 prot_db.database
 
+
+from queries import query_up, query_intact, query_merops2, query_psp2, query_ppase2
+# make dict
+cursor = cnx.cursor(dictionary=True)
+
+#https://stackoverflow.com/questions/589284/imploding-a-list-for-use-in-a-python-mysqldb-in-clause
+#format_strings = ','.join(['%s'] * len(get_uniprot))
+#cursor.execute(query_up % format_strings, tuple(get_uniprot))
+#format_strings = ','.join(['%s'] * 1)
+#cursor.execute(query_up, tu("O60307",))
+cursor.execute(query_up)
+uniprot_data = cursor.fetchall()
+len(uniprot_data)
+
+# get query for fill intact neo4j
+#format_strings_intact = ','.join(['%s'] * len(get_intact))
+#cursor.execute(query_intact % format_strings_intact, tuple(get_intact))
+cursor.execute(query_intact)
+intact_data = cursor.fetchall()
+len(intact_data)
+
+# get query for fill merops neo4j
+#format_strings_merops = ','.join(['%s'] * len(merops_IDs))
+#cursor.execute(query_merops2 % format_strings_merops, tuple(merops_IDs))
+cursor.execute(query_merops2)
+merops_data = cursor.fetchall()
+len(merops_data)
+
+# get query for fill psp neo4j
+format_strings_psp = ','.join(['%s'] * len(np.unique(psp['interactorB'])))
+cursor.execute(query_psp2 % format_strings_psp, tuple(np.unique(psp['interactorB'])))
+psp_data = cursor.fetchall()
+len(psp_data)
+
+# get query for fill ppase neo4j
+format_strings_ppase = ','.join(['%s'] * len(np.unique(ppase['interactorB'])))
+cursor.execute(query_ppase2 % format_strings_ppase, tuple(np.unique(ppase['interactorB'])))
+ppase_data = cursor.fetchall()
+len(ppase_data)
+
+
+
+
 #prot_db.create_proteins(uniprot_data)
-#prot_db.create_intact_interactions(intact_data)
+prot_db.create_intact_interactions(intact_data)
 prot_db.create_merops_interactions(merops_data)
-"""
+
 prot_db.create_psp_interactions(psp_data)
-prot_db.create_ppase_interactions(ppase_data)
-"""
+prot_db.create_depod_interactions(ppase_data)
