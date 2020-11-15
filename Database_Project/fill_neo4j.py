@@ -215,24 +215,24 @@ class ProteinExample:
                                                      ELSE $altProtNamesA
                                                      END,
                                   a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
-                	ON MATCH SET  a.altGeneNamesA = CASE a.altGeneNamesA
+                	ON MATCH SET  a.altGeneNames = CASE a.altGeneNames
                                                      WHEN null
                                                      THEN $altGeneNamesA
                                                      ELSE 
                                                        CASE $altGeneNamesA
                                                          WHEN null
-                                                         THEN a.altGeneNamesA
-                                                         ELSE apoc.coll.toSet(a.altGeneNamesA + $altGeneNamesA)
+                                                         THEN a.altGeneNames
+                                                         ELSE apoc.coll.toSet(a.altGeneNames + $altGeneNamesA)
                                                        END
                                                     END,
-                                  a.altProtNamesA = CASE a.altProtNamesA
+                                  a.altProtNames = CASE a.altProtNames
                                                      WHEN null
                                                      THEN $altProtNamesA
                                                      ELSE 
                                                        CASE $altProtNamesA
                                                          WHEN null
                                                          THEN a.altProtNamesA
-                                                         ELSE apoc.coll.toSet(a.altProtNamesA + $altProtNamesA)
+                                                         ELSE apoc.coll.toSet(a.altProtNames + $altProtNamesA)
                                                        END
                                                     END,
                                   a.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
@@ -308,17 +308,17 @@ class ProteinExample:
                                                      ELSE $altProtNamesA
                                                      END,
                                   a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
-                	ON MATCH SET  a.altGeneNamesA = CASE a.altGeneNamesA
+                	ON MATCH SET  a.altGeneNames = CASE a.altGeneNames
                                                      WHEN null
                                                      THEN $altGeneNamesA
                                                      ELSE 
                                                        CASE $altGeneNamesA
                                                          WHEN null
-                                                         THEN a.altGeneNamesA
-                                                         ELSE apoc.coll.toSet(a.altGeneNamesA + $altGeneNamesA)
+                                                         THEN a.altGeneNames
+                                                         ELSE apoc.coll.toSet(a.altGeneNames + $altGeneNamesA)
                                                        END
                                                     END,
-                                  a.altProtNamesA = CASE a.altProtNamesA
+                                  a.altProtNames = CASE a.altProtNamesA
                                                      WHEN null
                                                      THEN $altProtNamesA
                                                      ELSE 
@@ -345,17 +345,17 @@ class ProteinExample:
                                                      ELSE $altProtNamesB
                                                      END,
                                   b.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
-                	ON MATCH SET  b.altGeneNamesB = CASE b.altGeneNamesB
+                	ON MATCH SET  b.altGeneNames = CASE b.altGeneNames
                                                      WHEN null
                                                      THEN $altGeneNamesB
                                                      ELSE 
                                                        CASE $altGeneNamesB
                                                          WHEN null
-                                                         THEN b.altGeneNamesB
-                                                         ELSE apoc.coll.toSet(b.altGeneNamesB + $altGeneNamesB)
+                                                         THEN b.altGeneNames
+                                                         ELSE apoc.coll.toSet(b.altGeneNames + $altGeneNamesB)
                                                        END
                                                     END,
-                                  b.altProtNamesB = CASE b.altProtNamesB
+                                  b.altProtNames = CASE b.altProtNamesB
                                                      WHEN null
                                                      THEN $altProtNamesB
                                                      ELSE 
@@ -580,14 +580,14 @@ class ProteinExample:
                                   b.organism = $subOrganism,
                                   b.altGeneNames = $geneNameAltSub,            
                                   b.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
-                    ON MATCH SET  b.altGeneNamesB = CASE b.altGeneNamesB
+                    ON MATCH SET  b.altGeneNames = CASE b.altGeneNames
                                                      WHEN null
                                                      THEN $geneNameAltSub
                                                      ELSE 
                                                        CASE $geneNameAltSub
                                                          WHEN null
-                                                         THEN b.altGeneNamesB
-                                                         ELSE apoc.coll.toSet(b.altGeneNamesB + $geneNameAltSub)
+                                                         THEN b.altGeneNames
+                                                         ELSE apoc.coll.toSet(b.altGeneNames + $geneNameAltSub)
                                                        END
                                                     END,
                                   b.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
