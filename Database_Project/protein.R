@@ -3,7 +3,7 @@ library(magrittr)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "Swimgolf1212**", isV4 = TRUE)
+                     password = "**", isV4 = TRUE)
 con$ping()
 
 library(httr)
@@ -96,25 +96,3 @@ plot(graph_object, edge.label=G2$relationships$name,
      #edge.color=ifelse(G$relationships$direction=="+", "red", "blue"),
      #edge.label.color=ifelse(G$relationships$direction=="+", "red", "blue"))
 
-
-
-
-
-
-
-
-
-
-
-# library(ggraph)
-# graph_object %>%
-#   ggraph() + 
-#   geom_node_label(aes(label = label)) +
-#   geom_edge_link() + 
-#   theme_graph()
-# 
-# class(graph_object)
-# 
-# "MATCH (n)-[r]->(m)
-#     RETURN n,r,m" %>%
-#   call_neo4j(con)
