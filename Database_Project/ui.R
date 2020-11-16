@@ -5,16 +5,12 @@ library(shinythemes)
 library(shinyWidgets)
 library(dqshiny)
 
-# userMySQL='root'
-# passwordMySQL='Swimgolf1212**'
-# hostMySQL='127.0.0.1'
-# dbMySQL = 'protTest'
 
 loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "Swimgolf1212**",
+                          password = "**",
                           host = "127.0.0.1")
   data <- dbGetQuery(db, query)
   dbDisconnect(db)
