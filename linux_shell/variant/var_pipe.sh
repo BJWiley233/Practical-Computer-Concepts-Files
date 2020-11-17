@@ -15,6 +15,7 @@ export FREEBAYES=$TOOLS/freebayes/bin/freebayes;
 #export PATH=$PATH:/path/to/vcflib/bin:/path/to/bedtools/bin:/path/to/samtools/bin
 
 # get reference for freebayes and indexes from bowtie2
+# comment out after running initially
 wget https://genome-idx.s3.amazonaws.com/bt/hg19.zip
 unzip hg19.zip
 wget ftp://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz
