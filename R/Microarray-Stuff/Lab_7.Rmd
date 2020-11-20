@@ -1,0 +1,176 @@
+---
+title: "Lab7_Brian_Wiley"
+output:
+  pdf_document:
+header-includes:
+    - \usepackage {hyperref}
+    - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+### Brian Wiley
+### Lab #7 Dimensionality Reduction
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5)
+
+#### Summary
+<br>  
+<br>  
+In this lab, we will be using an Affymetrix breast cancer data set that was run on the human HGU133A array.  In the study, the investigators were interested in identifying transcripts that were differentially expressed in different histologic grade tumor samples to evaluate whether gene expression profiling could be used to improve histologic grading.  Our interest in this data set does not focus on this same biological question.  Rather, we would like to assess the processing variability in the data, since this type of variability can many times confound the biological variability.
+
+Since the array data was generated at different sites, we are interested in how this factor affects the variability in the samples.  Specifically, we would like to use dimensionality reduction (DR) methods to evaluate the amount of variance that is explained by differences in processing sites.  You will compute 4 different DR methods on this data set with the objectives of 1) summarizing the amount of variability is explained by differences in processing sites, and 2) understanding the visual differences in how the data structure is embedded when using difference methods of DR.
+
+The paper is entitled “Gene Expression Profiling in Breast Cancer: Understanding the Molecular Basis of Histologic Grade To Improve Prognosis” and is available on the course website.
+
+
+##### **1.)Load the Sotiriou breast cancer data set from the class website as well as the annotation file.** {#q1}
+<br>  
+<br>  
+```{r}
+sotiriou <- read.table("Sotiriou.txt", header=T, sep="\t", row.names = 1)
+sotiriou.ann <- read.table("Sotiriou_annotations.txt", header=T, sep="\t", row.names = 1)
+
+```
+
+##### **2.) Calculate and plot a PCA plot.  Label the points based on the site (“site” column header in annotation file).  Make sure to add a legend to denote the colors of the two sites.** {#q2}
+<br>  
+<br>  
+```{r, fig.height=4, fig.width=6}
+
+sotiriou.ann$site
+
+sotiriou.pca <- prcomp(t(sotiriou))
+pcomps <- data.frame(sotiriou.pca$x[, 1:2])
+
+pcomps$site <- ifelse(sotiriou.ann$site=="KIU", "KIU", "OXF")
+
+library(ggplot2)
+ggplot(pcomps, aes(PC1, PC2, color=site)) +
+  geom_point() +
+  ggtitle("PCA Plot Sotiriou, PC1 vs PC2") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+##### **3.) Calculate and plot the scree plot that corresponds to the PCA from question #2.  Using only the first two eigenvalues, approximately how much variability in the data is explained?** {#q3}
+<br>  
+<br>  
+```{r, }
+sotiriou.pca.var <- round(sotiriou.pca$sdev^2 / sum(sotiriou.pca$sdev^2)*100,2)
+plot(c(1:length(sotiriou.pca.var)),sotiriou.pca.var,type="b",xlab="# components",ylab="% variance",pch=21,col=1,bg=3,cex=1.5)
+title("Scree plot showing % variability explained by each eigenvalue\nSotiriou dataset")
+
+cat("Var % of first 2 eigenvalues: ", sum(sotiriou.pca.var[1:2]), "%")
+```
+
+
+
+##### **4.) Now calculate and plot 2 different MDS plots: 1) classic MDS and 2) nonmetric MDS.  Label the points based on the site.  Make sure to load the MASS library for the nonmetric MDS plot function.  Also add a legend to both plots.** {#q4}
+<br>  
+<br>  
+```{r, fig.width=6, fig.height=6}
+library(MASS)
+
+?cmdscale
+sotiriou.dist <- dist(t(sotiriou))
+
+# classical
+sotiriou.class.MDS <- data.frame(cmdscale(sotiriou.dist))
+
+# make sure correct order
+sotiriou.class.MDS$site <- sotiriou.ann[row.names(sotiriou.class.MDS),]$site
+
+library(gridExtra)
+
+g1 <- ggplot(sotiriou.class.MDS, aes(X1, X2, color=site)) +
+  geom_point() +
+  ggtitle("Classic Metric MDS Plot Sotiriou, k=2") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+?isoMDS
+# stress	The final stress achieved (in percent).
+sotiriou.monmetric.MDS <- isoMDS(sotiriou.dist)
+sotiriou.monmetric.MDS.df <- data.frame(sotiriou.monmetric.MDS$points)
+sotiriou.monmetric.MDS.df$site <- sotiriou.ann[row.names(sotiriou.monmetric.MDS.df),]$site
+
+stress <- round(sotiriou.monmetric.MDS$stress, 2)
+
+g2 <- ggplot(sotiriou.monmetric.MDS.df, aes(X1, X2, color=site)) +
+  geom_point() +
+  ggtitle("Kruskal's Non-metric MDS Plot Sotiriou, k=2") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  annotate("text", x=0, y=21, label=paste0("Stress = ",stress,"%"), hjust=0)
+
+grid.arrange(g1, g2, nrow=2)
+```
+
+
+##### **5.) Now, first center and scale the rows of the matrix with the commands below (assuming that dd is your data matrix):** {#q5}
+<br>  
+<br>  
+`> temp <- t(dd)`
+<br>  
+`> temp <- scale(temp,center=T,scale=T)`
+<br>  
+<br>  
+Then calculate and plot a two-dimensional embedding of the weighted graph Laplacian using `t(temp)` as the ‘X’ argument and ‘NULL’ for the qnt argument (don’t use quotations to run the function).  Label the points based on the site.  Also add a legend.  
+<br>  
+Hint: for the colors, use the following command to get a color vector for the samples:
+<br>  
+<br>  
+`foo <- as.numeric(ann$site)`
+<br>  
+<br>  
+Would need to factor it:
+<br>  
+<br>  
+`foo <- as.numeric(factor(ann$site))`
+```{r, message=F, fig.height=4, fig.width=8}
+
+temp <- t(sotiriou)
+temp <- scale(temp)
+
+# If there are no explicit returns from a function, the value of the last evaluated expression is returned automatically in R. 
+k.speClust2 <- function (X, qnt=NULL) {
+	dist2full <- function(dis) {
+		n <- attr(dis, "Size")
+	        full <- matrix(0, n, n)
+	        full[lower.tri(full)] <- dis
+	        full + t(full)
+	}
+	dat.dis <- dist(t(X),"euc")^2
+	if(!is.null(qnt)) {eps <- as.numeric(quantile(dat.dis,qnt))}
+	if(is.null(qnt)) {eps <- min(dat.dis[dat.dis!=0])}
+	cat("epsilon =", eps)
+	kernal <- exp(-1 * dat.dis/(eps))
+	K1 <- dist2full(kernal)
+	diag(K1) <- 0
+	D = matrix(0,ncol=ncol(K1),nrow=ncol(K1))
+	tmpe <- apply(K1,1,sum)
+	tmpe[tmpe>0] <- 1/sqrt(tmpe[tmpe>0])
+	tmpe[tmpe<0] <- 0
+	diag(D) <- tmpe
+	L <- D%*% K1 %*% D
+	X <- svd(L)$u
+	Y <- X / sqrt(apply(X^2,1,sum))
+}
+
+sotiriou.lap <- k.speClust2(t(temp))
+dim(sotiriou.lap)
+
+sotiriou.lap.df <- data.frame(sotiriou.lap[,1:2])
+colnames(sotiriou.lap.df) <- c("phi1", "phi2")
+sotiriou.lap.df$site <- sotiriou.ann$site
+
+ggplot(sotiriou.lap.df, aes(phi1, phi2, color=site)) +
+  geom_point() +
+  ggtitle("Weighted Graph Laplacian plot of Sotiriou Data\nepsilon=61.572") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+

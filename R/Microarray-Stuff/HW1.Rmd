@@ -1,9 +1,7 @@
 ---
 title: "Homework1"
 output:
-  html_document:
-    df_print: paged
-  pdf_document: null
+  pdf_document:
 header-includes:
 - \usepackage {hyperref}
 - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
@@ -31,7 +29,7 @@ names(renal.cell)
 
 ```
 
-##### **2.)Label the header columns of your data frame maintaining the GSM ID, but adding the Normal/Tumor identity. (2pts.)** {#q2}
+##### **2.) Label the header columns of your data frame maintaining the GSM ID, but adding the Normal/Tumor identity. (2pts.)** {#q2}
 ```{r}
 renal.annot <- read.table("renal_carcinoma_annotation.txt", row.names = 1,
                           stringsAsFactors = F)
@@ -39,6 +37,9 @@ renal.annot <- read.table("renal_carcinoma_annotation.txt", row.names = 1,
 ## to make sure we have to correct order we should always map
 ## never assume that the annotation is same order as data file
 cols <- names(renal.cell)
+
+## sanity check for order
+all(row.names(renal.annot) == cols)
 ## a data frame is a list
 ## https://stackoverflow.com/questions/7070173/convert-data-frame-column-to-a-vector
 groups <- renal.annot[cols, ][["V9"]]
@@ -48,15 +49,17 @@ names(renal.cell) <- new.cols
 names(renal.cell) 
 ```
 
-##### **3.) Identify any outlier samples using the following visual plots:**{#q3}
+##### **3.) Identify any outlier samples using the following visual plots:** {#q3}
 
-##### **Correlation plot (heat map)	(2pts.)**
-##### **Hierarchical clustering dendrogram (2pts.)**
-##### **CV vs. mean plot (2pts.)**
-##### **Average correlation plot (2pts.)**
+* **Correlation plot (heat map)	(2pts.)**
+* **Hierarchical clustering dendrogram (2pts.)**
+* **CV vs. mean plot (2pts.)**
+* **Average correlation plot (2pts.)**
+
 ##### **For all plots, make sure you label the points appropriately, title plots, and label axes.  You will also need to provide a legend for the correlation plot.  You can use the gplots for a color gradient, or just use the default colors.** 
 
-Correlation Plot
+
+\setlength{\leftskip}{1cm}***Correlation Plot:***
 ```{r plotting, fig.height=6, fig.width=6}
 
 ## correlation plot
@@ -76,14 +79,18 @@ ggplot(melt_data_cor, aes(x=Var1, y=Var2, fill=value)) +
                        name="Pearson\nCorr.") +
   theme(axis.text.x=element_text(angle=90),
         axis.title=element_blank(),
-        plot.title=element_text(hjust=0.5)) +
+          plot.title=element_text(hjust=0.5)) +
   ggtitle("Rena Cell Carcinoma - Tumor vs. Normal\nCorrelation Plot")
 
 ```
-From the correlation plot we see there are two samples `GSM146798.Normal` and `GSM146799.Tumor` that show low correlation even within samples of the same group.
+\hfill\break
+\setlength{\leftskip}{0pt}
+From the correlation plot we see there are two samples `GSM146798.Normal` and `GSM146799.Tumor` that show low correlation even within samples of the same group and high correlation with eachother.
 
 
-Hierarchical clustering dendrogram 
+
+\hfill\break
+\setlength{\leftskip}{1cm}***Hierarchical clustering dendrogram:***
 ```{r}
 dat <- t(renal.cell)
 ## calculate distances
@@ -92,16 +99,18 @@ dat.clust <- hclust(dat.dist, method = "complete")
 
 ## plot and annotate
 plot(dat.clust)
-rect(0.5, -800000, 2.5, 300000, border = "red", lwd = 2)
+rect(0.5, -1130000, 2.5, 250000, border = "red", lwd = 2)
 arrows(5, 500000, 3, 350000, col = "blue", lwd = 1.5)
 text(5.2, 550000, labels = "Possible Outliers", adj = 0, cex = 0.8, col = "blue")
 ```
-Again these two sample arrays, `GSM146798.Normal` and `GSM146799.Tumor`, that were noticed from the correlation plot are part of their own cluster outside from the two main clusters  We will most likely remove these samples from the analysis.
+\hfill\break
+\setlength{\leftskip}{0pt}
+Again these two sample arrays, `GSM146798.Normal` and `GSM146799.Tumor`, that were noticed from the correlation plot are part of their own cluster outside from the two main clusters.  We will most likely remove these samples from the analysis.
 
 
-In addition to the correlation plot and hierarchial clustering plots as their own plots, we can combine these plots using `heatmap.2` function from `gplots` into a dendogram based on the correlation.  This makes is much easier to see the two outluer samples because of the cold blue
+In addition to the correlation plot and hierarchial clustering plots as their own plots, we can combine these plots using `heatmap.2` function from `gplots` into a dendogram based on the correlation.  This makes is much easier to see the two outlier samples because of the cold blue
 created by their hierarchial clustering. `GSM146798.Normal` and `GSM146799.Tumor` have a .98 Pearson correlation coefficient.
-```{r 3. Extra, fig.width=7, fig.height=6}
+```{r 3. Extra, fig.width=7, fig.height=7, message=F}
 
 library(gplots) # for heatmap.2 to see combination of heatmap and dendrogram
 col <- colorpanel(25, "red", "yellow", "blue")
@@ -117,7 +126,8 @@ data_cor["GSM146798.Normal", "GSM146799.Tumor"]
 ```
 
 
-CV vs. mean plot
+
+\setlength{\leftskip}{1cm}***CV vs. mean plot:***
 ```{r, fig.width=7}
 ## get cv and mean for each sample
 means = apply(renal.cell, 2, function(x) mean(x, na.rm=T))
@@ -129,10 +139,13 @@ plot(means, cvs, xlab = "Mean", ylab = "CV", col="red", pch=20,
 title("Renal Cell Carcinoma\nSample CV vs. Mean")
 text(means, cvs, labels=names(renal.cell), pos = 4, cex = 0.7)
 ```
+\hfill\break
+\setlength{\leftskip}{0pt}
 Again we see these 2 samples very far away having a much higher mean and CV then the rest of the samples.
 
 
-Average correlation plot
+\hfill\break
+\setlength{\leftskip}{1cm}***Average correlation plot:***
 ```{r, fig.width=7, fig.height=5}
 avg.cor <- apply(data_cor, 1, mean)
 
@@ -157,17 +170,21 @@ ggplot(avg.cor, aes(x = x, y = avg.cor)) +
   ggtitle("Average Correlation Plot")
 
 ```
-This plot also shows the same two outlier samples from the other 3 plot types.  It also shows another sample, `GSM146799` has pretty low average correlation but I will not remove this same, only `GSM146798.Normal` and `GSM146799.Tumor`.
+\setlength{\leftskip}{0pt}
+
+This plot also shows the same two outlier samples from the other 3 plot types.  It also shows another sample, `GSM146799` has pretty low average correlation but I will not remove this sample, only `GSM146798.Normal` and `GSM146799.Tumor`.
 
 
-##### **4.) Install and load the impute library. (1pt.)**{#q4}
+##### **4.) Install and load the impute library. (1pt.)** {#q4}
 ```{r, message=FALSE}
 library(impute)
 
 ```
 
 
-##### **5.) Remove the outlier samples you identified in the first part of this assignment. (2pts.)**{#q5}
+##### **5.) Remove the outlier samples you identified in the first part of this assignment. (2pts.)** {#q5}
+
+Removing samples `GSM146798.Normal` and `GSM146799.Tumor` based on visual representations above.
 ```{r, message=FALSE, fig.width=7, fig.height=6}
 drop.cols <- c('GSM146798.Normal', 'GSM146799.Tumor')
 renal.cell.rem.out <- renal.cell[, !(names(renal.cell) %in% drop.cols)]
@@ -179,11 +196,13 @@ heatmap.2(cor(renal.cell.rem.out, use="pairwise.complete.obs", method="pearson")
 ```
 
 
-##### **6.) Now we are going to use a couple of transcripts that were determined in this study to be indicative of normal renal function.  The genes we will assess are kininogen 1 (KNG1) and aquaporin 2 (AQP2).  Using either NetAffx or Gene Cards websites (or other resources, if you like), extract the probesets for these two genes.  Hint: KNG1 has two while AQP2 has one.  Then plot a profile plot (expression intensity vs. samples) for each probeset for these two genes.  You may have to convert the data frame row to a vector to plot it.  Do the plots of these genes seem to indicate normal renal function? Explain. (6pts.)**{#q6}
+##### **6.) Now we are going to use a couple of transcripts that were determined in this study to be indicative of normal renal function.  The genes we will assess are kininogen 1 (KNG1) and aquaporin 2 (AQP2).  Using either NetAffx or Gene Cards websites (or other resources, if you like), extract the probesets for these two genes.  Hint: KNG1 has two while AQP2 has one.  Then plot a profile plot (expression intensity vs. samples) for each probeset for these two genes.  You may have to convert the data frame row to a vector to plot it.  Do the plots of these genes seem to indicate normal renal function? Explain. (6pts.)** {#q6}
+
+I performed a log2 transformation on the intensities because of the large range. [Affymetrix Human Genome U133A Array](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL96)
 ```{r, fig.width=8, fig.height5}
 ## there were three results for KNG1
 c("206054_at", "217512_at", "243562_at") %in% row.names(renal.cell.rem.out)
-## '243562_at' is in the U133B Array
+## '243562_at' is in the U133B Array not U133A
 
 ## '206672_at' is for AQP2 in U133A
 renal.genes <- as.data.frame(t(renal.cell.rem.out[c("206054_at", "217512_at", "206672_at"), ]))
@@ -215,13 +234,14 @@ ggplot(renal.genes.final, aes(x = sample, y = intensity, linetype=variable, colo
         # https://stackoverflow.com/questions/28872875/ggplot2-applying-width-of-line-to-the-legend-key
         legend.key.width = unit(1,"cm"),
         axis.title.x=element_blank()) +
+  ylab(expression(paste("log"[2], " intensities"))) +
   ggtitle("Gene Profiles for KNG1 & AQP2")
 
 ```
 It was much easier visually to inspect after log2 transformation.  It is obvious now that these genes have higher expression in normal sample and lower expression in tumor samples alluding to their role required for normal renal function.
 
 
-##### **7.) We want to assess the accuracy of missing value imputation.  So assign the KNG1 probeset (206054_at) an NA value, only for array GSM146784.  Be sure to first save the original value before replacing it with an NA.  Also cast the data frame to a matrix to run this function. (2pts.)**{#q7}
+##### **7.) We want to assess the accuracy of missing value imputation.  So assign the KNG1 probeset (206054_at) an NA value, only for array GSM146784.  Be sure to first save the original value before replacing it with an NA.  Also cast the data frame to a matrix to run this function. (2pts.)** {#q7}
 ```{r}
 #renal.cell.rem.out <- renal.cell[, !(names(renal.cell) %in% drop.cols)]
 sample.GSM146784 <- grep("GSM146784.", names(renal.cell.rem.out))
@@ -233,33 +253,37 @@ renal.cell.rem.out.matrix <- as.matrix(renal.cell.rem.out)
 ```
 
 
-##### **8.) Now estimate the missing values in the array using 6 nearest neighbors and Euclidean distance with the impute.knn() function. (2pts.)**{#q8}
-```{r}
-## assign imputed data
+##### **8.) Now estimate the missing values in the array using 6 nearest neighbors and Euclidean distance with the `impute.knn()` function. (2pts.)** {#q8}
+```{r, message=F}
+## assign imputed data with new matrix renal.cell.rem.out.matrix.knn
 renal.cell.rem.out.matrix.knn <- impute.knn(renal.cell.rem.out.matrix, k=6)
 
 ```
 
-##### **9.) Now estimate the missing values in the array using 6 nearest neighbors and Euclidean distance with the `impute.knn()` function. (2pts.)**{#q9}
+##### **9.) Look at the value that was imputed for your gene and calculate the relative error of this value using the actual value that you saved. (2pts.)** {#q9}
+
+There was a 9.85% relative error for knn imputation with 6 nearest neighbors.
 ```{r}
 ## get inputed value
 imputed.value <- renal.cell.rem.out.matrix.knn$data["206054_at", sample.GSM146784]
 
 ## get relative error
-paste0(round(abs(value-imputed.value)/value*100, 2), "% relative error")
+cat(paste0(round(abs(value-imputed.value)/value*100, 2), "% relative error
+for knn imputation with 6 nearest neighbors"))
 
 ```
 
 
-##### **10.) Now impute the missing values using the SVD imputation method.  This is in the `pcaMethods` package and the function is called `pca()` with method svdImpute and set `nPcs=9`.  To retrive the output matrix, see the help file. (2pts.)**{#q10}
-```{r}
-BiocManager::install("pcaMethods")
+##### **10.) Now impute the missing values using the SVD imputation method.  This is in the `pcaMethods` package and the function is called `pca()` with method svdImpute and set `nPcs=9`.  To retrive the output matrix, see the help file. (2pts.)** {#q10}
+
+There was a 24.24% relative error for SVD imputation using 9 principal components.
+```{r, message=F}
+#BiocManager::install("pcaMethods")
 library(pcaMethods)
 ?pcaMethods::pca
 listPcaMethods()
-#renal.cell.rem.out.matrix["206054_at", sample.GSM146784]
+
 ## assign imputed data
-#renal.cell.rem.out.matrix.svd
 renal.cell.rem.out.matrix.svd <- pcaMethods::pca(renal.cell.rem.out.matrix, method="svdImpute", nPcs=9)
 
 ## get matrix from the slot (@) completeObs
@@ -270,11 +294,12 @@ dim(renal.cell.rem.out.matrix.svd@completeObs)
 imputed.value.svd <- renal.cell.rem.out.matrix.svd@completeObs["206054_at", sample.GSM146784]
 
 ## get relative error
-paste0(round(abs(value-imputed.value.svd)/value*100, 2), "% relative error")
+cat(paste0(round(abs(value-imputed.value.svd)/value*100, 2), "% relative error
+for SVD imputation"))
 
 ```
 
-##### **11.) Finally, plot a gene profile plot of the probeset for this gene, where the two different imputed values are represented as different colored points and the actual value is a third point. (6pts.) **{#q10}
+##### **11.) Finally, plot a gene profile plot of the probeset for this gene, where the two different imputed values are represented as different colored points and the actual value is a third point. (6pts.) ** {#q11}
 ```{r}
 ## assign value back in
 renal.cell.rem.out["206054_at", sample.GSM146784] = value
@@ -295,5 +320,7 @@ ggplot(gene, aes(x=x, y=`206054_at`, group=1)) +
         axis.title.x=element_blank()) +
   ylab("206054_at intensities") +
   ggtitle("Gene Profile Plot for 206054_at (KNG1)")
-```
 
+```
+\hfill\break
+This again just visually proved that knn imputation performed better than svd for this particular datapoint. Might be different for other data points.

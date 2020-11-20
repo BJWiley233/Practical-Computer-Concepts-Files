@@ -1,0 +1,562 @@
+---
+title: "Lab6_Brian_Wiley"
+output:
+  pdf_document:
+header-includes:
+    - \usepackage {hyperref}
+    - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+### Brian Wiley
+### Lab #6 Multiple testing
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#q7) [8.](#q8) [9.](#q9) [10.](#q10) [11.](#q11) [12.](#q12) [13.](#q13) [14.](#q14) [Bonus](#Bonus)
+
+#### Summary
+In this lab, we will be working with an Affymetrix data set that was run on the human HGU95A array.  This experiment was designed to assess the gene expression events in the frontal cortex due to aging.  A total of 18 male and 12 female postmortem brain samples were obtained to assess this.
+
+The analysis that we are interested in conducting is a direct follow up to the previous lab of differential expression.  We first want to identify those genes/probes that are differentially expressed in the frontal cortex between old and young subjects, then between males and females.  Next, we would like to evaluate the differences between a couple of multiple testing adjustment methods.  As explained in the lecture and the course website, multiple testing is a necessary step to reduce false positives when conducting more than a single statistical test.  You will generate some p-value plots to get an idea of the how conservative some methods are compared to others.
+
+I have identified 2 gene vectors for you to use below, so do not calculate the t-test or adjustments on the entire array of genes/probes.
+
+For the second part of this lab, you will be working with RNA-sequencing data from The Cancer Genome Atlas (TCGA), specifically a breast invasive carcinoma dataset of 119 patient tumors. The data matrix and annotation files are on the course website. We will be trying to confirm an observation from a meta-analysis performed by Mehra et al, 2005 in Cancer Research. The authors identified the gene (using arrays) and protein (using immunohistochemistry) GATA3 as a prognostic factor in breast cancer, where patients with low expression of GATA3 experienced overall worse survival. The PubMed abstract is here: http://www.ncbi.nlm.nih.gov/pubmed/16357129.
+
+
+##### **1.) Download the GEO Brain Aging study from the class website.  Also obtain the annotation file for this data frame.** {#q1}
+<br>  
+<br>  
+```{r}
+# No Code required
+# Set working directory to ~/JHU_Fall_2020/Data_Analysis/Datasets in setup above
+```
+
+##### **2.) Load into R, using read.table() function and the header=T/row.names=1 arguments for each data file.** {#q2}
+<br>  
+<br>  
+```{r}
+brain.data <- read.table("agingStudy11FCortexAffy.txt", row.names = 1, header = T)
+brain.annot <- read.table("agingStudy1FCortexAffyAnn.txt", row.names = 1, header = T)
+dim(brain.data)
+all(gsub(".*\\.", "", names(brain.data)) == brain.annot$Gender)
+```
+
+
+##### **3.) Prepare 2 separate vectors for comparison.  The first is a comparison between male and female patients.  The current data frame can be left alone for this, since the males and females are all grouped together.  The second vector is comparison between patients >= 50 years of age and those < 50 years of age.**
+
+
+##### **To do this, you must use the annotation file and logical operators to isolate the correct arrays/samples.** {#q3}
+<br>  
+<br>  
+```{r, message=F}
+gender <- brain.annot$Gender == "M"
+age <- ifelse(brain.annot$Age >= 50, T, F)
+
+```
+
+##### **4.) Run the t.test function from the notes using the first gene vector below for the gender comparison.  Then use the second gene vector below for the age comparison.  Using these p-values, use either p.adjust in the base library or mt.rawp2adjp in the multtest library to adjust the values for multiple corrections with the Holm's method.** {#q4}
+<br>  
+<br>  
+Gene Vectors (indices for specific rows/genes)
+```
+# gender comparison gene vector
+`g.g <- c(1394,  1474,  1917,  2099,  2367,  2428, 2625,  3168,  3181,  3641,  3832,  4526,
+4731,  4863,  6062,  6356,  6684,  6787,  6900,  7223,  7244,  7299,  8086,  8652,
+8959,  9073,  9145,  9389, 10219, 11238, 11669, 11674, 11793)
+```
+```
+# age comparison gene vector
+g.a <- c(25, 302,  1847,  2324,  246,  2757, 3222, 3675,  4429,  4430,  4912,  5640, 5835, 5856,  6803,  7229,  7833,  8133, 8579,  8822,  8994, 10101, 11433, 12039, 12353,
+12404, 12442, 67, 88, 100)
+```
+```{r, }
+## for rowttests from Lab 5
+## rowttests Details: two-class t-test with equal variances.
+library(genefilter)
+#?p.adjust()
+
+# gender comparison gene vector
+g.g <- c(1394,  1474,  1917,  2099,  2367,  2428, 2625,  3168,  3181,  3641,  3832,  4526,
+4731,  4863,  6062,  6356,  6684,  6787,  6900,  7223,  7244,  7299,  8086,  8652,
+8959,  9073,  9145,  9389, 10219, 11238, 11669, 11674, 11793)
+
+g.a <- c(25, 302,  1847,  2324,  246,  2757, 3222, 3675,  4429,  4430,  4912,  5640, 5835, 5856,  6803,  7229,  7833,  8133, 8579,  8822,  8994, 10101, 11433, 12039, 12353,
+12404, 12442, 67, 88, 100)
+
+## get genes for different conditions
+brain.gender <- brain.data[g.g, ]
+brain.age <- brain.data[g.a, ]
+
+#?rowttests
+## Needs factors 
+brain.gender.tt <- rowttests(as.matrix(brain.gender), fac=factor(gender))
+brain.gender.p.adjust <- p.adjust(brain.gender.tt$p.value, method="holm")
+
+brain.age.tt <- rowttests(as.matrix(brain.age), fac=factor(age))
+brain.age.p.adjust <- p.adjust(brain.age.tt$p.value, method="holm")
+
+
+
+
+```
+
+
+##### **5.) Sort the adjusted p-values and non-adjusted p-values and plot them vs. the x-axis of numbers for each comparison data set.  Make sure that the two lines are different colors.  Also make sure that the p-values are sorted before plotting.** {#q5}
+<br>  
+<br>  
+
+```{r, message=F, fig.height=4, fig.width=8}
+brain.gender.tt.p.sorted <- sort(brain.gender.tt$p.value)
+brain.gender.p.adjust.sorted <- sort(brain.gender.p.adjust)
+
+brain.age.tt.p.sorted <- sort(brain.age.tt$p.value)
+brain.age.p.adjust.sorted <- sort(brain.age.p.adjust)
+
+par(mfrow=c(1,2))
+
+plot(brain.gender.tt.p.sorted, col="red", type="l",
+     ylim=c(min(c(brain.gender.tt.p.sorted, brain.gender.p.adjust.sorted)),
+            max(c(brain.gender.tt.p.sorted, brain.gender.p.adjust.sorted))),
+     ylab="sorted p-values",
+     main="P-value vs. Adjusted P-Value\nGender gene set")
+lines(brain.gender.p.adjust.sorted, col="blue", type="l", lty=2,
+      ylim=c(min(c(brain.gender.tt.p.sorted, brain.gender.p.adjust.sorted)),
+            max(c(brain.gender.tt.p.sorted, brain.gender.p.adjust.sorted))))
+legend(17, 0.05, legend=c("raw p-value", "holm adjusted\np-value"),
+       col=c("red", "blue"), lty=1:2, cex=0.7)
+
+plot(brain.age.tt.p.sorted, col="red", type="l",
+     ylim=c(min(c(brain.age.tt.p.sorted, brain.age.p.adjust.sorted)),
+            max(c(brain.age.tt.p.sorted, brain.age.p.adjust.sorted))),
+     ylab="sorted p-values",
+     main="P-value vs. Adjusted P-Value\nAge gene set")
+lines(brain.age.p.adjust.sorted, col="blue", type="l", lty=2,
+      ylim=c(min(c(brain.age.tt.p.sorted, brain.age.p.adjust.sorted)),
+            max(c(brain.age.tt.p.sorted, brain.age.p.adjust.sorted))))
+legend(6, 0.52, legend=c("raw p-value", "holm adjusted\np-value"),
+       col=c("red", "blue"), lty=1:2, cex=0.7)
+
+```
+
+Better to do ggplot with facet_wrap so you can see equal y-axis for both types of conditions.  We see above that although the plot of the left for gender looks like it reaches value of 1 for type I error (alpha) it really only gets up to about 0.09.  This means we really only need to set a confidence level of 1-0.09 (.91) to be able to reject null for all genes in set. How do see for age condition we can reject more hypothesis at for instance at alpha of .05 with adjusted p-values, 25 or 83% for age condition vs. just 11 or 33% for gender. This makes sense since when looking at change gene expression in front cortex of brain we wouldn't really expect a lot to change between genders, but at age increase we are going to see change in gene expression.
+<br>  
+<br>  
+```{r, message=F}
+library(ggplot2)
+library(reshape2)
+library(multtest)
+
+mt.reject(cbind(brain.gender.tt.p.sorted,
+                brain.gender.p.adjust.sorted),
+          seq(0,1,0.1))$r
+
+mt.reject(cbind(brain.age.tt.p.sorted,
+                brain.age.p.adjust.sorted),
+          seq(0,1,0.1))$r
+
+## with respect to the adjusted at .05 what is amount rejected for each condition
+## not adjusted and adjusted
+perc.genes.sig.0.05.gender <- mt.reject(cbind(brain.gender.tt.p.sorted,
+                                             brain.gender.p.adjust.sorted),
+                                        0.05)$r / length(g.g)
+perc.genes.sig.0.05.age <- mt.reject(cbind(brain.age.tt.p.sorted,
+                                           brain.age.p.adjust.sorted),
+                                     0.05)$r / length(g.a)
+perc.genes.sig.0.05 <- round(cbind(perc.genes.sig.0.05.gender,
+                             perc.genes.sig.0.05.age),2)
+colnames(perc.genes.sig.0.05) <- c("gender raw",  "gender adjusted",
+                               "age raw",  "age adjusted")
+perc.genes.sig.0.05
+
+
+## create df to plot vs indices in ggplot
+dat <- data.frame(c(brain.gender.tt.p.sorted, brain.gender.p.adjust.sorted,
+                    brain.age.tt.p.sorted, brain.age.p.adjust.sorted),
+                  c(1:length(brain.gender.tt.p.sorted),
+                    1:length(brain.gender.p.adjust.sorted),
+                    1:length(brain.age.tt.p.sorted), 
+                    1:length(brain.age.p.adjust.sorted)),
+                  c(rep("gender", length(brain.gender.tt.p.sorted)),
+                    rep("gender", length(brain.gender.p.adjust.sorted)),
+                    rep("age", length(brain.age.tt.p.sorted)),
+                    rep("age", length(brain.age.p.adjust.sorted))),
+                  c(rep("false", length(brain.gender.tt.p.sorted)),
+                    rep("true", length(brain.gender.p.adjust.sorted)),
+                    rep("false", length(brain.age.tt.p.sorted)),
+                    rep("true", length(brain.age.p.adjust.sorted))))
+colnames(dat) <- c("p.value", "index", "condition", "adjusted")
+```
+
+```{r,}
+ggplot(dat, aes(x=index, y=p.value, color=adjusted, linetype=adjusted)) +
+  geom_line() +
+  facet_wrap(~condition) +
+  ggtitle("P-value vs. Adjusted P-Value") +
+  ylab("Sorted adjusted p-values") +
+  xlab("Number of rejected hypothesis") +
+  theme(plot.title=element_text(hjust=0.5)) +
+  scale_linetype_manual(name = "",
+                        values=c(1,2),
+                        labels=c("raw p-value", "holm adjusted\np-value")) +
+  scale_color_manual(name = "",
+                     values=c("red", "blue"),
+                     labels=c("raw p-value", "holm adjusted\np-value"))
+
+```
+
+
+
+##### **6.) Repeat #4 and #5 with the Bonferroni method** {#q6}
+<br>  
+<br>  
+```{r, message=F}
+brain.gender.p.adjust.bf.sorted <- sort(p.adjust(brain.gender.tt$p.value,
+                                                 method="bonferroni"))
+brain.age.p.adjust.bf.sorted <- sort(p.adjust(brain.age.tt$p.value, 
+                                              method="bonferroni"))
+
+## create df to plot vs indices in ggplot
+dat.bf <- data.frame(c(brain.gender.tt.p.sorted, 
+                    brain.gender.p.adjust.bf.sorted,
+                    brain.age.tt.p.sorted, 
+                    brain.age.p.adjust.bf.sorted),
+                  c(1:length(brain.gender.tt.p.sorted),
+                    1:length(brain.gender.p.adjust.bf.sorted),
+                    1:length(brain.age.tt.p.sorted), 
+                    1:length(brain.age.p.adjust.bf.sorted)),
+                  c(rep("gender", length(brain.gender.tt.p.sorted)),
+                    rep("gender", length(brain.gender.p.adjust.bf.sorted)),
+                    rep("age", length(brain.age.tt.p.sorted)),
+                    rep("age", length(brain.age.p.adjust.bf.sorted))),
+                  c(rep("false", length(brain.gender.tt.p.sorted)),
+                    rep("true", length(brain.gender.p.adjust.bf.sorted)),
+                    rep("false", length(brain.age.tt.p.sorted)),
+                    rep("true", length(brain.age.p.adjust.bf.sorted))))
+colnames(dat.bf) <- c("p.value", "index", "condition", "adjusted")
+
+
+ggplot(dat.bf, aes(x=index, y=p.value, color=adjusted, linetype=adjusted)) +
+  geom_line() +
+  facet_wrap(~condition) +
+  ggtitle("P-value vs. Adjusted P-Value") +
+  ylab("Sorted adjusted p-values") +
+  xlab("Number of rejected hypothesis") +
+  theme(plot.title=element_text(hjust=0.5)) +
+  scale_linetype_manual(name = "",
+                        values=c(1,2),
+                        labels=c("raw p-value", "bonferroni adjusted\np-value")) +
+  scale_color_manual(name = "",
+                     values=c("red", "blue"),
+                     labels=c("raw p-value", "bonferroni adjusted\np-value"))
+
+cat("gender num rejected holm @ .075: ", sum(brain.gender.p.adjust.sorted < .075))
+cat("\ngender num rejected bf @ .075: ", sum(brain.gender.p.adjust.bf.sorted < .075))
+
+```
+We see the same story, only difference is that for gender the adjusted p-values are higher/steeper meaning that we will reject less null hypotheses in comparison as we increase the confidence (lower the type I error threshold) with the bf corrected versus holm corrected, which makes sense because bf is more conservative than holm.  For instance at 92.5% confidence we only reject 15 null hypotheses with holm but only 11 with bf corrected.
+ 
+ 
+##### **7.) Read in the log2 normalized fragments per kb per million mapped reads (FPKM) data matrix and annotation files. This is RNA-sequencing data that has normalized read counts on a similar scale to microarray intensities.** {#q7}
+<br>  
+<br>  
+```{r, message=F}
+tcga.brca.annot <- read.table("tcga_brca_fpkm_sam.txt", sep="\t")
+tcga.brca.rnaseq <- read.table("tcga_brca_fpkm.txt", sep="\t")
+
+```
+
+
+##### **8.) Use grep to subset the data matrix only by gene ‘GATA3’ and make sure to cast this vector to numeric.** {#q8}
+<br>  
+<br>  
+```{r, }
+gata3 <- as.numeric(tcga.brca.rnaseq[grep("GATA3", rownames(tcga.brca.rnaseq)), ])
+
+```
+
+
+##### **9.) Create a binary (1/0) vector for the patients where the upper 25% expression of GATA3 is coded as 1 and all other patients are coded as 0. Call this new variable ‘group’.** {#q9}
+<br>  
+<br>  
+```{r, }
+group <- ifelse(gata3 >= quantile(gata3)[4], 1, 0)
+sum(group)/length(group)
+
+```
+
+
+##### **10.) Create a data matrix with the ‘group’ variable you created in #9 and the remaining variables in the annotation file.** {#q10}
+<br>  
+<br>  
+```{r, }
+tcga.brca.annot$group <- group
+
+```
+
+
+##### **11.) Run a Kaplan-Meier (KM) analysis to determine if a difference in survival experience exists between the two GATA3 expression groups using the survdiff function. Extract the p-value from the chi squared test output.** {#q11}
+<br>  
+<br>  
+I'm not sure which should be the  "~ x" predictor here?  I am assuming it should be GATA3 as in:
+
+Surv(time, vital_status) ~ GATA3
+
+`Surv {survival}`
+<br>  
+<br> 
+        **`Arguments`**
+<br>  
+<br> 
+event	   The status indicator, normally 0=alive, 1=dead.
+```{r, }
+library(survival)
+library(splines)
+
+# 0 for alive and 1 for dead
+tcga.brca.annot$vital_status_num <- ifelse(tcga.brca.annot$vital_status=="DECEASED", 1, 0)
+svd <- survdiff(Surv(months_to_event, vital_status_num) ~ group, data=tcga.brca.annot)
+
+## https://stat.ethz.ch/pipermail/r-help/2007-April/130676.html
+p.val.KM <- round(1 - pchisq(svd$chisq, length(svd$n)-1), 2)
+
+################################
+os <- with(tcga.brca.annot, Surv(months_to_event, vital_status_num))
+with(tcga.brca.annot, coxph(os ~ group))
+
+
+```
+
+
+##### **12.) Now run a Cox proportion hazard (PH) regression model on just the grouping variable (i.e. no other covariates) and extract both the p-value and hazard ratio from the output.** {#q12}
+<br>  
+<br>  
+I am assuming with this we remove the vital_status from the call to Surv() in the formula??  See below question 14 where I did 12 and 13 including vital_status in the call to Surv() for the formula.
+
+About the groups, I got this info from [Statistical Tools For High-Throughput Data Analysis](http://www.sthda.com/english/wiki/cox-proportional-hazards-model) which was EXTREMELY helpful:
+**The R summary for the Cox model gives the hazard ratio (HR) for the SECOND group relative to the FIRST group**
+The first group, group=0 is the lower 75% for GATA3, while the second group, group=1 is the is the upper 25% for GATA3.  So a result of beta coefficient < 0 or the exp(coef) < 1 means that group 2 for the upper 25% has a lower risk of event.  Which makes sense as GATA3 transcript factor will help with upregulation of transcription of the tumor suppressor BRCA1.
+
+```{r, }
+fit <- coxph(Surv(months_to_event) ~ group, data=tcga.brca.annot)
+## https://community.rstudio.com/t/extract-p-value-from-coxph/57537/3
+cox.pval <- round(summary(fit)$coefficients[, "Pr(>|z|)"],2)
+cox.ph.ratio <- round(summary(fit)$coefficients[, "exp(coef)"],2)
+
+
+```
+
+
+##### **13.) Run the survfit() function only on the grouping variable (i.e. no other covariates) and plot the KM curves, being sure to label the two groups with a legend, two different colors for each line, and provide the KM p-value, Cox PH p-value, Cox PH hazard ratio, and sample sizes all in each of the two groups all on the plot.** {#q13}
+<br>  
+<br>  
+Again assuming with this we remove the vital_status from the call to Surv() in the formula??
+```{r, fig.height=5, fig.width=7}
+tcga.surv <- survfit(Surv(months_to_event) ~ group, data=tcga.brca.annot)
+
+plot(tcga.surv, lty = 2:3, xlab="Months",ylab="S(t)", col=c("red", "blue"), lwd=2)
+## it goes in order with group=0 first, so group 0 is lower 75% GATA3
+## and group=1 is second for upper 25% GATA3
+n.low.gata3 <- tcga.surv$n[1]
+n.high.gata3 <- tcga.surv$n[2]
+legend(x=c(80, 130), y=c(.50, .9), c(paste("Lower 75% GATA3\nn=", n.low.gata3),
+                  paste("Upper 25% GATA3\nn=", n.high.gata3)), 
+       lty = 2:3, col=c("red", "blue"), lwd=2, y.intersp=2)
+title("Kaplan-Meier Curves\nfor TCGA GATA3 Study")
+text(x=20, y=0.7, labels=paste("KM p-value: ", p.val.KM, "\nCox PH p-value: ", cox.pval,
+                        "\nCox PH hazard ratio: ", cox.ph.ratio), pos=4)
+
+```
+
+
+
+##### **14.) Does this result agree with the Mehra et al, study result?** {#q14}
+<br>  
+<br>  
+I would have to say that based on the result of the plot, despite the fact that the group with higher GATA3 expression had longer/better survival times, the KM curves are not that far and the p-values were not significant at the 95% confidence threshold.  I would say from a statistical standpoint from the p-values the results do not support the study.  However with survival time still longer for the upper GATA3 group and the Cox proportional hazard ratio being less than 0, exp() less than 1, that this group with higher GATA3 expression will have longer/better survival rates.  From a biological perspective we know that transcription factor regulation of both BRCA genes leads to better tumor suppression due to increased efficacy in mismatch repair pathways.
+
+I also think that maybe I should have include the vital_status in the call to Surv() so that is below.
+This changes the KM curves and drops the Cox PH p-value or proportional hazard ratio to where it would be much more acceptable to agree with the findings of Mehra et al.
+```{r, fig.height=5, fig.width=7}
+fit2 <- coxph(Surv(months_to_event, vital_status_num) ~ group, data=tcga.brca.annot)
+## https://community.rstudio.com/t/extract-p-value-from-coxph/57537/3
+cox.pval2 <- round(summary(fit2)$coefficients[, "Pr(>|z|)"],2)
+cox.ph.ratio2 <- round(summary(fit2)$coefficients[, "exp(coef)"],2)
+
+tcga.surv2 <- survfit(Surv(months_to_event, vital_status_num) ~ group, data=tcga.brca.annot)
+
+plot(tcga.surv2, lty = 2:3, xlab="Months",ylab="S(t)", col=c("red", "blue"), lwd=2, pch=3)
+lines(tcga.surv2)
+## it goes in order with group=0 first, so group 0 is lower 75% GATA3
+## and group=1 is second for upper 25% GATA3
+n.low.gata3_2 <- tcga.surv2$n[1]
+n.high.gata3_2 <- tcga.surv2$n[2]
+legend(x=c(80, 130), y=c(.58, .98), c(paste("Lower 75% GATA3\nn=", n.low.gata3_2),
+                  paste("Upper 25% GATA3\nn=", n.high.gata3)), 
+       lty = 2:3, col=c("red", "blue"), lwd=2, y.intersp=1.5, pch=15)
+title("Kaplan-Meier Curves\nfor TCGA GATA3 Study")
+text(x=25, y=0.8, labels=paste("KM p-value: ", p.val.KM, "\nCox PH p-value: ", cox.pval2,
+                        "\nCox PH hazard ratio: ", cox.ph.ratio2), pos=4)
+
+
+#####################
+plot(tcga.surv2, lty=1:2,col=c('red','blue'),main="KM analysis for GATA3-determined groups\nBreast Cancer",xlab="Months",lwd=2,ylab="Probability of Overall Survival")
+text(110,0.85,paste("N low=",n.low.gata3_2,"\nN high=",n.high.gata3,"\nCox PHp=",cox.pval2,"\nCox PH HR=",cox.ph.ratio2,"\nKM p=",p.val.KM,sep=""),cex=0.8)
+legend(110,0.1,c("low","high"),pch=15,col=c('red','blue'),cex=0.9)
+dev.off()
+
+## https://www.rdocumentation.org/packages/survminer/versions/0.4.8/topics/ggsurvplot
+library(survminer)
+ggsurvplot(tcga.surv2)
+```
+```{r}
+## Load survival package
+library(survival)
+## List datasets in survival package
+data(package = "survival")
+
+## Load lung data
+data(lung)
+
+## Show first 6 rows
+head(lung)
+## Add survival object
+lung$SurvObj <- with(lung, Surv(time, status == 2))
+
+## Check data
+head(lung)
+
+## Kaplan-Meier estimator. The "log-log" confidence interval is preferred.
+km.as.one <- survfit(SurvObj ~ 1, data = lung, conf.type = "log-log")
+km.by.sex <- survfit(SurvObj ~ sex, data = lung, conf.type = "log-log")
+
+## Show object
+km.as.one
+
+## See survival estimates at given time (lots of outputs)
+## summary(km.as.one)
+## summary(km.by.sex)
+
+## Plotting without any specification
+plot(km.as.one)
+```
+
+##### **Bonus.  For the frontal cortex plot all the procedures in mt.rawp2adjp
+`proc=c("Bonferroni", "Holm", "Hochberg", "SidakSS", "SidakSD","BH", "BY")`
+as well at `maxT` and `minP` for sample of 100 genes.  Going to use `test='t.equalvar'` for both maxT and minP and use the order from maxT for the rest of the adjustments. {#Bonus}
+```{r, fig.width=8, fig.height=5}
+library(genefilter)
+library(ggplot2)
+library(multtest)
+library(genefilter)
+library(limma)
+library(reshape2)
+library(RColorBrewer)
+
+## https://www.r-bloggers.com/2012/10/palettes-in-r/
+nb.cols <- 10
+cols <- colorRampPalette(brewer.pal(8, "Dark2"))(nb.cols)
+ltypes<-c(sample(1:4, size=10, replace = TRUE))
+
+## quick find a few genes in our hundred samples that should be diff exp
+# true is male, false is female
+design.gender <- model.matrix(~ groups + 0, 
+                              data.frame(groups = ifelse(gender==TRUE, "male", "female")))
+colnames(design.gender) <- c("male", "female")
+fit.gender <- lmFit(as.matrix(brain.data), design.gender)
+contrasts.gender <- makeContrasts(male-female, levels=design.gender)
+fit2.gender <- contrasts.fit(fit.gender, contrasts.gender)
+fit.gender.eb <- eBayes(fit2.gender)
+tT <- topTable(fit.gender.eb, sort.by = "P", number=100)
+tT.probes <- rownames(tT)
+gender.indices <- match(tT.probes, rownames(brain.data))
+
+sample.genes <-  sample(gender.indices, size=100, replace=F)
+brain.gender2 <- brain.data[sample.genes,]
+
+res1.gender <- mt.maxT(brain.gender2, as.integer(gender), test="t.equalvar")
+res2.gender <- mt.minP(brain.gender2, as.integer(gender), test="t.equalvar")
+rawp.gender <- res1.gender$rawp[order(res1.gender$index)]
+
+procs=c("Bonferroni", "Holm", "Hochberg", "SidakSS", "SidakSD","BH", "BY")
+res3.gender <- mt.rawp2adjp(rawp.gender, proc=procs)
+#allp.gender <- cbind(res3.gender$adjp[order(res3.gender$index),],
+#                     res2.gender$adjp[order(res2.gender$index)],
+#                     res1.gender$adjp[order(res1.gender$index)])
+## keep ordered for ggplot2
+allp.gender <- cbind(res3.gender$adjp,
+                     res2.gender$adjp,
+                     res1.gender$adjp)
+dimnames(allp.gender)[[2]][9:10] <- c("minP", "maxT")
+procs <- dimnames(allp.gender)[[2]]
+procs[7:10] <- c("maxT","minP","BH","BY")
+allp.gender <- allp.gender[, procs]
+
+# tstat.gender <- res1.gender$teststat[order(res1.gender$index)]
+# mt.plot(allp.gender,tstat.gender,plottype="pvsr",proc=procs,
+#         leg=c(80,0.4),lty=ltypes,col=cols,lwd=2)
+
+
+## repeat for age
+design.age <- model.matrix(~ groups + 0,
+                           data.frame(groups = ifelse(age==TRUE, "old", "ypung")))
+colnames(design.age) <- c("old", "young")
+fit.age <- lmFit(as.matrix(brain.data), design.age)
+contrasts.age <- makeContrasts(old-young, levels=design.age)
+fit2.age <- contrasts.fit(fit.age, contrasts.age)
+fit.age.eb <- eBayes(fit2.age)
+tT.age <- topTable(fit.age.eb, sort.by = "P", number=100)
+tT.age.probes <- rownames(tT.age)
+age.indices <- match(tT.age.probes, rownames(brain.data))
+
+sample.genes.age <-  sample(age.indices, size=100, replace=F)
+brain.age2 <- brain.data[sample.genes.age,]
+
+res1.age <- mt.maxT(brain.age2, as.integer(age), test="t.equalvar")
+res2.age <- mt.minP(brain.age2, as.integer(age), test="t.equalvar")
+rawp.age <- res1.age$rawp[order(res1.age$index)]
+
+procs=c("Bonferroni", "Holm", "Hochberg", "SidakSS", "SidakSD","BH", "BY")
+res3.age <- mt.rawp2adjp(rawp.age, proc=procs)
+# allp.age <- cbind(res3.age$adjp[order(res3.age$index),],
+#                      res2.age$adjp[order(res2.age$index)],
+#                      res1.age$adjp[order(res1.age$index)])
+## keep ordered for ggplot2
+allp.age <- cbind(res3.age$adjp,
+                  res2.age$adjp,
+                  res1.age$adjp)
+dimnames(allp.age)[[2]][9:10] <- c("minP", "maxT")
+procs <- dimnames(allp.age)[[2]]
+procs[7:10] <- c("maxT","minP","BH","BY")
+allp.age <- allp.age[, procs]
+
+# tstat.age <- res1.age$teststat[order(res1.age$index)]
+# mt.plot(allp.age,tstat.age,plottype="pvsr",proc=procs,
+#         leg=c(80,0.4),lty=ltypes,col=cols,lwd=2)
+
+
+## ggplot
+melted.gender <- cbind(melt(allp.gender), rep("gender", 1000))
+melted.age <- cbind(melt(allp.age), rep("age", 1000))
+colnames(melted.gender) <- c("index","adjustment", "p.value", "condition")
+colnames(melted.age) <- c("index","adjustment", "p.value", "condition")
+full.dat <- rbind(melted.gender, melted.age)
+
+
+ggplot(full.dat, aes(x=index, y=p.value, color=adjustment, linetype=adjustment)) +
+  geom_line() +
+  facet_wrap(~condition) +
+  ggtitle("P-value vs. Adjusted P-Value") +
+  ylab("Sorted adjusted p-values") +
+  xlab("Number of rejected hypothesis") +
+  theme(plot.title=element_text(hjust=0.5)) +
+  scale_linetype_manual(name = "",
+                        values=ltypes,
+                        labels=procs) +
+  scale_color_manual(name = "",
+                     values=cols,
+                     labels=procs)
+```

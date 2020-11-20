@@ -1,0 +1,259 @@
+---
+title: "Homework3"
+output:
+  pdf_document:
+header-includes:
+- \usepackage {hyperref}
+- \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+- \usepackage{tikz}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(dev = 'pdf')
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+#### Brian Wiley
+### Homework 3
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#q7) [8.](#q8) [9.](#q9) [Bonus](#Bonus)
+
+
+##### **1.) Load the golub data training set in the `multtest` library.  Also load `Biobase` and `annotate` libraries, if they are not loaded with the multtest library.  Remember that the golub data training set is in the multtest library, so see the help file for information on this data set. (2.5 pts.)** {#q1}  
+<br>  
+<br>  
+```{r, message=F}
+## load
+library(multtest)
+library(Biobase)
+library(annotate)
+
+data("golub")
+
+?golub
+## for the Example by Sandrine
+?multtest::mt.plot()
+
+```
+
+
+##### **2.) Cast the matrix to a data frame and label the gene names as numbers (e.g. “g1”,”g2”,etc). (2.5 pts)** {#q2}  
+<br>  
+<br>  
+```{r, fig.height=10, fig.width=10, message=F, warning=FALSE}
+golub.df <- data.frame(golub)
+rownames(golub.df) <- paste0("g", c(1:nrow(golub)))
+
+```
+
+
+##### **Get the sample labels (see lecture notes) and set the sample labels to the data frame. (2.5 pts)** {#q3}
+<br>  
+<br>  
+```{r, message=F, warning=FALSE}
+colnames(golub.df) <- golub.cl
+
+```
+
+
+##### **4.)Use the t-test function in the lecture #7 notes and modify it to "wilcox.test" instead of "t.test".  Change the "$p.value" argument to "$statistic".  Assign the following arguments to the function: (2.5 pts)** {#q4} 
+<br>  
+<br>    
+`exact=F`
+`alternative="two.sided"`
+`correct=T`
+<br>  
+<br>    
+**Run the function on all of the genes in the dataset and save it as `original.wmw.run`**  
+<br>  
+<br>    
+```{r,}
+w.test.all.genes <- function(x,s1,s2) {
+	x1 <- x[s1]
+	x2 <- x[s2]
+	x1 <- as.numeric(x1)
+	x2 <- as.numeric(x2)
+	w.out <- wilcox.test(x1,x2, exact=F, alternative="two.sided",correct=T)
+	out <- as.numeric(w.out$statistic)
+	return(out)
+}
+
+original.wmw.run <- apply(golub.df, 1, w.test.all.genes,
+                          s1=colnames(golub.df)=="0", s2=colnames(golub.df)=="1")
+
+```
+
+
+##### **5.) Now write a for loop to iterate 500 times, where in each iteration, the columns of the data frame are shuffled (class labels mixed up), the WMW test is calculated on all of the genes, and the maximum test statistic (W) is saved in a list.  (5 pts)** {#q5}
+<br>  
+<br>  
+Hints: 
+<br>  
+<br>  
+Use `sample()` to sample the number of columns
+<br>  
+<br>  
+Get the maximum test statistic across all genes with `max()`
+```{r, message=F, warning=FALSE}
+max.test.stats = rep(NA, 500)
+
+start = proc.time()
+for (i in 1:500) {
+  shuffle.cols <- sample(1:ncol(golub.df), ncol(golub.df))
+  shuffled.golub <- golub.df[, shuffle.cols]
+  
+  run <- apply(shuffled.golub, 1, w.test.all.genes,
+               s1=colnames(golub.df)=="0", s2=colnames(golub.df)=="1")
+  
+  max.test.stats[i] <- max(run)
+}
+proc.time()-start
+
+```
+
+
+##### **6.) Once you have the list of maximum test statistics, get the 95% value test statistic.  Subset the original.wmw.run list of values with only those that have a higher test statistic than the 95% value that you calculated.  Print the gene names and test statistics out. (5 pts)** {#q6}
+<br>  
+<br>  
+```{r, }
+q.95 <- quantile(max.test.stats, .95)
+sum(max.test.stats < q.95)/500
+
+genes.above.95 <- data.frame(genes=rownames(golub.df), 
+                             statistic=original.wmw.run)[original.wmw.run > q.95, ]
+
+genes.above.95
+
+```
+
+
+##### **7.) Now we want to compare these results to those using the empirical Bayes method in the limma package.  Load this library and calculate p-values for the same dataset using the eBayes() function. (5 pts)** {#q7}
+<br>  
+<br>  
+```{r, message=F}
+library(limma)
+?eBayes
+
+design <- cbind(Grp1=1,Grp2vs1=c(rep(0,sum(colnames(golub.df)=="0")),rep(1,sum(colnames(golub.df)=="1"))))
+fit <- lmFit(golub.df, design)
+fit2 <- eBayes(fit)
+head(fit2$p.value[, 2])
+
+```
+
+##### **8.) Sort the empirical Bayes p-values and acquire the lowest n p-values, where n is defined as the number of significant test statistics that you found in problem 6.  Intersect the gene names for your two methods and report how many are in common between the two differential expression methods, when choosing the top n genes from each set. (2.5 pts)** {#q8}
+<br>  
+<br>  
+```{r,}
+eb.lowest.pvals <- fit2$p.value[, 2][order(fit2$p.value[, 2])][1:dim(genes.above.95)[1]]
+common <- intersect(names(eb.lowest.pvals), genes.above.95$genes)
+length(common)
+
+```
+
+##### **9.) Finally, compare the results from a Student’s t-test with the empirical Bayes method.  To do this, first calculate a two sample (two-tailed) Student’s t-test on all genes.  Make sure that you are running a Student’s t-test and not a Welch’s t-test.  Then extract only those genes with a p-value less than 0.01 from this test.  Plot the gene p-values<0.01 for the Student’s t-test vs. the same genes in the empirical Bayes method.  Make sure to label the axes and title appropriately. (7.5 pts)** {#q9}
+<br>  
+<br>  
+```{r, fig.width=5, fig.height=5}
+?t.test
+library(genefilter)
+?rowttests
+
+## confirm apply loop with var.equal = T pooled variance gives same results as rowttests
+t.test.all.genes <- function(x,s1,s2) {
+	x1 <- x[s1]
+	x2 <- x[s2]
+	x1 <- as.numeric(x1)
+	x2 <- as.numeric(x2)
+	t.out <- t.test(x1,x2, var.equal=T, alternative="two.sided")
+	out <- as.numeric(t.out$p.value)
+	return(out)
+}
+
+pvals.ttest <- apply(golub.df, 1, t.test.all.genes,
+                     s1=colnames(golub.df)=="0", s2=colnames(golub.df)=="1")
+pvals.huber.genefilter <- rowttests(golub, fac = factor(colnames(golub.df)))$p.value
+all(round(pvals.ttest, 5) == round(pvals.huber.genefilter, 5))
+
+indices.less.than.0.01 <- pvals.huber.genefilter < 0.01
+xy.max <- max(c(fit2$p.value[indices.less.than.0.01, 2],
+                pvals.huber.genefilter[indices.less.than.0.01]))
+plot(fit2$p.value[indices.less.than.0.01, 2], pvals.huber.genefilter[indices.less.than.0.01],
+     xlab="eBayes",ylab="Student's t", 
+     main="P-value distribution comparison using Golub data set,\n genes where Student's t p-values < .01",
+     cex=0.7, pch=15, col="green", xlim=c(0,xy.max), ylim=c(0,xy.max), cex.main=.8)
+abline(0, 1)
+```
+<br>  
+<br>  
+We can see as as the p-values increase for the Student's t-test they increase more for empirical bayes.
+
+
+
+
+##### **Bonus** {#Bonus}
+<br>  
+<br>  
+Confirm using the contrast matrix approach gives same answers as lecture notes.
+[Page 37](https://www.bioconductor.org/packages/devel/bioc/vignettes/limma/inst/doc/usersguide.pdf) of limma package
+<br>  
+<br>  
+Also count number of genes with pvals < .05 in all three methods and plot all three combinations for
+Wilcoxon Rank Sum, empirical Bayes, and Student's t
+```{r, fig.height=8, fig.width=4}
+design.golub <- model.matrix(~ group + 0,
+                             data.frame(group=colnames(golub.df)))
+colnames(design.golub) <- c("group0", "group1")
+fit3 <- lmFit(golub.df, design.golub)
+contrasts.matrix <- makeContrasts(group1-group0, levels=design.golub)
+fit4 <- contrasts.fit(fit3, contrasts.matrix)
+fit4 <- eBayes(fit4)
+eb.lowest.pvals2 <- rownames(fit4$p.value)[order(fit4$p.value)][1:dim(genes.above.95)[1]]
+## do all pvals from contrasts match pvals from code in lecture
+all(round(fit4$p.value, 5) == round(fit2$p.value[, 2], 5))
+common2 <- intersect(eb.lowest.pvals2, genes.above.95$genes)
+all(common==common2)
+
+
+####
+w.test.pvals.all.genes <- function(x,s1,s2) {
+	x1 <- x[s1]
+	x2 <- x[s2]
+	x1 <- as.numeric(x1)
+	x2 <- as.numeric(x2)
+	w.out <- wilcox.test(x1,x2, exact=F, alternative="two.sided",correct=T)
+	out <- as.numeric(w.out$p.value)
+	return(out)
+}
+
+pvals.wmw <- apply(golub.df, 1, w.test.pvals.all.genes,
+                      s1=colnames(golub.df)=="0", s2=colnames(golub.df)=="1")
+sprintf("%-24s %5.0f", "WMW < .05 count:", sum(pvals.wmw < .01))
+sprintf("%-24s %5.0f", "eBayes < .05 count:", sum(fit2$p.value[, 2] < .01))
+sprintf("%-24s %5.0f", "Student's t < .05 count:", sum(pvals.huber.genefilter < .01))
+
+par(mfrow=c(3,1))
+plot(pvals.wmw, fit2$p.value[, 2],
+     xlab="WMW",ylab="eBayes", 
+     main="P-value distribution comparison using Golub data set",
+     cex=0.7, pch=15, col="green", cex.main=.8)
+abline(0, 1)
+
+plot(pvals.wmw, pvals.huber.genefilter,
+     xlab="WMW",ylab="Student's t", 
+     main="P-value distribution comparison using Golub data set",
+     cex=0.7, pch=15, col="green", cex.main=.8)
+abline(0, 1)
+
+plot(fit2$p.value[, 2], pvals.huber.genefilter,
+     xlab="eBayes",ylab="Student's t", 
+     main="P-value distribution comparison using Golub data set",
+     cex=0.7, pch=15, col="green", cex.main=.8)
+abline(0, 1)
+```
+
+
+
+
+

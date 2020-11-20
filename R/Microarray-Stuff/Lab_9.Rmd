@@ -1,0 +1,157 @@
+---
+title: "Lab9_Brian_Wiley"
+output:
+  pdf_document:
+header-includes:
+    - \usepackage {hyperref}
+    - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+### Brian Wiley
+### Lab #9 Classification
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#7)
+
+#### Summary
+<br>  
+<br>  
+In this lab, you will analyze an Affymetrix lung cancer data set that I have already preselected genes/probes.  There are 3 different tissue types that gene expression information was generated for: small cell lung carcinoma (SCLC), adenocarcinoma, and normal healthy control.  Like many microarray analysis studies in cancer, the investigators are interested in identifying transcripts that are both differentially expressed between different cancer types and normal tissue and can be subsequently used to classify unknown tissue into the appropriate cancer type.
+
+For the analysis, you will calculate one of the classic classifier algorithms - linear discriminant analysis (LDA).  The objective is to train a model on a subset of the arrays, then test the predictability of this model on the remaining arrays, for identifying the correct cancer (and normal) class.  This type of classification problem is common in microarray analysis, when attempting to design a diagnostic or prognostic test based on transcripts.
+
+##### **1.) Obtain the GEO lung cancer data set from the course website and read in the data.  The column headers explain what each sample type is.** {#q1}
+<br>  
+<br>  
+```{r, message=F}
+df <- read.table("lung_cancer.txt", header = T, sep = "\t", row.names = 1)
+colnames(df)
+```
+
+##### **2.) Load the MASS library and create a variable that has the class names for the 3 classes in the data.  This variable should be of length 24.  Next, bind the variable that you just created to a transposition of the data matrix using the data.frame() function.  Note: the dimensions of this final data matrix should be 24 x 3014.** {#q2}
+<br>  
+<br>  
+```{r, fig.height=4, fig.width=6}
+library(MASS)
+cls <- c(rep("adeno", length(grep("Adeno", colnames(df)))),
+         rep("sclc", length(grep("SCLC", colnames(df)))),
+         rep("norm", length(grep("Norm", colnames(df)))))
+
+dat <- data.frame(class=cls, t(df))
+rownames(dat) = c()
+dim(dat)
+```
+
+
+##### **3.) Now create 2 separate data matrices from the matrix created in #2 above – a training set and a test set.  The training set should include the following number of samples from each class: first 6 adenocarcinomas, first 6 SCLC, and first 3 normals.  The test set should include the remaining samples.  Put the first column of the test matrix that you just created into a new variable, since this will be the actual sample classes.  Then remove the first column from the test set.** {#q3}
+<br>  
+<br>  
+```{r, message=F}
+train.idx <- c(grep("adeno", cls)[1:6], grep("sclc", cls)[1:6], grep("norm", cls)[1:3])
+test.idx <- setdiff(1:length(cls), train.idx)
+
+train <- dat[train.idx, ]
+test <- dat[test.idx, -1]
+dim(train)
+dim(test)
+y <- dat[test.idx, 1]
+```
+
+
+
+##### **4.) Now we want to run a classifier to see if we can predict the lung cancer types and discriminate them from both each other and the normal samples.  We will train the model on the training set and use the test set as our model accuracy assessment.** {#q4}
+<br>  
+<br>  
+**Use the lda() function and train the model using the training set, but ONLY use the first 2 genes.  Predict the test set sample using the predict() function.  This function only requires 2 arguments – the variable that you saved the model construction in and the test set.  Make sure to only select the first 2 genes (i.e. columns) in the test set, when predicting the sample classes.  Use the table() function to see the confusion matrix.  Hint: if you saved your output from the predict function in the variable “out” and you called the variable created in #3 “lab”, then you use table like this:**
+<br>  
+<br>  
+`> table(out$class,lab)`
+<br>  
+<br>  
+**How many total samples are misclassified?**
+<br>  
+<br>  
+```{r, fig.width=10, fig.height=10, message=F}
+
+dat.lda <- lda(class~X1007_s_at+X1053_at, train) 
+#dat.lda <- lda(train$class ~ train$X1007_s_at + train$X1053_at)
+## below better if you wanted 100 columns without specifying names
+dat.lda <- lda(as.formula(paste("class~", paste(colnames(train)[2:3], collapse="+"))), train)
+y.predict <- predict(dat.lda, test[,1:2])
+
+cm <- table(y, y.predict$class)
+sum(cm) - sum(diag(cm))
+```
+5 out of 9 were misclassified.
+<br>  
+<br>  
+
+
+##### **5.) Now plot the first 2 discriminant functions versus each other in an xy plot.  These vectors are saved in the object “x” from your predict() output.  For example, if you used the following code to predict the samples:** {#q5}
+<br>  
+<br>  
+`> lda.test <- predict(lda.train,test[,1:2])`
+
+**you can access the 2 vectors using:**
+
+`> lda.test$x`
+
+**Make sure to title the plot accordingly, color the points their appropriate cancer/normal type, and put a legend on the plot.** {#q5}
+<br>  
+<br>  
+
+```{r, message=F, fig.height=5, fig.width=7}
+
+plot(y.predict$x, col=as.numeric(y.predict$class), pch=19,
+     main="Discriminant function for Lung Cancer dataset\npredicted=dots and truth=circles around them",
+     cex=.8, ylab="Discriminant function", xlab="Score")
+legend(1, 2, legend=unique(y.predict$class), col=unique(as.numeric(y.predict$class)),
+       pch=19, cex=.8)
+## plot truth
+points(y.predict$x, col=as.numeric(factor(y)), cex=2, lwd=1.5)
+
+
+```
+```{r}
+## confirm legend is correct order
+data.frame(as.numeric(y.predict$class), y.predict$class, y.predict$x)
+
+```
+
+
+##### **6.) Now repeat #4 using all of the genes in the matrix as opposed to the first 2** {#q6}
+<br>  
+<br>  
+
+```{r, message=F, fig.height=5, fig.width=7}
+
+dat.lda.all <- lda(class~., train) 
+y.predict.all <- predict(dat.lda.all, test)
+
+cm.all <- table(y, y.predict.all$class)
+sum(cm.all) - sum(diag(cm.all))
+
+```
+All were classified correctly.
+<br>  
+<br>  
+
+##### **7.) Now repeat #5 using all of the genes in the matrix as opposed to the first 2** {#q7}
+<br>  
+<br>  
+```{r, message=F, fig.height=5, fig.width=7}
+
+plot(y.predict.all$x, col=as.numeric(y.predict.all$class), pch=19,
+     main="Discriminant function for All Genes, Lung Cancer dataset\npredicted=dots and truth=circles around them",
+     cex=.8, ylab="Discriminant function", xlab="Score")
+legend(.9, .8, legend=unique(y.predict.all$class), col=unique(as.numeric(y.predict.all$class)),
+       pch=19, cex=.8)
+## plot truth
+points(y.predict.all$x, col=as.numeric(factor(y)), cex=2, lwd=1.5)
+
+
+```

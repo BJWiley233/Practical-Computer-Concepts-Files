@@ -1,0 +1,149 @@
+---
+title: "Lab8_Brian_Wiley"
+output:
+  pdf_document:
+header-includes:
+    - \usepackage {hyperref}
+    - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+### Brian Wiley
+### Lab #8 Cluster Analysis
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [Bonus](#Bonus)
+
+#### Summary
+<br>  
+<br>  
+In this lab, you will be working with an R data set that was run on the Affymetrix human HGU95Av2 array.  The microarray data are from genomic primary fibroblast cell lines and were generated for 46 samples: 23 human (Homo sapien), 11 bonobo (Pan paniscus), and 12 gorilla (Gorilla gorilla) donors.  This is a publicly available dataset within the 'fibroEset' package in R.  It should be noted that two identical human donor arrays are in this dataset.  This data set is good for clustering and classification problems since there is a large difference in transcript profiles between all 3 species.
+
+The analysis that you will conduct is based on clustering methods.  The first problems require hierarchical clustering, while the last problems use spectral k-means clustering.  We denote this as ‘spectral’ because instead of using the genes/probes as input into the clustering algorithm like the hierarchical clustering method, some form of spectral decomposition (e.g. PCA) is first computed and these eigenfunctions are used in the clustering algorithm.  This method can be more useful than using the genes/probes in some cases where the variability is best summarized in a few components (or eigenfunctions).
+
+##### **1.) Load the fibroEset library and data set.  Obtain the classifications for the samples** {#q1}
+<div>
+```{r, message=F}
+library(fibroEset)
+data("fibroEset")
+
+cls <- fibroEset@phenoData@data[["species"]]
+dim(exprs(fibroEset))
+dim(exprs(fibroEset))[2] == length(cls)
+
+library(plyr)
+cls.names <- mapvalues(cls, from=c("b", "g", "h"), to=c("bonobo", "gorilla", "human"))
+
+```
+
+##### **2.) Select a random set of 50 genes from the data frame, and subset the data frame.** {#q2}
+<div>
+```{r, fig.height=4, fig.width=6}
+nsamples <- nrow(exprs(fibroEset))
+
+set.seed(40)
+genes <- sample(1:nsamples, 50)
+
+fibroEset.df <- exprs(fibroEset)[genes, ]
+colnames(fibroEset.df) <- cls.names
+
+```
+
+
+##### **3.) Run and plot hierarchical clustering of the samples using manhattan distance metric and median linkage method.  Make sure that the sample classification labels are along the x-axis.  Title the plot.** {#q3}
+<div>
+```{r, message=F}
+dat <- t(fibroEset.df)
+dat.dist <- dist(dat, method="manhattan")
+dat.clust <- hclust(dat.dist, method="median")
+
+# color labels by group
+# https://cran.r-project.org/web/packages/dendextend/vignettes/FAQ.html
+library(dendextend)
+dend <- as.dendrogram(dat.clust)
+cols <- mapvalues(cls, from=c("b", "g", "h"), to=c("black", "green", "blue"))
+#https://stackoverflow.com/questions/6328771/changing-values-when-converting-column-type-to-numeric
+cols <- as.character(as.character(cols))
+cols <- cols[order.dendrogram(dend)]
+labels_colors(dend) <- cols
+
+plot(dend, main="Hierarchical clustering using Manhattan distance\nand median WPGMC")
+
+
+```
+
+
+
+##### **4.) Now both run hierarchical clustering and plot the results in two dimensions (on samples and genes).  Plot a heatmap with the genes on the y-axis and samples on the x-axis.  Once again, make sure that the sample and genes labels are present.  Title the plot.** {#q4}
+<div style="border: 1px solid black">Hello World</div>
+bonobo = "black" on ColSideColors
+<div></div>
+gorilla = "green" on ColSideColors
+<div></div>
+human = "blue" on ColSideColors
+<div></div>
+As we can see from this and previous question, the gorilla samples get grouped by themselves and bonobo and human are less isolated in the grouping.
+```{r, fig.width=10, fig.height=10, message=F}
+library(gplots)
+cols2 <- mapvalues(cls, from=c("b", "g", "h"), to=c("black", "green", "blue"))
+
+# plot with ColSideColors showing colors for original species
+heatmap.2(fibroEset.df, ColSideColors = as.character(cols2), trace="none", 
+          cexCol = 1.1, cexRow = 0.8, colCol = as.character(cols2))
+
+```
+
+
+##### **5.) Calculate PCA on the samples and retain the first two components vectors (eigenfunctions).  Calculate k-means clustering on these first two components with k=3.** {#q5}
+<br>  
+<br>  
+
+```{r, message=F, fig.height=4, fig.width=8}
+set.seed(1)
+fibroEset.pca <- prcomp(t(fibroEset.df))
+
+pcomps <- data.frame(fibroEset.pca$x[, 1:2])
+cl <- kmeans(pcomps, centers=3, iter.max=20)
+
+```
+
+
+##### **6.) Plot a two-dimensional scatter plot of the sample classification labels, embedded with the first two eigenfunctions (from PCA).  Color the labels with the color that corresponds to the predicted cluster membership.  Make sure to label the axes and title the plot.** {#q6}
+<br>  
+<br>  
+
+```{r, message=F, fig.height=6, fig.width=6}
+cols3 <- mapvalues(cl$cluster, from=c(3, 1, 2), to=c("black", "green", "blue"))
+
+# predicted
+plot(pcomps, col=cols3, cex=1, pch=16,
+     main="K-means Cluster with K=3 on PCA=2")
+points(cl$centers, col=c("black", "green", "blue")[order(c(3, 1, 2))], pch = '*' , cex=4.5)
+
+
+```
+
+
+
+##### **Bonus: Plot the truth labels surround the kmeans predictions.**{#Bonus}
+<br>  
+<br>  
+We can see that all the gorilla in green was predicted to correctly while bonobo in black and human in blue had some incorrect predictions.
+```{r, message=F, fig.height=6, fig.width=6}
+# predicted
+plot(pcomps, col=cols3, cex=1, pch=16,
+     main="K-means Cluster with K=3 on PCA=2\nwith Ground Truth")
+points(cl$centers, col=c("black", "green", "blue")[order(c(3, 1, 2))], pch = '*' , cex=4.5)
+
+
+
+# truth
+points(pcomps, col = as.character(cols2), cex=2, lwd=2)
+legend(-5500, 2000, legend=c("bonobo truth", "gorilla truth", "human truth"),
+       col=c("black", "green", "blue"), pch=1, pt.cex=2, pt.lwd=2)
+
+
+```

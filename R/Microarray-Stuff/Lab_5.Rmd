@@ -1,0 +1,233 @@
+---
+title: "Lab5_Brian_Wiley"
+output:
+  pdf_document:
+header-includes:
+    - \usepackage {hyperref}
+    - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+### Brian Wiley
+### Lab 5: Differential expression
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#q7) [8.](#q8) [Bonus](#Bonus)
+
+#### Summary
+In this lab, we will be conducting a two-sample test for each gene/probe on the array to identify differentially expressed genes/probes between ketogenic rats and control diet rats.  This small data set was run on the rat RAE230A Affymetrix array.  The objective of the study was to determine differences in mRNA levels between brain hippocampi of animals fed a ketogenic diet (KD) and animals fed a control diet. “KD is an anticonvulsant treatment used to manage medically intractable epilepsies”, so differences between the 2 groups of rats can provide biological insight into the genes that are regulated due to the treatment.
+
+We are going to identify those genes/probes that are differentially expressed between the 2 rat diet groups and plot the results with a couple of different visual summaries.
+
+##### **1.) Download the GEO rat ketogenic brain data set and save as a text file.** {#q1}
+```{r}
+# No Code required
+# Set working directory to ~/JHU_Fall_2020/Data_Analysis/Datasets in setup above
+```
+
+##### **2.) Load into R, using read.table() function and header=T/row.names=1 arguments.** {#q2}
+```{r}
+rat.hippocampi <- read.table("rat_KD.txt", row.names = 1, header = T)
+head(rat.hippocampi) 
+names(rat.hippocampi)
+
+```
+
+
+##### **3.) First log2 the data, then use the Student’s t-test function in the notes to calculate the changing genes between the control diet and ketogenic diet classes.  (Hint: use the names() function to determine where one class ends and the other begins).** {#q3}
+
+The `rowttests` function from `genefilter` package is written in C code and is much much faster.  The only downfall is you do not have choice to run with `var.equal=FALSE` which is the default for `t.test`.  The `rowttests` function only allows for `var.equal=True`.
+
+#### **`Details`**
+
+`If fac is specified, rowttests performs for each row of x a two-sided, two-class t-test with equal variances.`
+```{r, message=F}
+## for rowttests function
+library(genefilter)
+
+groups <- factor(ifelse(grepl("control", names(rat.hippocampi)), "control", "ketogenic"))
+rat.hippocampi.log2 <- log2(rat.hippocampi)
+
+## x	  Numeric matrix.
+## rowttests does not have the ability to set var.equal to False
+## by default it is set to True and is same as t.test with var.equal=T
+rat.ttests <- genefilter::rowttests(as.matrix(rat.hippocampi.log2), groups)
+
+## confirm same as t.test for first value
+first <- t.test(x=rat.hippocampi.log2[1, groups=="control"],
+       y=rat.hippocampi.log2[1, groups!="control"],
+       alternative="two.sided", var.equal = T)
+round(first$p.value, 9) == round(rat.ttests$p.value[1], 9)
+
+## alternative to rowttests, just use apply
+library(Biobase)
+t.test.all.genes <- function(x, g1, g2) {
+  t.out <- t.test(x=as.numeric(x[g1]), 
+                  y=as.numeric(x[g2]),
+                  alternative="two.sided", var.equal=T)
+  t.pval <- t.out$p.value
+}
+
+## from class presentation notes
+pvals <- apply(rat.hippocampi.log2, 1, t.test.all.genes, groups=="control", groups!="control")
+
+## sanity check same as rowttests from genefilter
+all(round(pvals, 9)==round(rat.ttests$p.value, 9))
+
+## time speeds
+## https://stackoverflow.com/questions/46104176/how-to-run-a-function-multiple-times-and-write-the-results-to-a-list
+library(microbenchmark)
+library(ggplot2)
+mb <- microbenchmark(rowttests = rowttests(as.matrix(rat.hippocampi.log2), groups),
+                     apply.t.tests = apply(rat.hippocampi.log2, 1, t.test.all.genes, groups=="control",
+                                           groups!="control"),
+                     times=10)
+autoplot(mb)
+```
+
+##### **4.) Plot a histogram of the p-values and report how many probesets have a p<.05 and p<.01.  Then divide an alpha of 0.05 by the total number of probesets and report how many probesets have a p-value less than this value.  This is a very conservative p-value thresholding method to account for multiple testing called the Bonferroni correction that we will discuss in upcoming lectures.** {#q4}
+
+```{r, message=F}
+hist(pvals)
+abline(v=.05, col="blue", lwd=1.5)
+abline(v=.01, col="red", lwd=1.5)
+
+## count <0.05 and <0.01
+paste("pval less than .05:", sum(pvals<.05))
+paste("pval less than .01:", sum(pvals<.01))
+
+## conservative bf correction
+bf.corr.pval <- 0.05/nrow(rat.hippocampi.log2)
+paste("pval less than bf corrected:", sum(pvals<bf.corr.pval))
+```
+
+
+##### **5.) Next calculate the mean for each gene, and calculate the fold change between the groups (control vs. ketogenic diet).  Remember that you are on a log2 scale.** {#q5}
+```{r, message=F}
+## use rowMeans
+keto.means = rowMeans(rat.hippocampi.log2[,groups!="control"], na.rm=T)
+control.means = rowMeans(rat.hippocampi.log2[,groups=="control"], na.rm=T)
+
+log2.fold.change = keto.means - control.means
+head(log2.fold.change)
+
+```
+
+
+##### **6.) What is the maximum and minimum fold change value, please report on the linear scale?  Now report the probesets with a p-value less than the Bonferroni threshold you used in question 4 and |fold change|>2.  Remember that you are on a log2 scale for your fold change and I am looking for a linear |fold| of 2.** {#q6}
+
+I think professor meant |log2 fold change| > 2 and "I am looking for linear of <0.25 or >4.0".  You cannot have a negative fold change, only a negative log2 fold change.  If we do linear fold change it would be `linear.fc < 0.25 || linear.fc > 4` which is equivalent to `abs(log2.fc) > 2`.
+
+The genes that were bf corrected and large fold change (i.e. |log2.fc| > 2) were all negatively expressed meaning mean(keto)/mean(control) is less than 0.25.
+```{r, message=F}
+min.fold.change.linear <- 2^min(log2.fold.change)
+min.fold.change.linear
+max.fold.change.linear <- 2^max(log2.fold.change)
+max.fold.change.linear
+
+row.names(rat.hippocampi)[pvals<bf.corr.pval & abs(log2.fold.change)>2]
+
+# what was log2 fold change (down or up?)
+log2.fold.change[pvals<bf.corr.pval & abs(log2.fold.change)>2]
+## all negatively down regulated?
+all(log2.fold.change[pvals<bf.corr.pval & abs(log2.fold.change)>2] < 0)
+```
+
+##### **7.) Go to NetAffx or another database source if you like and identify gene information for the probesets that came up in #6.  What is the general biological function that associates with these probesets?** {#q7}
+
+* 1367553_x_at is for hemoglobin, beta (Hbb) and is oxygen transporter
+* 1370239_at is for hemoglobin, alpha 1 and hemoglobin, alpha 2 (Hba1, Hba2) (oxygen transporters)
+* 1370240_x_at again for Hba1, Hba2
+* 1371102_x_at is for hemoglobin, beta adult major chain (Hbb-b1) (oxygen transporter)
+* 1371245_a_at again for hemoglobin, beta adult major chain (Hbb-b1) (oxygen transporter)
+* 1388608_x_at again for Hba1, Hba2
+
+All of the probes were for oxygen transport genes.  From question 6 above we see these are all down regulated which makes sense when metabolism changes from glucose driven to fatty acid beta-oxidation driven on ketogenic diet.
+```{r, message=F}
+#BiocManager::install("pd.rae230a")
+library(pd.rae230a)
+## doesn't have gene info
+pd.rae230a@getdb()
+pd.rae230a@annotation
+```
+  
+
+##### **8.) Transform the p-value (-1*log10(p-value)) and create a volcano plot with the p-value and fold change vectors (see the lecture notes).  Make sure to use a log10 transformation for the p-value and a log2 (R function log2()) transformation for the fold change.  Draw the horizontal lines at fold values of 2 and -2 (log2 value=1) and the vertical p-value threshold line at p=.05 (remember that it is transformed in the plot).** {#q8}
+
+```{r, message=F}
+p.trans <- -log10(pvals)
+plot(range(log2.fold.change), range(p.trans), xlab=expression(paste("log"[2], " fold change")),
+     ylab=expression(paste("-log"[10],"(p-value)")), main="Volcano Plot", pch="")
+points(log2.fold.change, p.trans, pch=16, cex=0.9)
+points(log2.fold.change[p.trans> -log10(.05) & log2.fold.change< -2],
+       p.trans[p.trans> -log10(.05) & log2.fold.change < -2],
+       col="green", pch=16, cex=0.65)
+points(log2.fold.change[p.trans> -log10(.05) & log2.fold.change>2],
+       p.trans[p.trans> -log10(.05) & log2.fold.change>2],
+       col="red", pch=16, cex=0.65)
+abline(v=2); abline(v=-2); abline(h=-log10(.05))
+text(-5.5, 4.5, labels="Negatively\nExpressed\nin Keto diet", col="darkgreen", pos=4, cex=.8)
+text(2.2, 7, labels="Positively\nExpressed\nin Keto diet", col="red", pos=4, cex=.8)
+
+```
+
+
+##### **Bonus, volcano plots with gene names** {#Bonus}
+```{r, message=F}
+dat <- as.data.frame(col.names=c("log.fc", "pval"),
+                     cbind(log2.fold.change,
+                           p.trans))
+
+library(tibble)
+library(dplyr)
+## read in export for all probes from NetAffx using custom view
+probe.data <- read.table("export.tsv", header=T, sep="\t")
+head(probe.data)
+
+get.first.valid.gene.name <- function(x) {
+  names = strsplit(x["Gene.Symbol"], " /// ")[[1]]
+  ## regex doesn't work perfectly here
+  ## not sure why we have to use ?! to match not starting with "LOC#####"
+  ## https://stackoverflow.com/questions/8438173/r-regex-match-strings-not-beginning-with-a-pattern
+  ret = names[grep("^(?!LOC\\d+)", names, perl = TRUE)[1]]
+  return(ret)
+}
+
+probe.data$valid.gene.sym <- apply(probe.data, 1, get.first.valid.gene.name)
+
+## OK so a lot of probes do not have names
+## For example 1388804_at
+final.df <- left_join(rownames_to_column(dat),
+                      probe.data,
+                      by = c("rowname" = "Probe.Set.ID"))
+
+## replace NA "---" with ""
+final.df$valid.gene.sym <- ifelse(final.df$valid.gene.sym=="---",
+                                    "", final.df$valid.gene.sym)
+## check the negatively expressed genes (green)
+final.df[(p.trans> -log10(.05) & log2.fold.change< -2), ]$valid.gene.sym
+## check the positively expressed genes (red)
+final.df[(p.trans> -log10(.05) & log2.fold.change>2), ]$valid.gene.sym
+
+
+plot(range(log2.fold.change)+c(0,1), range(p.trans), xlab=expression(paste("log"[2], " fold change")),
+     ylab=expression(paste("-log"[10],"(p-value)")), main="Volcano Plot", pch="")
+points(log2.fold.change, p.trans, pch=16, cex=0.9)
+points(log2.fold.change[p.trans> -log10(.05) & log2.fold.change< -2],
+       p.trans[p.trans> -log10(.05) & log2.fold.change < -2],
+       col="green", pch=16, cex=0.65)
+points(log2.fold.change[p.trans> -log10(.05) & log2.fold.change>2],
+       p.trans[p.trans> -log10(.05) & log2.fold.change>2],
+       col="red", pch=16, cex=0.65)
+abline(v=2); abline(v=-2); abline(h=-log10(.05))
+with(final.df[(p.trans> -log10(.05) & log2.fold.change< -2), ], 
+     text(p.trans~log2.fold.change, labels=valid.gene.sym, pos=4, cex=1, col="darkgreen"))
+with(final.df[(p.trans> -log10(.05) & log2.fold.change>2), ], 
+     text(p.trans~log2.fold.change, labels=valid.gene.sym, pos=3, cex=1, col="red"))
+text(-5.5, 4.5, labels="Negatively\nExpressed\nin Keto diet", col="darkgreen", pos=4, cex=.8)
+text(3, 7, labels="Positively\nExpressed\nin Keto diet", col="red", pos=4, cex=.8)
+
+```
