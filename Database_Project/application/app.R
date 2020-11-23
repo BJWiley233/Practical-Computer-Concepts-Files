@@ -6,12 +6,16 @@ library(shinyWidgets)
 library(dqshiny)
 library(DT)
 library(shinyjs)
+library(plotly)
+library(igraphdata)
+library(dplyr)
+library(jsonlite)
 
 loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -28,6 +32,13 @@ dat.query <- sprintf("SELECT headProteinFamily, organism, geneNamePreferred, uni
                       FROM proteinsUniprot")
 dat <- loadData(dat.query)
 
+structures.query <- function(id) {
+  sprintf("SELECT * FROM uniprotPdbJoin
+           WHERE uniProtID = '%s'", id)
+}
+
+normalize <- function(x) {x / sqrt(sum(x^2))}
+
 library(neo4r)
 library(magrittr)
 library(httr)
@@ -38,7 +49,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "**", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 
@@ -61,7 +72,7 @@ getGraph <- function(UP.id, direction, length, limit=10) {
       	startNode(last(rs)).name AS Protein1, 
           relType['name'] AS `Interaction type`,
       	endNode(last(rs)).name AS Protein2, 
-          rs AS `Relationship details`, p AS Path
+          rs[0] AS `Relationship details`, p AS Path
       LIMIT %d",  UP.id, direct.str, limit
   ) %>%
     call_neo4j(con, type="graph")
@@ -69,7 +80,7 @@ getGraph <- function(UP.id, direction, length, limit=10) {
   if (length(G)==0) {
     return("No results in graph. Try another protein.")
   } else{
-    #G2 <- G
+ 
     G$nodes$properties <- lapply(G$nodes$properties, 
                                  function(x) list.remove(x, c("altProtNames", "altGeneNames")))
 
@@ -80,23 +91,17 @@ getGraph <- function(UP.id, direction, length, limit=10) {
       unnest_relationships() %>%
       select(startNode, endNode, type, everything())
     
-    graph_object <- igraph::graph_from_data_frame(
-      d = G$relationships, 
-      directed = TRUE, 
-      vertices = G$nodes
-    )
-    
-    plot(graph_object, edge.label=G$relationships$name,
-         vertex.label=G$nodes$name, edge.label.cex=0.8,
-         vertex.label.cex=0.7) 
+    return(G)
   }
 
 }
 
-
+# PRKCD
+# Q05655
 #G <- getGraph('Q05655', direction="down", length=1, limit=10)
 #G <- getGraph("88888", direction="down", length=1, limit=10)
 
+# https://github.com/open-meta/uiStub/blob/master/app/old-faithful.R
 ui <- uiOutput("uiStub")
 
 server <- function(input, output, session) {

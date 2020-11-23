@@ -3,7 +3,7 @@ output$pageStub <- renderUI(fluidPage(theme = shinytheme("slate"),
                                       
   titlePanel(title = "Search"),
   
-  fluidRow(column(4, h4("Filters")), column(8, h6("\tFor substrates direction=down & length=1"))),
+  fluidRow(column(4, h4("Filters")), column(4), column(2, h6("\tFor substrates direction=down & length=1"))),
            
   fluidRow(column(4, pickerInput("headProteinFamily", "Protein Family:",
                                 choices = protein.families$headProteinFamily,
@@ -13,8 +13,7 @@ output$pageStub <- renderUI(fluidPage(theme = shinytheme("slate"),
                                 options = list(`actions-box` = TRUE))),
    
           column(3, autocomplete_input("geneNamePreferred", "Gene Name: (type to choose IDs)", 
-                                       options = dat$geneNamePreferred, 
-                                       value = session$input$geneNamePreferred,
+                                       options = dat$geneNamePreferred,
                                        create = T)),
           column(1),
           column(2, selectInput("direction", "Path Direction", 
@@ -28,7 +27,8 @@ output$pageStub <- renderUI(fluidPage(theme = shinytheme("slate"),
                                 multiple = TRUE,
                                 options = list(`actions-box` = TRUE))),
            column(3, autocomplete_input("uniProtID", "UniProt ID:",
-                                       options = dat$uniProtID)),
+                                       options = dat$uniProtID,
+                                       create=T)),
            column(1),
            column(2, selectInput("length", "Path Length", 
                                 choices = 1:5, selected = 1)),
@@ -55,8 +55,11 @@ observe({
   
   output$text <- renderText({ nchar(input$geneNamePreferred) })
   output$text2 <- renderText({ length(input$tb_chosen_cells_selected) })
+  output$upID <- renderText({ input$uniProtID })
   
   req(input$geneNamePreferred)
+  ## Anything below here requires gene name to be entered for observing
+  
   
   # if delete Gene Name
   if (nchar(input$geneNamePreferred) == 0) {
@@ -66,8 +69,8 @@ observe({
                               value = "", create=T)
   } else {
     UP.ids <- dat[dat$headProteinFamily %in% input$headProteinFamily &
-                    dat$organism %in% input$proteinOrganism &
-                    dat$geneNamePreferred %in% input$geneNamePreferred,
+                  dat$organism %in% input$proteinOrganism &
+                  dat$geneNamePreferred %in% input$geneNamePreferred,
                   "uniProtID"]
     if (length(UP.ids)==1) { UP.ids = list(UP.ids) }
 
@@ -110,6 +113,14 @@ observeEvent(input$getGraph, {
   req(input$uniProtID)
 })
 
+# observe({
+#   req(input$uniProtID)
+#   update_autocomplete_input(session, "geneNamePreferred", "Gene Name: (type to choose IDs)",
+#                             options = dat[dat$headProteinFamily %in% input$headProteinFamily &
+#                                           dat$organism %in% input$proteinOrganism, "geneNamePreferred"],
+#                             value = dat[dat$uniProtID==input$uniProtID, "geneNamePreferred"])
+# })
+
 
 submit.click <- reactive({
   if (input$uniProtID == "" || input$direction == "" || input$length < 1) {
@@ -121,21 +132,23 @@ submit.click <- reactive({
     fname = paste0("Graph", ".R") # remove leading "?", add ".R"
     cat(paste0("Session filename: ", fname, ".\n"))      # print the URL for this session
     source(fname, local=TRUE)
-    update_autocomplete_input(session, "uniProtID", "UniProt ID:",
-                              options = dat[dat$headProteinFamily %in% input$headProteinFamily &
-                                              dat$organism %in% input$proteinOrganism, "uniProtID"],
-                              value = input$uniProtID, create=T)
   }
   
 })
 
-
+# https://community.rstudio.com/t/change-the-color-of-column-headers-in-dt-table/77343
 output$tb_chosen <- DT::renderDataTable(
                         datatable(subset(dat,
                                          dat$headProteinFamily %in% input$headProteinFamily &
                                          dat$geneNamePreferred %in% input$geneNamePreferred &
                                          dat$organism %in% input$proteinOrganism),
-                                  selection=list(mode = "single", target = "cell")))
+                                  selection=list(mode = "single", target = "cell"),
+                        options = list(
+                          initComplete = JS(
+                            "function(settings, json) {",
+                            "$(this.api().table().header()).css({'color': '#fff'});",
+                            "}")),
+                        colnames = c("Head Protein Family", "Organism", "Gene Name", "UniProt ID")))
 
 
                 
