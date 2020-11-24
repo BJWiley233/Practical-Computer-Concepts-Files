@@ -1,0 +1,190 @@
+title	geo_accession	source_name_ch1
+GSM2087693.CEL.gz	FL P001	GSM2087693	B cell lymphocytes from FL patient
+GSM2087694.CEL.gz	FL P002	GSM2087694	B cell lymphocytes from FL patient
+GSM2087695.CEL.gz	FL P003	GSM2087695	B cell lymphocytes from FL patient
+GSM2087696.CEL.gz	FL P004	GSM2087696	B cell lymphocytes from FL patient
+GSM2087697.CEL.gz	FL P005	GSM2087697	B cell lymphocytes from FL patient
+GSM2087698.CEL.gz	FL P006	GSM2087698	B cell lymphocytes from FL patient
+GSM2087699.CEL.gz	FL P007	GSM2087699	B cell lymphocytes from FL patient
+GSM2087700.CEL.gz	FL P008	GSM2087700	B cell lymphocytes from FL patient
+GSM2087701.CEL.gz	FL P009	GSM2087701	B cell lymphocytes from FL patient
+GSM2087702.CEL.gz	SMZL P010	GSM2087702	B cell lymphocytes from SMZL patient
+GSM2087703.CEL.gz	HCL P011	GSM2087703	B cell lymphocytes from HCL patient
+GSM2087704.CEL.gz	B-CLPD NOS P012	GSM2087704	B cell lymphocytes from B-CLPD NOS patient
+GSM2087705.CEL.gz	HCL P013	GSM2087705	B cell lymphocytes from HCL patient
+GSM2087706.CEL.gz	HCL P014	GSM2087706	B cell lymphocytes from HCL patient
+GSM2087707.CEL.gz	B-CLPD NOS P015	GSM2087707	B cell lymphocytes from B-CLPD NOS patient
+GSM2087708.CEL.gz	B-CLPD NOS P016	GSM2087708	B cell lymphocytes from B-CLPD NOS patient
+GSM2087709.CEL.gz	HCL P017	GSM2087709	B cell lymphocytes from HCL patient
+GSM2087710.CEL.gz	SMZL P018	GSM2087710	B cell lymphocytes from SMZL patient
+GSM2087711.CEL.gz	SMZL P019	GSM2087711	B cell lymphocytes from SMZL patient
+GSM2087712.CEL.gz	SDRPL P020	GSM2087712	B cell lymphocytes from SDRPL patient
+GSM2087714.CEL.gz	CLL P021	GSM2087714	B cell lymphocytes from CLL patient
+GSM2087715.CEL.gz	CLL P022	GSM2087715	B cell lymphocytes from CLL patient
+GSM2087716.CEL.gz	CLL P023	GSM2087716	B cell lymphocytes from CLL patient
+GSM2087717.CEL.gz	CLL P024	GSM2087717	B cell lymphocytes from CLL patient
+GSM2087718.CEL.gz	CLL P025	GSM2087718	B cell lymphocytes from CLL patient
+GSM2087719.CEL.gz	CLL P026	GSM2087719	B cell lymphocytes from CLL patient
+GSM2087720.CEL.gz	CLL P027	GSM2087720	B cell lymphocytes from CLL patient
+GSM2087721.CEL.gz	CLL P028	GSM2087721	B cell lymphocytes from CLL patient
+GSM2087722.CEL.gz	CLL P029	GSM2087722	B cell lymphocytes from CLL patient
+GSM2087723.CEL.gz	CLL P030	GSM2087723	B cell lymphocytes from CLL patient
+GSM2087724.CEL.gz	CLL P031	GSM2087724	B cell lymphocytes from CLL patient
+GSM2087725.CEL.gz	CLL P032	GSM2087725	B cell lymphocytes from CLL patient
+GSM2087726.CEL.gz	CLL P033	GSM2087726	B cell lymphocytes from CLL patient
+GSM2087727.CEL.gz	CLL P034	GSM2087727	B cell lymphocytes from CLL patient
+GSM2087728.CEL.gz	CLL P035	GSM2087728	B cell lymphocytes from CLL patient
+GSM2087729.CEL.gz	CLL P036	GSM2087729	B cell lymphocytes from CLL patient
+GSM2087730.CEL.gz	CLL P037	GSM2087730	B cell lymphocytes from CLL patient
+GSM2087731.CEL.gz	CLL P038	GSM2087731	B cell lymphocytes from CLL patient
+GSM2087732.CEL.gz	CLL P039	GSM2087732	B cell lymphocytes from CLL patient
+GSM2087733.CEL.gz	CLL P040	GSM2087733	B cell lymphocytes from CLL patient
+GSM2087734.CEL.gz	CLL P041	GSM2087734	B cell lymphocytes from CLL patient
+GSM2087735.CEL.gz	CLL P042	GSM2087735	B cell lymphocytes from CLL patient
+GSM2087736.CEL.gz	CLL P043	GSM2087736	B cell lymphocytes from CLL patient
+GSM2087737.CEL.gz	CLL P044	GSM2087737	B cell lymphocytes from CLL patient
+GSM2087738.CEL.gz	CLL P045	GSM2087738	B cell lymphocytes from CLL patient
+GSM2087739.CEL.gz	CLL P046	GSM2087739	B cell lymphocytes from CLL patient
+GSM2087740.CEL.gz	CLL P047	GSM2087740	B cell lymphocytes from CLL patient
+GSM2087741.CEL.gz	CLL P048	GSM2087741	B cell lymphocytes from CLL patient
+GSM2087742.CEL.gz	CLL P049	GSM2087742	B cell lymphocytes from CLL patient
+GSM2087743.CEL.gz	CLL P050	GSM2087743	B cell lymphocytes from CLL patient
+GSM2087744.CEL.gz	CLL P051	GSM2087744	B cell lymphocytes from CLL patient
+GSM2087745.CEL.gz	CLL P052	GSM2087745	B cell lymphocytes from CLL patient
+GSM2087746.CEL.gz	CLL P054	GSM2087746	B cell lymphocytes from CLL patient
+GSM2087747.CEL.gz	CLL P055	GSM2087747	B cell lymphocytes from CLL patient
+GSM2087748.CEL.gz	CLL P056	GSM2087748	B cell lymphocytes from CLL patient
+GSM2087749.CEL.gz	CLL P057	GSM2087749	B cell lymphocytes from CLL patient
+GSM2087750.CEL.gz	CLL P058	GSM2087750	B cell lymphocytes from CLL patient
+GSM2087751.CEL.gz	CLL P059	GSM2087751	B cell lymphocytes from CLL patient
+GSM2087752.CEL.gz	CLL P060	GSM2087752	B cell lymphocytes from CLL patient
+GSM2087753.CEL.gz	CLL P061	GSM2087753	B cell lymphocytes from CLL patient
+GSM2087754.CEL.gz	CLL P062	GSM2087754	B cell lymphocytes from CLL patient
+GSM2087755.CEL.gz	CLL P063	GSM2087755	B cell lymphocytes from CLL patient
+GSM2087756.CEL.gz	CLL P064	GSM2087756	B cell lymphocytes from CLL patient
+GSM2087757.CEL.gz	CLL P065	GSM2087757	B cell lymphocytes from CLL patient
+GSM2087758.CEL.gz	CLL P066	GSM2087758	B cell lymphocytes from CLL patient
+GSM2087759.CEL.gz	CLL P067	GSM2087759	B cell lymphocytes from CLL patient
+GSM2087760.CEL.gz	CLL P069	GSM2087760	B cell lymphocytes from CLL patient
+GSM2087761.CEL.gz	CLL P070	GSM2087761	B cell lymphocytes from CLL patient
+GSM2087762.CEL.gz	CLL P071	GSM2087762	B cell lymphocytes from CLL patient
+GSM2087763.CEL.gz	CLL P072	GSM2087763	B cell lymphocytes from CLL patient
+GSM2087764.CEL.gz	B-CLPD NOS P073	GSM2087764	B cell lymphocytes from B-CLPD NOS patient
+GSM2087765.CEL.gz	CLL P074	GSM2087765	B cell lymphocytes from CLL patient
+GSM2087766.CEL.gz	B-CLPD NOS P075	GSM2087766	B cell lymphocytes from B-CLPD NOS patient
+GSM2087767.CEL.gz	B-CLPD NOS P076	GSM2087767	B cell lymphocytes from B-CLPD NOS patient
+GSM2087768.CEL.gz	CLL P077	GSM2087768	B cell lymphocytes from CLL patient
+GSM2087769.CEL.gz	B-CLPD NOS P078	GSM2087769	B cell lymphocytes from B-CLPD NOS patient
+GSM2087770.CEL.gz	B-CLPD NOS P079	GSM2087770	B cell lymphocytes from B-CLPD NOS patient
+GSM2087771.CEL.gz	B-CLPD NOS P080	GSM2087771	B cell lymphocytes from B-CLPD NOS patient
+GSM2087772.CEL.gz	CLL P081	GSM2087772	B cell lymphocytes from CLL patient
+GSM2087773.CEL.gz	B-CLPD NOS P082	GSM2087773	B cell lymphocytes from LPL patient
+GSM2087774.CEL.gz	B-CLPD NOS P083	GSM2087774	B cell lymphocytes from B-CLPD NOS patient
+GSM2087776.CEL.gz	LPL P084	GSM2087776	B cell lymphocytes from LPL patient
+GSM2087777.CEL.gz	LPL P085	GSM2087777	B cell lymphocytes from LPL patient
+GSM2087778.CEL.gz	SMZL P086	GSM2087778	B cell lymphocytes from SMZL patient
+GSM2087780.CEL.gz	SMZL P087	GSM2087780	B cell lymphocytes from SMZL patient
+GSM2087781.CEL.gz	SMZL P088	GSM2087781	B cell lymphocytes from SMZL patient
+GSM2087782.CEL.gz	SMZL P090	GSM2087782	B cell lymphocytes from SMZL patient
+GSM2087784.CEL.gz	SMZL P091	GSM2087784	B cell lymphocytes from SMZL patient
+GSM2087786.CEL.gz	SMZL P092	GSM2087786	B cell lymphocytes from SMZL patient
+GSM2087787.CEL.gz	B-CLPD NOS P093	GSM2087787	B cell lymphocytes from B-CLPD NOS patient
+GSM2087789.CEL.gz	SDRPL P094	GSM2087789	B cell lymphocytes from SDRPL patient
+GSM2087790.CEL.gz	SMZL P095	GSM2087790	B cell lymphocytes from SMZL patient
+GSM2087791.CEL.gz	SMZL P096	GSM2087791	B cell lymphocytes from SMZL patient
+GSM2087792.CEL.gz	SMZL P097	GSM2087792	B cell lymphocytes from SMZL patient
+GSM2087793.CEL.gz	SMZL P098	GSM2087793	B cell lymphocytes from SMZL patient
+GSM2087794.CEL.gz	SMZL P099	GSM2087794	B cell lymphocytes from SMZL patient
+GSM2087795.CEL.gz	SMZL P100	GSM2087795	B cell lymphocytes from SMZL patient
+GSM2087796.CEL.gz	B-CLPD NOS P101	GSM2087796	B cell lymphocytes from B-CLPD NOS patient
+GSM2087797.CEL.gz	cMCL P102	GSM2087797	B cell lymphocytes from cMCL patient
+GSM2087798.CEL.gz	cMCL P103	GSM2087798	B cell lymphocytes from cMCL patient
+GSM2087799.CEL.gz	nnMCL P104	GSM2087799	B cell lymphocytes from nnMCL patient
+GSM2087800.CEL.gz	nnMCL P105	GSM2087800	B cell lymphocytes from nnMCL patient
+GSM2087801.CEL.gz	nnMCL P106	GSM2087801	B cell lymphocytes from nnMCL patient
+GSM2087802.CEL.gz	nnMCL P107	GSM2087802	B cell lymphocytes from nnMCL patient
+GSM2087803.CEL.gz	nnMCL P108	GSM2087803	B cell lymphocytes from nnMCL patient
+GSM2087804.CEL.gz	nnMCL P109	GSM2087804	B cell lymphocytes from nnMCL patient
+GSM2087805.CEL.gz	nnMCL P110	GSM2087805	B cell lymphocytes from nnMCL patient
+GSM2087806.CEL.gz	nnMCL P111	GSM2087806	B cell lymphocytes from nnMCL patient
+GSM2087807.CEL.gz	cMCL P112	GSM2087807	B cell lymphocytes from cMCL patient
+GSM2087808.CEL.gz	nnMCL P113	GSM2087808	B cell lymphocytes from nnMCL patient
+GSM2087809.CEL.gz	nnMCL P114	GSM2087809	B cell lymphocytes from nnMCL patient
+GSM2087810.CEL.gz	cMCL P115	GSM2087810	B cell lymphocytes from cMCL patient
+GSM2087811.CEL.gz	cMCL P116	GSM2087811	B cell lymphocytes from cMCL patient
+GSM2087812.CEL.gz	cMCL P117	GSM2087812	B cell lymphocytes from cMCL patient
+GSM2087813.CEL.gz	nnMCL P118	GSM2087813	B cell lymphocytes from nnMCL patient
+GSM2087814.CEL.gz	nnMCL P119	GSM2087814	B cell lymphocytes from nnMCL patient
+GSM2087815.CEL.gz	nnMCL P120	GSM2087815	B cell lymphocytes from nnMCL patient
+GSM2087816.CEL.gz	nnMCL P121	GSM2087816	B cell lymphocytes from nnMCL patient
+GSM2087817.CEL.gz	nnMCL P122	GSM2087817	B cell lymphocytes from nnMCL patient
+GSM2087818.CEL.gz	cMCL P123	GSM2087818	B cell lymphocytes from cMCL patient
+GSM2087819.CEL.gz	nnMCL P125	GSM2087819	B cell lymphocytes from nnMCL patient
+GSM2087820.CEL.gz	nnMCL P126	GSM2087820	B cell lymphocytes from nnMCL patient
+GSM2087821.CEL.gz	nnMCL P127	GSM2087821	B cell lymphocytes from nnMCL patient
+GSM2087822.CEL.gz	cMCL P128	GSM2087822	B cell lymphocytes from cMCL patient
+GSM2087823.CEL.gz	cMCL P129	GSM2087823	B cell lymphocytes from cMCL patient
+GSM2087824.CEL.gz	nnMCL P130	GSM2087824	B cell lymphocytes from nnMCL patient
+GSM2087825.CEL.gz	cMCL P131	GSM2087825	B cell lymphocytes from cMCL patient
+GSM2087826.CEL.gz	cMCL P132	GSM2087826	B cell lymphocytes from cMCL patient
+GSM2087827.CEL.gz	nnMCL P133	GSM2087827	B cell lymphocytes from nnMCL patient
+GSM2087828.CEL.gz	cMCL P134	GSM2087828	B cell lymphocytes from cMCL patient
+GSM2087829.CEL.gz	cMCL P135	GSM2087829	B cell lymphocytes from cMCL patient
+GSM2087830.CEL.gz	B-CLPD NOS P136	GSM2087830	B cell lymphocytes from B-CLPD NOS patient
+GSM2087831.CEL.gz	cMCL P137	GSM2087831	B cell lymphocytes from cMCL patient
+GSM2087832.CEL.gz	cMCL P138	GSM2087832	B cell lymphocytes from cMCL patient
+GSM2087833.CEL.gz	nnMCL P139	GSM2087833	B cell lymphocytes from nnMCL patient
+GSM2087834.CEL.gz	cMCL P140	GSM2087834	B cell lymphocytes from cMCL patient
+GSM2087835.CEL.gz	FL P141	GSM2087835	B cell lymphocytes from FL patient
+GSM2087836.CEL.gz	CLL P142	GSM2087836	B cell lymphocytes from CLL patient
+GSM2087837.CEL.gz	HCLv P143	GSM2087837	B cell lymphocytes from HCL-v patient
+GSM2087839.CEL.gz	B-CLPD NOS P144	GSM2087839	B cell lymphocytes from B-CLPD NOS patient
+GSM2087840.CEL.gz	SMZL P145	GSM2087840	B cell lymphocytes from SMZL patient
+GSM2087841.CEL.gz	B-CLPD NOS P146	GSM2087841	B cell lymphocytes from LPL patient
+GSM2087842.CEL.gz	LPL P148	GSM2087842	B cell lymphocytes from LPL patient
+GSM2087843.CEL.gz	SMZL P150	GSM2087843	B cell lymphocytes from SMZL patient
+GSM2087844.CEL.gz	B-CLPD NOS P152	GSM2087844	B cell lymphocytes from B-CLPD NOS patient
+GSM2087845.CEL.gz	HCLv P153	GSM2087845	B cell lymphocytes from HCL-v patient
+GSM2087846.CEL.gz	B-CLPD NOS P155	GSM2087846	B cell lymphocytes from B-CLPD NOS patient
+GSM2087847.CEL.gz	SMZL P156	GSM2087847	B cell lymphocytes from SMZL patient
+GSM2087848.CEL.gz	SMZL P157	GSM2087848	B cell lymphocytes from SMZL patient
+GSM2087849.CEL.gz	B-CLPD NOS P158	GSM2087849	B cell lymphocytes from B-CLPD NOS patient
+GSM2087850.CEL.gz	B-CLPD NOS P159	GSM2087850	B cell lymphocytes from B-CLPD NOS patient
+GSM2087851.CEL.gz	B-CLPD NOS P160	GSM2087851	B cell lymphocytes from B-CLPD NOS patient
+GSM2087852.CEL.gz	B-CLPD NOS P161	GSM2087852	B cell lymphocytes from B-CLPD NOS patient
+GSM2087853.CEL.gz	HCLv P162	GSM2087853	B cell lymphocytes from HCL-v patient
+GSM2087854.CEL.gz	B-CLPD NOS P163	GSM2087854	B cell lymphocytes from B-CLPD NOS patient
+GSM2087855.CEL.gz	B-CLPD NOS P164	GSM2087855	B cell lymphocytes from B-CLPD NOS patient
+GSM2087856.CEL.gz	B-CLPD NOS P165	GSM2087856	B cell lymphocytes from B-CLPD NOS patient
+GSM2087857.CEL.gz	B-CLPD NOS P166	GSM2087857	B cell lymphocytes from B-CLPD NOS patient
+GSM2087858.CEL.gz	SMZL P167	GSM2087858	B cell lymphocytes from SMZL patient
+GSM2087859.CEL.gz	SMZL P168	GSM2087859	B cell lymphocytes from SMZL patient
+GSM2087860.CEL.gz	B-CLPD NOS P170	GSM2087860	B cell lymphocytes from B-CLPD NOS patient
+GSM2087861.CEL.gz	SMZL P171	GSM2087861	B cell lymphocytes from SMZL patient
+GSM2087862.CEL.gz	B-CLPD NOS P173	GSM2087862	B cell lymphocytes from B-CLPD NOS patient
+GSM2087863.CEL.gz	B-CLPD NOS P174	GSM2087863	B cell lymphocytes from B-CLPD NOS patient
+GSM2087864.CEL.gz	LPL  P175	GSM2087864	B cell lymphocytes from LPL patient
+GSM2087865.CEL.gz	B-CLPD NOS P176	GSM2087865	B cell lymphocytes from B-CLPD NOS patient
+GSM2087866.CEL.gz	HCLv P177	GSM2087866	B cell lymphocytes from HCL-v patient
+GSM2087868.CEL.gz	SMZL P178	GSM2087868	B cell lymphocytes from SMZL patient
+GSM2087869.CEL.gz	cMCL P179	GSM2087869	B cell lymphocytes from cMCL patient
+GSM2087870.CEL.gz	cMCL P180	GSM2087870	B cell lymphocytes from cMCL patient
+GSM2087871.CEL.gz	nnMCL P181	GSM2087871	B cell lymphocytes from nnMCL patient
+GSM2087872.CEL.gz	cMCL P182	GSM2087872	B cell lymphocytes from cMCL patient
+GSM2087873.CEL.gz	cMCL P183	GSM2087873	B cell lymphocytes from cMCL patient
+GSM2087874.CEL.gz	nnMCL P184	GSM2087874	B cell lymphocytes from nnMCL patient
+GSM2087875.CEL.gz	cMCL P185	GSM2087875	B cell lymphocytes from cMCL patient
+GSM2087876.CEL.gz	cMCL P186	GSM2087876	B cell lymphocytes from cMCL patient
+GSM2087877.CEL.gz	cMCL P187	GSM2087877	B cell lymphocytes from cMCL patient
+GSM2087878.CEL.gz	cMCL P188	GSM2087878	B cell lymphocytes from cMCL patient
+GSM2087879.CEL.gz	cMCL P189	GSM2087879	B cell lymphocytes from cMCL patient
+GSM2087880.CEL.gz	cMCL P190	GSM2087880	B cell lymphocytes from cMCL patient
+GSM2087881.CEL.gz	nnMCL P191	GSM2087881	B cell lymphocytes from nnMCL patient
+GSM2087882.CEL.gz	cMCL P192	GSM2087882	B cell lymphocytes from cMCL patient
+GSM2087883.CEL.gz	cMCL P193	GSM2087883	B cell lymphocytes from cMCL patient
+GSM2087884.CEL.gz	cMCL P194	GSM2087884	B cell lymphocytes from cMCL patient
+GSM2087885.CEL.gz	cMCL P195	GSM2087885	B cell lymphocytes from cMCL patient
+GSM2087886.CEL.gz	SDRPL P197	GSM2087886	B cell lymphocytes from SDRPL patient
+GSM2087887.CEL.gz	FL P198	GSM2087887	B cell lymphocytes from FL patient
+GSM2087888.CEL.gz	FL P199	GSM2087888	B cell lymphocytes from FL patient
+GSM2087889.CEL.gz	SDRPL P200	GSM2087889	B cell lymphocytes from SDRPL patient
