@@ -154,5 +154,39 @@ abline(v=5.23, lty=3)
 text(means, cvs, labels=ex_between(colnames(df),"_","_"),
      pos = 1, cex=0.6)
 
+outliers <- c(which(means>5.23), which(cvs<0.407))
+
+
+#https://stackoverflow.com/questions/60798208/how-to-bold-a-group-of-labels-or-branches-in-heatmap-2-in-r
+make_bold_names <- function(mat, rc_fun, rc_names) {
+  bold_names <- rc_fun(mat)
+  ids <- rc_names %>% match(rc_fun(mat))
+  ids %>%
+    walk(
+      function(i)
+        bold_names[i] <<-
+        bquote(bold(.(rc_fun(mat)[i]))) %>%
+        as.expression()
+    )
+  bold_names
+}
+library(dplyr)
+library(purrr)
+
+
+data.corr.copy <- data.corr
+colnames(data.corr.copy)[outliers] <- paste(colnames(data.corr.copy)[outliers], "    **")
+colnames(data.corr.copy)[-outliers] <- paste(colnames(data.corr.copy)[-outliers], "      ")
+
+new.lmat=rbind(c(0,3,4), c(0,1,2))
+new.lhei=c(1,5.0)
+new.lwid=c(0.5,4,1)
+par(oma=c(3,0,0,0))
+par(mar=c(3.8,4.1,4.1,2.1))
+heatmap.2(abs(data.corr), trace="none", scale = "row", 
+          colCol = colors, key=F, dendrogram="column",
+          labCol = gsub("_.*_", "_", make_bold_names(data.corr.copy,colnames,outliers)),
+          lmat = new.lmat, lhei = new.lhei, lwid = new.lwid, cexCol = 1)
+
 
 #####################################################################################################
