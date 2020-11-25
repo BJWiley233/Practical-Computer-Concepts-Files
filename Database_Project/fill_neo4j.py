@@ -450,6 +450,9 @@ class ProteinExample:
         query = ("""
                  MERGE (a:Protein{uniprotID: $proteaseUniprot, 
                                    taxid: $proteaseTaxId})
+                    ON CREATE SET a.name = $proteaseGenePreferred,
+                                  a.meropsID = $meropsID,
+                                  a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
                     ON MATCH SET  a.meropsID = $meropsID,
                                   a.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
                  
@@ -504,6 +507,7 @@ class ProteinExample:
         result = tx.run(query, 
                         proteaseUniprot=interaction['proteaseUniprot'],
                         proteaseTaxId=interaction['proteaseTaxId'],
+                        proteaseGenePreferred=interaction['proteaseGenePreferred']
                         meropsID=interaction['meropsID'],
                         substrateUniprot=interaction['substrateUniprot'],
                         substrateGenePreferred=interaction['substrateGenePreferred'],
@@ -554,10 +558,10 @@ class ProteinExample:
 
         if interaction['inVivo'] and interaction['inVitro']:
             method = "in Vivo, in Vitro"
-        elif interaction['inVivo'] and not ['inVitro']:
+        elif interaction['inVivo'] and not interaction['inVitro']:
             method = "in Vivo"
-        elif interaction['inVitro'] and not ['inVivo']:
-            method = "in inVitro"    
+        elif interaction['inVitro'] and not interaction['inVivo']:
+            method = "in Vitro"    
         else:
             method = None
             
@@ -669,7 +673,7 @@ class ProteinExample:
         elif interaction['inVivo'] and not ['inVitro']:
             method = "in Vivo"
         elif interaction['inVitro'] and not ['inVivo']:
-            method = "in inVitro"    
+            method = "in Vitro"    
         else:
             method = None
             
