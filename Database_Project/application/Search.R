@@ -1,5 +1,14 @@
 # Already inside server
 output$pageStub <- renderUI(fluidPage(theme = shinytheme("slate"),
+                                      tags$style(HTML("
+                                                      .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
+                                                      color: #a9a8ae;
+                                                      }
+                                                      #Error {
+                                                        color: #da3910;
+                                                      }
+                                                      ")
+                                      ),
                                       
   titlePanel(title = "Search"),
   
@@ -39,7 +48,7 @@ output$pageStub <- renderUI(fluidPage(theme = shinytheme("slate"),
   
   fluidRow(column(7, DT::dataTableOutput("tb_chosen")), column(1),
            column(1, actionButton("getGraph", "Get Graph")),
-           column(3, textOutput("text3")))
+           column(3, textOutput("Error")))
   )
 )
 
@@ -59,7 +68,6 @@ observe({
   
   req(input$geneNamePreferred)
   ## Anything below here requires gene name to be entered for observing
-  
   
   # if delete Gene Name
   if (nchar(input$geneNamePreferred) == 0) {
@@ -106,29 +114,19 @@ observe({
   
 })
 
-
-
+## submit button click
 observeEvent(input$getGraph, {
   submit.click()
   req(input$uniProtID)
 })
 
-# observe({
-#   req(input$uniProtID)
-#   update_autocomplete_input(session, "geneNamePreferred", "Gene Name: (type to choose IDs)",
-#                             options = dat[dat$headProteinFamily %in% input$headProteinFamily &
-#                                           dat$organism %in% input$proteinOrganism, "geneNamePreferred"],
-#                             value = dat[dat$uniProtID==input$uniProtID, "geneNamePreferred"])
-# })
-
 
 submit.click <- reactive({
+  ## direction and length with always have entry really
   if (input$uniProtID == "" || input$direction == "" || input$length < 1) {
-    output$text3 <- renderText({ "Error" })
+    output$Error <- renderText({ "Error: Please enter UniProt ID\n or search Gene Name to select an ID." })
   } else {
-    output$text3 <- renderText({ paste(input$uniProtID, input$direction, 
-                                       as.numeric(input$length), as.numeric(input$limit)) })
-    
+    ## source main interface
     fname = paste0("Graph", ".R") # remove leading "?", add ".R"
     cat(paste0("Session filename: ", fname, ".\n"))      # print the URL for this session
     source(fname, local=TRUE)
@@ -143,13 +141,12 @@ output$tb_chosen <- DT::renderDataTable(
                                          dat$geneNamePreferred %in% input$geneNamePreferred &
                                          dat$organism %in% input$proteinOrganism),
                                   selection=list(mode = "single", target = "cell"),
-                        options = list(
-                          initComplete = JS(
-                            "function(settings, json) {",
-                            "$(this.api().table().header()).css({'color': '#fff'});",
-                            "}")),
-                        colnames = c("Head Protein Family", "Organism", "Gene Name", "UniProt ID")))
-
-
-                
+                                  options = list(
+                                    initComplete = JS(
+                                      "function(settings, json) {",
+                                      "$(this.api().table().header()).css({'color': '#fff'});",
+                                      "}")),
+                                  colnames = c("Head Protein Family", "Organism", 
+                                               "Gene Name", "UniProt ID"))
+                        )
                 

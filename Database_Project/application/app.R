@@ -10,20 +10,23 @@ library(plotly)
 library(igraphdata)
 library(dplyr)
 library(jsonlite)
+library(qdapRegex)
 
 loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
   dat
 }
+
 protein.families.query <- sprintf("SELECT DISTINCT headProteinFamily 
                                    FROM proteinsUniprot")
 protein.families <- loadData(protein.families.query)
+
 organisms.query <- sprintf("SELECT DISTINCT organism 
                             FROM proteinsUniprot")
 organism <- loadData(organisms.query)
@@ -37,7 +40,42 @@ structures.query <- function(id) {
            WHERE uniProtID = '%s'", id)
 }
 
+drugBankBinding.query <- function(id) {
+  ## if drugBankID is blank
+  ## https://go.drugbank.com/unearth/q?utf8=%E2%9C%93&searcher=drugs&query=%s, ligandShort
+  sprintf("SELECT DISTINCT j.`chain` as 'UniProt Protein Chain', pb.*, sel.drugBankID
+           FROM uniprotPdbJoin j
+           INNER JOIN 
+          	 pdbBindingSites pb
+          	 ON j.pdbID = pb.pdbID
+           LEFT JOIN 
+          	 (SELECT DISTINCT d.drugShort, d.drugBankID FROM pdbDrugBank d) sel
+              ON pb.ligandShort = sel.drugShort
+           WHERE j.uniProtID = '%s'", id)
+}
+
+
+
 normalize <- function(x) {x / sqrt(sum(x^2))}
+
+empty_plot <- function(title = NULL){
+  p <- plotly_empty(type = "scatter", mode = "markers") %>%
+    plotly::config(
+      displayModeBar = FALSE
+    ) %>%
+    layout(
+      title = list(
+        text = title,
+        yref = "paper",
+        y = 1.,
+        x=0.02,
+        font = list(color="red"),
+        xanchor = "left"
+      )
+    )
+  return(p)
+} 
+
 
 library(neo4r)
 library(magrittr)
@@ -49,7 +87,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "**", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 
@@ -98,6 +136,7 @@ getGraph <- function(UP.id, direction, length, limit=10) {
 
 # PRKCD
 # Q05655
+# P56817
 #G <- getGraph('Q05655', direction="down", length=1, limit=10)
 #G <- getGraph("88888", direction="down", length=1, limit=10)
 
