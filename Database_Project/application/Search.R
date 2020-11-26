@@ -1,5 +1,5 @@
 # Already inside server
-output$pageStub <- renderUI(fluidPage(theme = shinytheme("slate"),
+output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                       tags$style(HTML("
                                                       .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
                                                       color: #a9a8ae;
@@ -7,6 +7,7 @@ output$pageStub <- renderUI(fluidPage(theme = shinytheme("slate"),
                                                       #Error {
                                                         color: #da3910;
                                                       }
+                                                      
                                                       ")
                                       ),
                                       
@@ -47,7 +48,10 @@ output$pageStub <- renderUI(fluidPage(theme = shinytheme("slate"),
            column(3, sliderInput("limit", "Limit Results to:", min=1, max=200, value=10))),
   
   fluidRow(column(7, DT::dataTableOutput("tb_chosen")), column(1),
-           column(1, actionButton("getGraph", "Get Graph")),
+           column(1, actionButton("getGraph", "Get Graph"
+                                  #,onclick="location.href='?Graph';"
+                                  )
+                  ),
            column(3, textOutput("Error")))
   )
 )
@@ -117,7 +121,7 @@ observe({
 ## submit button click
 observeEvent(input$getGraph, {
   submit.click()
-  req(input$uniProtID)
+  #req(input$uniProtID)
 })
 
 
@@ -126,7 +130,8 @@ submit.click <- reactive({
   if (input$uniProtID == "" || input$direction == "" || input$length < 1) {
     output$Error <- renderText({ "Error: Please enter UniProt ID\n or search Gene Name to select an ID." })
   } else {
-    ## source main interface
+
+    updateNavbarPage(session=session, "graph_and_data")
     fname = paste0("Graph", ".R") # remove leading "?", add ".R"
     cat(paste0("Session filename: ", fname, ".\n"))      # print the URL for this session
     source(fname, local=TRUE)
@@ -136,7 +141,8 @@ submit.click <- reactive({
 
 # https://community.rstudio.com/t/change-the-color-of-column-headers-in-dt-table/77343
 output$tb_chosen <- DT::renderDataTable(
-                        datatable(subset(dat,
+                        datatable(style = "bootstrap", class = "compact",
+                                  subset(dat, 
                                          dat$headProteinFamily %in% input$headProteinFamily &
                                          dat$geneNamePreferred %in% input$geneNamePreferred &
                                          dat$organism %in% input$proteinOrganism),

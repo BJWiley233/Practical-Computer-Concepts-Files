@@ -12,18 +12,17 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                       ),
   navbarPage("Graph and Data",
              tabPanel(title = "Graph",
-                      mainPanel(
-                        plotlyOutput("plot", width="1200px", height="800px")
-                      )
+                      fluidRow(column(2), plotOutput("legend", width="1200px", height="100px")),
+                      fluidRow(plotlyOutput("plot", width="1200px", height="800px"))
              ),
              tabPanel(title="Graph Data Table",
-                      mainPanel(
+                      #mainPanel(
                         fluidRow(column(12, 
                                         div(DT::dataTableOutput("data_table"),
                                             style = "font-size:95%;width:1200px")
                                         )
                         )
-                      )
+                      #)
              ),
              tabPanel(title="PDB Structures",
                       mainPanel(
@@ -33,7 +32,7 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                      uiOutput("structure_3d")),
                                  column(2, textOutput("text2"))
                                  ),
-                        fluidRow(column(8, htmlOutput("SwissModel")))
+                        fluidRow(column(8, htmlOutput("SwissModel"))),
                       )
              ),
              tabPanel(title="PDB Binding Sites and Drugs",
@@ -46,55 +45,64 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
   )
 )
 
-#observe({
+
+observe({
   ## set name for graph title
   req(input$uniProtID)
   name <- dat[dat$uniProtID==input$uniProtID, "geneNamePreferred"]
+
   G <- getGraph(input$uniProtID, input$direction,
                 as.numeric(input$length), limit=as.numeric(input$limit))
   
   ## main graph app
   if ("neo" %in% class(G)) {
+    final <- G$relationships %>%
+      group_by(id, startNode, endNode) %>% 
+      summarise(
+        startNode=startNode,
+        endNode=endNode,
+        type=type,
+        id=id,
+        entries=list(unique(entries)),
+        name=name) %>%
+      relocate(id, .after = type) %>%
+      distinct()
+    
+    graph_object <- igraph::graph_from_data_frame(
+      d = final, 
+      directed = TRUE, 
+      vertices = G$nodes
+    )
+    index.protein.searched <- which(G$nodes$uniprotID == input$uniProtID)
+    print(G$nodes$uniprotID)
+    L.g <- layout.circle(graph_object)
+    vs.g<- V(graph_object)
+    es.g <- get.edgelist(graph_object)
+    
+    Nv.g <- length(vs.g) #number of nodes
+    Ne.g <- length(es.g[,1]) #number of edges
+    
+    L.g <- layout.fruchterman.reingold(graph_object)
+    Xn.g <- L.g[,1]
+    Yn.g <- L.g[,2]
+    
+    v.colors <- c("dodgerblue", "yellow", "green")
+    # for different interactions types 
+    e.colors <- c("orchid", "orange", "turquoise", "grey", "purple", "brown", "darkblue")
+    
+    #vertex_attr(graph_object, "UniProt ID", index = V(graph_object)) <- node.data.g$uniprotID
+    v.attrs <- vertex_attr(graph_object)
+    edge_attr(graph_object, "color", index = E(graph_object)) <- 
+      e.colors[as.factor(edge_attr(graph_object)$name)]
+    e.attrs <- edge_attr(graph_object)
+    
     output$plot <- renderPlotly({
       
-      final <- G$relationships %>%
-        group_by(id, startNode, endNode) %>% 
-        summarise(
-          startNode=startNode,
-          endNode=endNode,
-          type=type,
-          id=id,
-          entries=list(unique(entries)),
-          name=name) %>%
-        relocate(id, .after = type) %>%
-        distinct()
-      
-      graph_object <- igraph::graph_from_data_frame(
-        d = final, 
-        directed = TRUE, 
-        vertices = G$nodes
-      )
-      
-      L.g <- layout.circle(graph_object)
-      vs.g<- V(graph_object)
-      es.g <- get.edgelist(graph_object)
-      
-      Nv.g <- length(vs.g) #number of nodes
-      Ne.g <- length(es.g[,1]) #number of edges
-      
-      L.g <- layout.fruchterman.reingold(graph_object)
-      Xn.g <- L.g[,1]
-      Yn.g <- L.g[,2]
-      
-      v.colors <- c("dodgerblue", "red", "yellow", "green")
-      # for different interactions types 
-      e.colors <- c("orchid", "orange", "black", "grey", "purple")
-      
-      #vertex_attr(graph_object, "UniProt ID", index = V(graph_object)) <- node.data.g$uniprotID
-      v.attrs <- vertex_attr(graph_object)
-      edge_attr(graph_object, "color", index = E(graph_object)) <- 
-        e.colors[as.factor(edge_attr(graph_object)$name)]
-      e.attrs <- edge_attr(graph_object)
+      ## set color of your protein to red, all others color of molecule type
+      colors <- v.colors[as.factor(v.attrs$label)]
+      colors[index.protein.searched] <- "red"
+      sizes <- rep(20, Nv.g)
+      sizes[index.protein.searched] <- 30
       
       # Creates the nodes (plots the points)
       network.g <- plot_ly(x = ~Xn.g, y = ~Yn.g, #Node points
@@ -106,9 +114,9 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                               "Organism: ", v.attrs$organism, "\n",
                                               "TaxID: ", v.attrs$taxid),
                            marker = list(
-                             color = v.colors[as.factor(v.attrs$label)],
-                             size = 20),
-                           textfont = list(color = '#000000', size = 16, layer="above"),
+                             color = colors,
+                             size = sizes),
+                           textfont = list(color = '#efeff5', size = 16, layer="above"),
       )
       
       #Create edges
@@ -120,9 +128,14 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
         v1.g <- as.character(es.g[i,2])
         
         dir <- c(Xn.g[v1.g], Yn.g[v1.g]) - c(Xn.g[v0.g], Yn.g[v0.g])
-        
-        new.p1 <- c(Xn.g[v0.g], Yn.g[v0.g]) + .2*normalize(dir)
-        new.p2 <- c(Xn.g[v1.g], Yn.g[v1.g]) + -.1*normalize(dir)
+        ## if self make small arrow
+        if (all(dir == 0)) {
+          new.p1 <- c(Xn.g[v1.g], Yn.g[v1.g])*(.9999)
+          new.p2 <- c(Xn.g[v1.g], Yn.g[v1.g])*(1.0001)
+        } else {
+          new.p1 <- c(Xn.g[v0.g], Yn.g[v0.g]) + .2*normalize(dir)
+          new.p2 <- c(Xn.g[v1.g], Yn.g[v1.g]) + -.1*normalize(dir)
+        }
         
         edge_shape.g = list(
           type = "line",
@@ -141,19 +154,21 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
       axis.g <- list(title = "", showgrid = FALSE, 
                      showticklabels = FALSE, zeroline = FALSE)
       title <- ifelse(input$length==1 & input$direction=="down",
-                      sprintf("%s Substrates", name),
-                      sprintf("%s Paths", name))
+                      sprintf("<b>%s Substrates", name),
+                      sprintf("<b>%s Paths", name))
       
       p.g <- plotly::layout(
         network.g,
         title = list(text=title, 
-                     font=list(size=25)
+                     font=list(size=30, style="italic", color="#c7c7df")
         ),
         shapes = edge_shapes.g,
         xaxis = axis.g,
         yaxis = axis.g,
         showlegend=FALSE,
-        margin = list(l=50, r=50, b=100, t=100, pad=4)
+        margin = list(l=50, r=50, b=100, t=100, pad=4),
+        plot_bgcolor = "#19191f",
+        paper_bgcolor = "#19191f"
       )
       
       arrow.x.start <- lapply(edge_shapes.g, function(x) x$x0) 
@@ -203,6 +218,14 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
       
     })
     
+    output$legend <- renderPlot({
+      par(mar=c(1,1,1.8,1))
+      plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+      legend("topleft", legend = levels(as.factor(e.attrs$name)), lty = 1, lwd = 3, 
+             col = c(unique(e.colors)), box.lty = 0, ncol = 8, cex=1.2, text.col = "#c7c7df")
+      mtext("Reaction type", at=0.2, cex=2, col = "#c7c7df")
+    }, bg = "#19191f")
+    
     ## get table from graph
     relation <- data.frame(G$relationships)
     relation <- relation %>% rename(reaction=name)
@@ -220,6 +243,10 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
         string = paste(string, j)
       return(trimws(string, which="both"))
     })
+    
+    df3$uniprotID.y <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+                               df3$uniprotID.y, df3$uniprotID.y)
+      
     colnames(df3) <- c("Protein", "Protein UniProt ID", "Protein taxid", "Protein organism",
                        "Substrate", "Substrate UniProt ID", "Substrate taxid", "Substrate organism",
                        "Reaction type", "Reaction info")
@@ -269,27 +296,9 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
       })
     }
    
-  observe ({
-    req(input$PDB_structures_cells_selected)
-    output$text2 <- renderText({ ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]] })
-  
-    output$structure_3d <- renderUI({
-      
-      tabPanel("3D Structure",
-               tags$head(tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js")),
-               tags$div(
-                 style="height: 400px; width: 700px: position: relative;",
-                 class='viewer_3Dmoljs',
-                 'data-pdb'=ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]],
-                 'data-backgroundcolor'='0xffffff',
-                 'data-style'='cartoon'))
-      
-    })
-    
-  })
-    
+    ################################################################################################
     output$PDB_structures <- DT::renderDataTable(
-                                datatable(pdb.data,
+                                datatable(pdb.data,  style = "bootstrap", class = "compact",
                                           selection=list(mode = "single", target = "cell"),
                                           options = list(
                                             initComplete = JS(
@@ -302,6 +311,7 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                
     )
     
+    ################################################################################################
     ## binding sites and drugs
     pdb.drug.bind.data <- loadData(drugBankBinding.query(input$uniProtID))
     
@@ -319,7 +329,7 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                         pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
     
     output$binding_drug <- DT::renderDataTable(
-                                datatable(pdb.drug.bind.data,
+                                datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
                                           options = list(
                                             initComplete = JS(
                                               "function(settings, json) {",
@@ -340,6 +350,31 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                           escape = F
                                 )
     )
+    
+    ################################################################################################
+    observe ({
+      req(input$PDB_structures_cells_selected)
+      
+      if (length(input$PDB_structures_cells_selected)>0) {
+        pdb <- ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]]
+      } else {
+        pdb=""
+      }
+        output$structure_3d <- renderUI({
+          
+          tabPanel("3D Structure",
+                   tags$head(tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js")),
+                   tags$div(
+                     style="height: 400px; width: 700px: position: relative;",
+                     class='viewer_3Dmoljs',
+                     'data-pdb'=pdb,
+                     'data-backgroundcolor'='0xffffff',
+                     'data-style'='cartoon'))
+          
+        })
+      
+    })
+    ################################################################################################
     ## no neo4j graph
   } else {
     output$plot <- renderPlotly({ empty_plot("No data in neo4j for your protein!
@@ -362,14 +397,16 @@ or select a different UniProt ID.")
       })
     }
     
+    ################################################################################################
     observe ({
       req(input$PDB_structures_cells_selected)
-      output$text2 <- renderText({ ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]] })
+      #output$text2 <- renderText({ ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]] })
       
       output$structure_3d <- renderUI({
         
         tabPanel("3D Structure",
-                 tags$head(tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js")),
+                 #tags$head(tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js")),
+                 tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js"),
                  tags$div(
                    style="height: 400px; width: 700px: position: relative;",
                    class='viewer_3Dmoljs',
@@ -380,8 +417,9 @@ or select a different UniProt ID.")
       })
     })
     
+    ################################################################################################
     output$PDB_structures <- DT::renderDataTable(
-      datatable(pdb.data,
+      datatable(pdb.data, style = "bootstrap", class = "compact",
                 selection=list(mode = "single", target = "cell"),
                 options = list(
                   initComplete = JS(
@@ -393,6 +431,7 @@ or select a different UniProt ID.")
       )
     )
 
+    ################################################################################################
     ## binding sites and drugs
     pdb.drug.bind.data <- loadData(drugBankBinding.query(input$uniProtID))
     
@@ -410,7 +449,7 @@ or select a different UniProt ID.")
                                         pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
     
     output$binding_drug <- DT::renderDataTable(
-      datatable(pdb.drug.bind.data,
+      datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
                 options = list(
                   initComplete = JS(
                     "function(settings, json) {",
@@ -432,6 +471,6 @@ or select a different UniProt ID.")
       )
     )
   }
-#})
+})
 
             
