@@ -7,18 +7,17 @@ output$pageStub <- renderUI(
                ")
             ),
             # Application title
-            titlePanel("FORUM (Coming Soon. Check out Iris :)"),
-            fluidRow(column(8, DT::dataTableOutput("schema")),
-                     #useShinyjs(),
-                     #inlineCSS(list("table" = "font-size: 10px")),
-                     column(4, textAreaInput("sql", "SQL Query")))
+            titlePanel(sprintf("FORUM (Coming Soon. Check my IntAct Table %s)",
+                               emoji(search_emoji('smile'))[1])),
+            fluidRow(column(12, DT::dataTableOutput("schema")))
   )
   
 )
 
 
+#intact[1:1000,]
 output$schema <- DT::renderDataTable(datatable(
-  iris,  style = "bootstrap", class = "compact",
+  intact[1:1000,],  style = "bootstrap", class = "compact",
   filter = "top",
   options = list(
     initComplete = JS(
@@ -26,14 +25,15 @@ output$schema <- DT::renderDataTable(datatable(
       "$(this.api().table().header()).css({'color': '#fff'});",
       "}"),
     autoWidth = T,
-    columnDefs = list(
-      list(
-        targets = 5,
-        render = JS(
-          "function(data, type, row, meta) {",
-          "return type === 'display' && data.length > 15 ?",
-          "'<span title=\"' + data + '\">' + data.substr(0, 15) + '...</span>' : data;",
-          "}"))),
+    # takes to long to load
+    # columnDefs = list(
+    #   list(
+    #     targets = c(6:9, 19),
+    #     render = JS(
+    #       "function(data, type, row, meta) {",
+    #       "return type === 'display' && data.length > 30 ?",
+    #       "'<span title=\"' + data + '\">' + data.substr(0, 30) + '...</span>' : data;",
+    #       "}"))),
     scrollX='400px'), 
   callback = JS('table.page(3).draw(false);'),
   escape = F

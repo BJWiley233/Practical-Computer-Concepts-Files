@@ -1,37 +1,81 @@
 output$pageStub <- renderUI(
   fluidPage(theme = "slate.min.css",
             tags$style(
-                       # HTML("
-                       #  .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter,
-                       #  .dataTables_wrapper .dataTables_info
-                       #    {
-                       #    color: #a9a8ae;
-                       #  }
-                       #  .dataTables_wrapper .dataTables_paginate .paginate_button {
-                       #    color: #a9a8ae !important;
-                       #  }")
               HTML("
                .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
                  color: #a9a8ae;
                ")
             ),
             # Application title
-            titlePanel("SQL"),
-            fluidRow(column(8, DT::dataTableOutput("schema")),
-                     #useShinyjs(),
-                     #inlineCSS(list("table" = "font-size: 10px")),
-                     column(4, textAreaInput("sql", "SQL Query")))
+            titlePanel("Search MySQL Database"),
+            navbarPage("SQL", id="sqlNav",
+                       tabPanel(title="Table Schema & SQL", value = "query",
+                          fluidRow(column(8, DT::dataTableOutput("schema")),
+                                   column(4, textAreaInput("sql", "SQL Query",
+                                            placeholder = 
+                                    sprintf(paste0(
+                                            "/* Which kinase has most unique substrates */\n",
+                                            "SELECT *\n",
+                                            "FROM kinasePhosphoSitePlus\n",
+                                            "WHERE uniProtIDKin = \n",
+                                            "   (SELECT sel1.uniProtIDKin\n",
+                                            "    FROM (SELECT DISTINCT uniProtIDKin, uniProtIDSub\n",
+                                            " \t\t FROM kinasePhosphoSitePlus) as sel1\n",
+                                            "    GROUP BY uniProtIDKin\n",
+                                            "    ORDER BY COUNT(uniProtIDKin) DESC\n",
+                                            "    LIMIT 1);")), width = "400px", height = "300px"),
+                                   actionButton("sqlSubmit", "Submit")))
+                          ),
+                       tabPanel(title="Results", value="Results",
+                                fluidRow(column(11, DT::dataTableOutput("results")),
+                                         column(1, downloadButton("downloadData", "Download")))
+                       )
+            )
   )
   
 )
 
-observe({
-  
-  
-  
-  
-  
+getData <- reactive({
+  req(input$sql)
+  data <- loadData(input$sql)
+  return(data)
 })
+
+observeEvent(input$sqlSubmit, {
+  updateTabsetPanel(session, "sqlNav",
+                    selected = "Results")
+})
+
+get.data.on.submit <- eventReactive(input$sqlSubmit, {
+  data <- getData()
+  data
+})
+ 
+  
+  
+output$results <- DT::renderDataTable(datatable(
+  get.data.on.submit(),  style = "bootstrap", class = "compact",
+  filter = "top",
+  options = list(
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({'color': '#fff'});",
+      "}"),
+    autoWidth = T,
+    scrollX='800px'), 
+  callback = JS('table.page(3).draw(false);'),
+  escape = F
+  )
+)
+
+output$downloadData <- downloadHandler(
+  filename = function() {
+    paste0(file.prefix(), "_", gsub(" ", "_", date()), ".csv")
+  },
+  content = function(file) {
+    write.csv(getData(), file, row.names = FALSE)
+  }
+)
 
 output$schema <- DT::renderDataTable(datatable(
                       schema.mysql,  style = "bootstrap", class = "compact",
@@ -44,7 +88,7 @@ output$schema <- DT::renderDataTable(datatable(
                         autoWidth = T,
                         columnDefs = list(
                           list(
-                            targets = c(1,2,4,5,7,8),
+                            targets = c(1,4,5,7,8),
                             render = JS(
                               "function(data, type, row, meta) {",
                               "return type === 'display' && data.length > 15 ?",
@@ -53,8 +97,8 @@ output$schema <- DT::renderDataTable(datatable(
                         scrollX='400px'), 
                       callback = JS('table.page(3).draw(false);'),
                       colnames = c("Element Name", "Table Name", "Description",
-                                   "Source","Data Type", "Node or Edge", 
+                                   "Source","Data Type", "Node or Edge",
                                    "Neo4j Elem. Name", "Neo4j Data Type"),
                       escape = F
-)
+  )
 )

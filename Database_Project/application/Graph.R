@@ -16,13 +16,11 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                       fluidRow(plotlyOutput("plot", width="1200px", height="800px"))
              ),
              tabPanel(title="Graph Data Table",
-                      #mainPanel(
                         fluidRow(column(12, 
                                         div(DT::dataTableOutput("data_table"),
                                             style = "font-size:95%;width:1200px")
                                         )
                         )
-                      #)
              ),
              tabPanel(title="PDB Structures",
                       mainPanel(
@@ -74,7 +72,7 @@ observe({
       vertices = G$nodes
     )
     index.protein.searched <- which(G$nodes$uniprotID == input$uniProtID)
-    print(G$nodes$uniprotID)
+
     L.g <- layout.circle(graph_object)
     vs.g<- V(graph_object)
     es.g <- get.edgelist(graph_object)
@@ -86,9 +84,10 @@ observe({
     Xn.g <- L.g[,1]
     Yn.g <- L.g[,2]
     
-    v.colors <- c("dodgerblue", "yellow", "green")
+    v.colors <- c("dodgerblue", "#0afb02", "#fcf51c")
     # for different interactions types 
-    e.colors <- c("orchid", "orange", "turquoise", "grey", "purple", "brown", "darkblue")
+    e.colors <- c("orchid", "orange", "#4444fb", "#5cf61d", "#6b6bae", 
+                  "#0cf3fa", "#f20e42", "#cdafb6", "#8bd0f8", "#b40fb9", "#fdfbfd")
     
     #vertex_attr(graph_object, "UniProt ID", index = V(graph_object)) <- node.data.g$uniprotID
     v.attrs <- vertex_attr(graph_object)
@@ -99,7 +98,10 @@ observe({
     output$plot <- renderPlotly({
       
       ## set color of your protein to red, all others color of molecule type
-      colors <- v.colors[as.factor(v.attrs$label)]
+      ## this factoring becomes issue with list vs. vectors with more than 1 factor
+      #colors <- v.colors[as.factor(v.attrs$label)]
+      ## change to list instead and Protein factor comes before Molecule using forcats::fct_rev
+      colors <- v.colors[forcats::fct_rev(as.factor(data.frame(v.attrs$label)))]
       colors[index.protein.searched] <- "red"
       sizes <- rep(20, Nv.g)
       sizes[index.protein.searched] <- 30
@@ -222,7 +224,7 @@ observe({
       par(mar=c(1,1,1.8,1))
       plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
       legend("topleft", legend = levels(as.factor(e.attrs$name)), lty = 1, lwd = 3, 
-             col = c(unique(e.colors)), box.lty = 0, ncol = 8, cex=1.2, text.col = "#c7c7df")
+             col = c(unique(e.colors)), box.lty = 0, ncol = 5, cex=1.2, text.col = "#c7c7df")
       mtext("Reaction type", at=0.2, cex=2, col = "#c7c7df")
     }, bg = "#19191f")
     
@@ -291,12 +293,11 @@ observe({
       output$SwissModel <- renderUI({  
         tagList("There are no structures for your UniProt Protein.
                 Click link for SwissModel model of ", url)
-        #sprintf("Click link for SwissModel model of <a href='https://swissmodel.expasy.org/repository/uniprot/%s'>%s</a>",
-        #        input$uniProtID, input$uniProtID)
       })
     }
    
     ################################################################################################
+    ## structures
     output$PDB_structures <- DT::renderDataTable(
                                 datatable(pdb.data,  style = "bootstrap", class = "compact",
                                           selection=list(mode = "single", target = "cell"),
@@ -352,6 +353,7 @@ observe({
     )
     
     ################################################################################################
+    ## 3D images from PITT javascript script, see works cited
     observe ({
       req(input$PDB_structures_cells_selected)
       
@@ -400,12 +402,10 @@ or select a different UniProt ID.")
     ################################################################################################
     observe ({
       req(input$PDB_structures_cells_selected)
-      #output$text2 <- renderText({ ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]] })
-      
+
       output$structure_3d <- renderUI({
         
         tabPanel("3D Structure",
-                 #tags$head(tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js")),
                  tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js"),
                  tags$div(
                    style="height: 400px; width: 700px: position: relative;",

@@ -17,13 +17,12 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
            
   fluidRow(column(4, pickerInput("headProteinFamily", "Protein Family:",
                                 choices = protein.families$headProteinFamily,
-                                #selected = protein.families$headProteinFamily,
-                                selected = "kinase",
+                                selected = protein.families$headProteinFamily,
                                 multiple = TRUE,
                                 options = list(`actions-box` = TRUE))),
    
           column(3, autocomplete_input("geneNamePreferred", "Gene Name: (type to choose IDs)", 
-                                       options = dat$geneNamePreferred,
+                                       options = dat$geneNamePreferred[!is.na(dat$geneNamePreferred)],
                                        create = T)),
           column(1),
           column(2, selectInput("direction", "Path Direction", 
@@ -48,10 +47,7 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
            column(3, sliderInput("limit", "Limit Results to:", min=1, max=200, value=10))),
   
   fluidRow(column(7, DT::dataTableOutput("tb_chosen")), column(1),
-           column(1, actionButton("getGraph", "Get Graph"
-                                  #,onclick="location.href='?Graph';"
-                                  )
-                  ),
+           column(1, actionButton("getGraph", "Get Graph")),
            column(3, textOutput("Error")))
   )
 )
@@ -59,16 +55,22 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
 observe({
   update_autocomplete_input(session, "geneNamePreferred", "Gene Name: (type to choose IDs)",
                             options = dat[dat$headProteinFamily %in% input$headProteinFamily &
-                                          dat$organism %in% input$proteinOrganism, "geneNamePreferred"])
-  
+                                            dat$organism %in% input$proteinOrganism,
+                                          "geneNamePreferred"][!is.na(dat[dat$headProteinFamily %in% input$headProteinFamily &
+                                                                     dat$organism %in% input$proteinOrganism,
+                                                                   "geneNamePreferred"])]
+                            )
+
+
   update_autocomplete_input(session, "uniProtID", "UniProt ID:",
                             options = dat[dat$headProteinFamily %in% input$headProteinFamily &
                                           dat$organism %in% input$proteinOrganism,
                                           "uniProtID"])
   
-  output$text <- renderText({ nchar(input$geneNamePreferred) })
-  output$text2 <- renderText({ length(input$tb_chosen_cells_selected) })
-  output$upID <- renderText({ input$uniProtID })
+  # testing selections
+  # output$text <- renderText({ nchar(input$geneNamePreferred) })
+  # output$text2 <- renderText({ length(input$tb_chosen_cells_selected) })
+  # output$upID <- renderText({ input$uniProtID })
   
   req(input$geneNamePreferred)
   ## Anything below here requires gene name to be entered for observing
@@ -121,7 +123,6 @@ observe({
 ## submit button click
 observeEvent(input$getGraph, {
   submit.click()
-  #req(input$uniProtID)
 })
 
 
@@ -130,7 +131,6 @@ submit.click <- reactive({
   if (input$uniProtID == "" || input$direction == "" || input$length < 1) {
     output$Error <- renderText({ "Error: Please enter UniProt ID\n or search Gene Name to select an ID." })
   } else {
-
     updateNavbarPage(session=session, "graph_and_data")
     fname = paste0("Graph", ".R") # remove leading "?", add ".R"
     cat(paste0("Session filename: ", fname, ".\n"))      # print the URL for this session

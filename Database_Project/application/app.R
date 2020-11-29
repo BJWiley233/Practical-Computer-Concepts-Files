@@ -11,12 +11,13 @@ library(igraphdata)
 library(dplyr)
 library(jsonlite)
 library(qdapRegex)
+library(emojifont)
 
 loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -40,6 +41,14 @@ structures.query <- function(id) {
            WHERE uniProtID = '%s'", id)
 }
 
+## for the Forum.R placeholder
+intact <- loadData("SELECT * FROM intact")
+colnames(intact)
+cols <- c("organismA", "organismB", "detectionMethod", 
+          "interactionType", "isNegative")
+intact[cols] <- lapply(intact[cols], factor)
+
+
 drugBankBinding.query <- function(id) {
   ## if drugBankID is blank
   ## https://go.drugbank.com/unearth/q?utf8=%E2%9C%93&searcher=drugs&query=%s, ligandShort
@@ -54,9 +63,25 @@ drugBankBinding.query <- function(id) {
            WHERE j.uniProtID = '%s'", id)
 }
 
+schema.mysql <- read.table("~/JHU_Fall_2020/Biological_DBs/Project/data_dict.csv",
+                           sep = ",", header = T)
+#https://stackoverflow.com/questions/33180058/coerce-multiple-columns-to-factors-at-once
+cols <- c("MySQL.table.name", "Source", "Data.type", 
+          "Neo4j.node.or.edge..property.", "Neo4j.data.type")
+schema.mysql[cols] <- lapply(schema.mysql[cols], factor)
 
-
+## for shortening arrows in graph
 normalize <- function(x) {x / sqrt(sum(x^2))}
+
+## for download sql query results to file
+#https://stackoverflow.com/questions/42734547/generating-random-strings
+file.prefix <- function() {
+  a <- do.call(paste0, replicate(7, sample(LETTERS, 1, TRUE), FALSE))
+  b <- do.call(paste0, replicate(7, sample(LETTERS, 1, TRUE), FALSE))
+  paste0(a, sprintf("%04d", sample(999999, 1, TRUE)), b)
+}
+
+
 
 empty_plot <- function(title = NULL){
   p <- plotly_empty(type = "scatter", mode = "markers") %>%
@@ -87,7 +112,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 
@@ -141,7 +166,7 @@ getGraph <- function(UP.id, direction, length, limit=10) {
 #G <- getGraph("88888", direction="down", length=1, limit=10)
 
 # https://github.com/open-meta/uiStub/blob/master/app/old-faithful.R
-ui <- uiOutput("uiStub")
+ui <- function(request) { uiOutput("uiStub") }
 
 server <- function(input, output, session) {
   cat("Session started.\n")                               # this prints when a session starts
@@ -154,6 +179,7 @@ server <- function(input, output, session) {
       fluidRow(column(12,
                       HTML("<h3><a href='?RoadMap'>RoadMap</a> | ",
                            "<a href='?Search'>Search</a> |",
+                           "<a href='?SQL'>SQL</a> |",
                            "<a href='?Forum'>Forum</a> |",
                            "<a href='?page3'>Nothing</a>",
                            "</h3>"))
@@ -162,7 +188,7 @@ server <- function(input, output, session) {
     )
   )
   
-  validFiles = c("RoadMap.R", "Search.R", "Graph.R", "Forum.R")
+  validFiles = c("RoadMap.R", "Search.R", "Graph.R", "Forum.R", "SQL.R")
   
   fname = isolate(session$clientData$url_search)
   if (nchar(fname)==0) { fname = "?RoadMap"}
@@ -185,5 +211,5 @@ server <- function(input, output, session) {
 }
 
 # Run the application
-shinyApp(ui = ui, server = server)
+shinyApp(ui = ui, server = server, enableBookmarking = "url")
 
