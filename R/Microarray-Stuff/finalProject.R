@@ -3,11 +3,8 @@ library(affy)
 
 
 setwd("/home/coyote/JHU_Fall_2020/Data_Analysis/project")
-## Path to phenodata
-## /home/coyote/JHU_Fall_2020/Data_Analysis/project/geo_downloads/GSE79196/CEL/GSE79196_SelectPhenoData.txt
-## ./GSE79196_SelectPhenoData.txt
-## Path to matrix
-## 
+
+## Download matrix data just to confirm the pheno data
 my.gse <- "GSE79196"
 my.geo.matrix <- getGEO(my.gse, AnnotGPL = T, getGPL = F)
 my.geo.matrix <- my.geo.matrix[[1]]
@@ -20,8 +17,11 @@ write.table(my.pdata, file=paste0(my.gse,"_SelectPhenoData_ALL.txt"), quote=F, s
 groups <- gsub("GSM.* ", "", my.pdata$title)
 groups <- gsub(" .*", "", groups)
 big.groups <- names(table(groups)[table(groups)>20])
+
 ## remove samples where total of group < 20
+## write the keep indices to file
 keep <- groups %in% big.groups
+write.table(data.frame(as.numeric(keep), keep), "keep.txt", quote = F)
 
 new.geo.matrix <- my.geo.matrix[, keep]
 new.pdata <- as.data.frame(pData(new.geo.matrix), stringsAsFactors=FALSE)
@@ -31,28 +31,32 @@ newgroups <- gsub(" .*", "", newgroups)
 all(table(newgroups)>20)
 new.pdata <- new.pdata[, c("title", "geo_accession", "source_name_ch1")]
 row.names(new.pdata) = paste0(row.names(new.pdata), '.CEL.gz')
+## will use this text file when reading in CELs into AffyBatch
 write.table(new.pdata, file=paste0(my.gse,"_SelectPhenoData.txt"), quote=F, sep = "\t")
+## Will use to confirm if rma() on AffyBatch is different than author's matrix
+## this can be space delimieted since it's just probes and intensities
 write.table(exprs(new.geo.matrix), file=paste0(my.gse,"_matrix.txt"), quote=F)
 
-
+## Now we can get the CEL files with getGEOSuppFiles()
+## Only running this here once for intial download and will comment out
 getOption('timeout') ## might need to change this depending on size
 options(timeout=1000)
 dir.create("geo_downloads")
 a <- getGEOSuppFiles(my.gse, makeDirectory=T, baseDir="./geo_downloads")
+## untar
+untar(cel.path, exdir=paste0("geo_downloads/", my.gse, "/CEL"))
 
 #####################################################################################################
 library(affy)
 setwd("/home/coyote/JHU_Fall_2020/Data_Analysis/project")
 my.gse <- "GSE79196"
 cel.path <- paste0("geo_downloads/", my.gse, "/CEL")
-## untar
-#untar(cel.path, exdir=paste0("geo_downloads/", my.gse, "/CEL"))
+
 # get file names
 #my.cels <- list.files(paste0("geo_downloads/", my.gse, "/CEL"), pattern = "*.CEL")
 keep <- read.table("keep.txt", )[,2]
 #new.pdata <- read.table(paste0(my.gse,"_SelectPhenoData.txt"), sep = "\t")
 #my.cels <- my.cels[keep]
-#write.table(data.frame(as.numeric(keep), keep), "keep.txt", quote = F)
 ## confirm cels in correct order
 #all(gsub("_P[0-9]*", "", my.cels) == paste0(new.pdata$geo_accession, '.CEL.gz'))
 
@@ -60,7 +64,7 @@ keep <- read.table("keep.txt", )[,2]
                     #filenames = my.cels
                     #,phenoData = paste0(my.gse, "_SelectPhenoData_ALL.txt")
                     #)
-#matrix <- read.table(pipe(paste0("cut -f1,2,3 ",my.gse,"_matrix.txt")), header = T)
+
 #dim(matrix)
 # pData(my.affy)
 # normData <- rma(my.affy)
@@ -70,18 +74,25 @@ keep <- read.table("keep.txt", )[,2]
 # round(matrix[1:20,1:3], 6)
 # dim(matrix)
 
+?affy::justRMA()
+# justRMA is a wrapper for just.rma that permits the user to 
+# read in phenoData, MIAME information, and CEL files using widgets.
 justNormData <- justRMA(celfile.path=cel.path,
                         phenoData=paste0(my.gse,"_SelectPhenoData_ALL.txt"),
                         compress=T)
-?ExpressionSet
 rownames(pData(justNormData))
 expr.set <- justNormData[,keep]
 
 df <- exprs(expr.set)
-dim(df)
-head(df)
+## Confirm differences
+matrix <- read.table(pipe(paste0("cut -f1,2,3 -d' ' ",my.gse,"_matrix.txt")), header = T)
+matrix[1:10,]
+df[1:10, 1:3]
+
 write.table(df, file = paste0(my.gse,"justRMA_keep_matrix.txt"), 
             sep="\t", quote = F)
+##################################################################################################
+##################################################################################################
 ##################################################################################################
 library(affy)
 setwd("/home/coyote/JHU_Fall_2020/Data_Analysis/project")
@@ -410,22 +421,25 @@ head(final.df, 55)
 library(dplyr)
 colnames(diagnosed.groups.keep.anova.pairT) <-
   paste0(gsub(".*_", "", colnames(diagnosed.groups.keep.anova.pairT)), ".CEL.gz")
-test.expset <- ExpressionSet(assayData=diagnosed.groups.keep.anova.pairT,
-                             phenoData=annot.diagnosed.groups)
+significant.expset <- ExpressionSet(assayData=diagnosed.groups.keep.anova.pairT,
+                                    phenoData=annot.diagnosed.groups)
 
 # https://www.biostars.org/p/254040/
 # http://biolearnr.blogspot.com/2017/05/bfx-clinic-getting-up-to-date.html
 # most of code below comes up link above from BFX clinic to map probes to genes
+BiocManager::install("hgu133plus2.db")
 library(hgu133plus2.db)
 
 keys(hgu133plus2.db)
-rownames(test.expset) %in% keys(hgu133plus2.db) %>%
+rownames(significant.expset) %in% keys(hgu133plus2.db) %>%
   summary()
 ## same for dataframe with leukemia type
 unique(final.df$gene) %in% keys(hgu133plus2.db) %>%
   summary()
 
 columns(hgu133plus2.db)
+
+# Expression Set we made at beginning
 db.annotation.all <- AnnotationDbi::select(
   x = hgu133plus2.db,
   keys = rownames(b.cell.expr.set),
@@ -433,13 +447,16 @@ db.annotation.all <- AnnotationDbi::select(
   columns = c("PROBEID", "SYMBOL"),
   keytype = "PROBEID"
 )
+
+# Significant gene expression sets
 db.annotation <- AnnotationDbi::select(
   x = hgu133plus2.db,
-  keys = rownames(test.expset),
+  keys = rownames(significant.expset),
   #columns = c("PROBEID", "ENSEMBL", "ENTREZID", "SYMBOL"),
   columns = c("PROBEID", "SYMBOL"),
   keytype = "PROBEID"
 )
+
 # 'select()' returned 1:many mapping between keys and columns
 # some probes assign to more than 1 gene
 table(db.annotation$PROBEID) > 1
@@ -459,9 +476,9 @@ db.annot.mult.mapping <- db.annotation %>%
   dplyr::slice(1)
 
 ## AnnotationDbi and ExpressionSet already order probe names
-all(db.annot.mult.mapping$PROBEID==row.names(test.expset))
+all(db.annot.mult.mapping$PROBEID==row.names(significant.expset))
 
-featureData(test.expset) <- AnnotatedDataFrame(db.annot.mult.mapping)
+featureData(significant.expset) <- AnnotatedDataFrame(db.annot.mult.mapping)
 
 ## also assigned it to our nice leukemia type dataframe
 final.df.with.names <- dplyr::left_join(x=final.df, y=db.annot.mult.mapping, by=c("probe"="PROBEID"))
@@ -503,27 +520,153 @@ ggplot(pcomps, aes(PC1, PC2, color=leuk)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 ####################################################################################
-## GO ontology
+## write top 5 up and down to file
 write.table(diff.exp.genes, file = "diff.exp.genes.txt", quote=F, sep="\t", row.names = F)
+## list of the probes for NCBI David
 write.table(diff.exp.genes$probe, file = "probes.txt", quote=F, sep="\t", row.names = F,
             col.names = F)
+
+diff.exp.genes <- read.table(file = "diff.exp.genes.txt", sep="\t", header=T)
+
+## got fix your java certificates first
+## https://support.bioconductor.org/p/72188/
 library(RDAVIDWebService)
 david <- DAVIDWebService$new(email="bwiley4@jh.edu", url="https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
 result <- addList(david, diff.exp.genes$probe,
                   idType="AFFYMETRIX_3PRIME_IVT_ID",
                   listName="Top5All", listType="Gene")
-## 39 of the 40 probe ids were annotated
+
+## see 39 of the 40 probe ids were annotated
 david
-## get GO and Paths
-setAnnotationCategories(david, c("GOTERM_BP_ALL", "GOTERM_MF_ALL", "GOTERM_CC_ALL",
+## get GO and Paths/interactions, need to set at least 1 annotation 
+## that has 100% of the IDs so there are rows for each annotation = number of IDs
+## that is pretty silly
+setAnnotationCategories(david, c("GOTERM_CC_DIRECT",
                                  "KEGG_PATHWAY", "REACTOME_PATHWAY",
-                                 "MINT", "INTACT", "UCSC_TFBS"))
-setAnnotationCategories(david, c("GOTERM_CC_DIRECT", "ENSEMBL_GENE_ID"))
-full.gene.names <- RDAVIDWebService::getGeneListReport(david)
+                                 "MINT", "INTACT", "UCSC_TFBS", "ENSEMBL_GENE_ID"))
+## or just get GO and Ensemble ID
+#setAnnotationCategories(david, c("GOTERM_CC_DIRECT", "ENSEMBL_GENE_ID"))
+
+## get annotations selected, returns sparse matrix for your probes for each annotation
+## need novel way to convert below
 annotTable <- RDAVIDWebService::getFunctionalAnnotationTable(david)
+memberships <- RDAVIDWebService::membership(annotTable)
+annotTable@Genes ## gene names
+nrow(annotTable@Genes) ## 40 since I have 4 groups, you should have 10
+
+## now there are only 39 rows find which id is missing
+## since we can't set annotTable@Genes[,"ID"] as names with 40 on list of 39
+nrow(memberships$KEGG_PATHWAY) ## this is 40
+all(lapply(memberships, function(x) nrow(x))==nrow(diff.exp.genes)) ## now all are 40 in length good, 10 for you
+
+
+## add full genes names to your results
+library("dplyr")
+diff.exp.genes.with.names <- left_join(diff.exp.genes, annotTable@Genes[,1:2], by=c("probe"="ID"))
 
 
 
+## BELOW to add column for go ids and columns for go terms
+## GO comes with a dictionary mapping of ids to terms, pretty nice
+go.matrix <- as.data.frame(memberships$GOTERM_CC_DIRECT)
+go.dict <- annotTable@Dictionary$GOTERM_CC_DIRECT
+## above is not real dict, lists are real dicts in R
+go.dict.real.dict <- setNames(split(go.dict[,2], seq(nrow(go.dict))), go.dict[,1])
+## Example 'endoplasmic reticulum'
+go.dict.real.dict$`GO:0005783`
+
+## create adjacency lists from sparse go matrix for ids and use dict for terms
+go.ids.per.probe <- apply(go.matrix, 1, function(x) colnames(go.matrix)[which(x==TRUE)])
+names(go.ids.per.probe) <- annotTable@Genes[,"ID"]
+go.terms.per.probe <- lapply(go.ids.per.probe, function(x) sapply(x, function(y) go.dict.real.dict[[y]]))
+names(go.terms.per.probe) <- annotTable@Genes[,"ID"]
+
+## make GO ID dataframe and join
+## set the collapse to any delimter you want with your annotations
+## NCBI David uses comma separated
+## This is really a matrix need to convert
+## https://stackoverflow.com/questions/4227223/convert-a-list-to-a-data-frame
+goid.list <- lapply(go.ids.per.probe, function(x) paste0(x, collapse = ", "))
+goid.df <- data.frame(matrix(unlist(goid.list), nrow=length(goid.list), byrow = T), stringsAsFactors = FALSE)
+colnames(goid.df) <- "goIDs"
+rownames(goid.df) <- annotTable@Genes[,"ID"]
+goid.df$ID <- annotTable@Genes[,"ID"]
+## add go terms to differential expression dataframe
+diff.exp.genes.with.names.goids <- left_join(diff.exp.genes.with.names, 
+                                             goid.df, by=c("probe"="ID"))
+
+
+# same for terms
+goTerm.list <- lapply(go.terms.per.probe, function(x) paste0(x, collapse = ", "))
+goTerm.df <- data.frame(matrix(unlist(goTerm.list), nrow=length(goTerm.list), byrow = T), 
+                        stringsAsFactors = FALSE)
+colnames(goTerm.df) <- "goTerms"
+rownames(goTerm.df) <- annotTable@Genes[,"ID"]
+goTerm.df$ID <- annotTable@Genes[,"ID"]
+## add go terms to differential expression dataframe
+diff.exp.genes.with.names.goidsAndTerms <- left_join(diff.exp.genes.with.names.goids, 
+                                                     goTerm.df, by=c("probe"="ID"))
+
+
+cat(sum(diff.exp.genes.with.names.goidsAndTerms$goIDs != ""), "entries for", "Go IDs")
+cat(sum(diff.exp.genes.with.names.goidsAndTerms$goTerms != ""), "entries for", "Go Terms")
+## so for me two of the probes matched (SOX5) so 37 is really 36
+
+################################################################################################
+## repeat for other annotations but make individual dataframes
+## i.e. the original columns of diff.exp.genes and new column for 
+## each of "KEGG_PATHWAY", "REACTOME_PATHWAY", "MINT", "INTACT", "UCSC_TFBS"
+memberships <- RDAVIDWebService::membership(annotTable)
+names(memberships)
+# memberships$KEGG_PATHWAY
+# annotation <- "KEGG_PATHWAY"
+
+make.annot.df <- function(annotation) {
+  matrix <- as.data.frame(memberships[[annotation]])
+  annot.per.probe <- apply(matrix, 1, function(x) colnames(matrix)[which(x==TRUE)])
+  names(annot.per.probe) <- annotTable@Genes[,"ID"]
+  
+  annot.list <- lapply(annot.per.probe, function(x) paste0(x, collapse = ", "))
+  annot.df <- data.frame(matrix(unlist(annot.list), nrow=length(annot.list), byrow = T), 
+                         stringsAsFactors = FALSE)
+  colnames(annot.df) <- annotation
+  rownames(annot.df) <- annotTable@Genes[,"ID"]
+  annot.df$ID <- annotTable@Genes[,"ID"]
+  ## add add annotation to differential expression dataframe with full gene names
+  diff.exp.genes.with.names.annot <- left_join(diff.exp.genes.with.names, 
+                                               annot.df, by=c("probe"="ID"))
+  cat(sum(diff.exp.genes.with.names.annot[annotation] != ""), "entries for", annotation)
+  
+  diff.exp.genes.with.names.annot
+}
+
+## KEGG
+kegg.df <- make.annot.df("KEGG_PATHWAY")  ## SOX5 empty
+head(kegg.df)
+
+## REACTOME
+reactome <- make.annot.df("REACTOME_PATHWAY") ## SOX5 empty
+head(reactome)
+
+## IntAct, lot of entries here!
+intact <- make.annot.df("INTACT") ## again SOX5 twice so really 31
+intact[intact$probe=="203072_at", "INTACT"]
+
+## MINT
+mint <- make.annot.df("MINT") ## SOX5 so 16
+
+## UCSC_TFBS
+ucsc.tfbs <- make.annot.df("UCSC_TFBS") ## SOX5 so 38
+ucsc.tfbs[ucsc.tfbs$probe=="230441_at", "UCSC_TFBS"]
+
+# x=go.ids$`236226_at`
+# go.dict.real.dict[[x[2]]]
+# 
+# go.matrix[31,]
+# names(go.ids) <- annotTable@Genes[,"ID"]
+# go.dict <- annotTable@Dictionary$GOTERM_CC_DIRECT
+# go.dict[go.dict$ID=="GO:0005634",]
+# go.ids$`208717_at`
 
 
 ####################################################################################
