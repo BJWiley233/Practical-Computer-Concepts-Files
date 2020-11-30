@@ -12,12 +12,13 @@ library(dplyr)
 library(jsonlite)
 library(qdapRegex)
 library(emojifont)
+library(shinyBS)
 
 loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -103,16 +104,16 @@ empty_plot <- function(title = NULL){
 
 
 library(neo4r)
-library(magrittr)
+#library(magrittr)
 library(httr)
 library(igraph)
 library(dplyr)
-library(purrr)
+#library(purrr)
 library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "**", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 
@@ -120,29 +121,38 @@ status_code(GET("http://localhost:7474"))
 getGraph <- function(UP.id, direction, length, limit=10) {
   
   if (direction=="down") {
-    direct.str <- sprintf("-[:INTERACTION*0..%d]->", length)
+    direct.str <- sprintf("-[:INTERACTION*1..%d]->", length)
   } else if (direction=="up") {
-    direct.str <- sprintf("<-[:INTERACTION*0..%d]-", length)
+    direct.str <- sprintf("<-[:INTERACTION*1..%d]-", length)
   } else {
-    direct.str <- sprintf("<-[:INTERACTION*0..%d]->", length)
+    direct.str <- sprintf("<-[:INTERACTION*1..%d]->", length)
   }
   
   G <- sprintf(
+    # "MATCH p = (n:Protein {uniprotID:'%s'})%s() 
+    #   WITH *, relationships(p) AS rs
+    #   UNWIND rs AS relType
+    #   RETURN 
+    #   	startNode(last(rs)).name AS Protein1, 
+    #       relType['name'] AS `Interaction type`,
+    #   	endNode(last(rs)).name AS Protein2, 
+    #       rs[0] AS `Relationship details`, p AS Path
+    #   LIMIT %d",  UP.id, direct.str, limit
+    
+    ## Above ne04j query is incorrect, this will
+    ## now limit return of relationships correctly at least 
+    ## instead of try to limit entries or nodes
     "MATCH p = (n:Protein {uniprotID:'%s'})%s() 
       WITH *, relationships(p) AS rs
-      UNWIND rs AS relType
       RETURN 
-      	startNode(last(rs)).name AS Protein1, 
-          relType['name'] AS `Interaction type`,
-      	endNode(last(rs)).name AS Protein2, 
-          rs[0] AS `Relationship details`, p AS Path
+        p
       LIMIT %d",  UP.id, direct.str, limit
   ) %>%
     call_neo4j(con, type="graph")
   
   if (length(G)==0) {
     return("No results in graph. Try another protein.")
-  } else{
+  } else {
  
     G$nodes$properties <- lapply(G$nodes$properties, 
                                  function(x) list.remove(x, c("altProtNames", "altGeneNames")))

@@ -47,8 +47,33 @@ observeEvent(input$sqlSubmit, {
 })
 
 get.data.on.submit <- eventReactive(input$sqlSubmit, {
-  data <- getData()
-  data
+  data.sql <- getData()
+  if (any(c('uniProtIDKin','geneNamePreferredKin','kinTaxid',
+           'kinOrganism', 'subModSite', 'sitePlusMinus7AA') %in% colnames(data.sql))) {
+    "<a href=https://www.phosphosite.org/homeAction>PSP</a>"
+    data.sql$source <- "<a href=https://www.phosphosite.org/homeAction>PSP</a>"
+  }
+  
+  ## if kinase substrate mod site with substrate ID link both mod site
+  ## and substrate ID to PSP
+  if (all(c('subModSite', 'uniProtIDSub') %in% colnames(data.sql))) {
+    data.sql$subModSite <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>",
+                                   data.sql$uniProtIDSub, data.sql$subModSite)
+    data.sql$uniProtIDSub <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>",
+                                     data.sql$uniProtIDSub, data.sql$uniProtIDSub)
+    
+  } 
+  
+  ## if kinase ID link to that kinase in PSP
+  if ('uniProtIDKin' %in% colnames(data.sql)) {
+    data.sql$uniProtIDKin <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>",
+                                     data.sql$uniProtIDKin, data.sql$uniProtIDKin)
+  }
+
+  
+  
+  data.sql
+  
 })
  
   

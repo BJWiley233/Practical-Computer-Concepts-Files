@@ -238,22 +238,52 @@ observe({
     df3 <- df2[c("name.x", "uniprotID.x", "taxid.x", "organism.x",
                  "name.y", "uniprotID.y", "taxid.y", "organism.y",
                  "reaction", "entries")]
+    
+    ## list the entries
     df3$entries <- sapply(df3$entries, function(x) {
       l = jsonlite::fromJSON(x[[1]])
       string = ""
+      if (!is.null(l$interactionID)) {
+        if (grepl("EBI-[0-9]+", l$interactionID)) {
+          l$interactionID = sprintf("<a href=https://www.ebi.ac.uk/intact/interaction/%s>%s</a>",
+                                    l$interactionID, l$interactionID)
+        } else if (grepl("CLE[0-9]+", l$interactionID)) {
+          link.id <- ex_between(l$`publicationID(s)`, "[", "]")[[1]]
+          publication <- ex_between(l$`publicationID(s)`, "<%", "[")[[1]]
+          publication <- gsub("%", "", publication)
+          l$`publicationID(s)` = sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
+                                         link.id, publication)
+        }
+      }
       for (j in paste(names(l), ":", l, "<br>"))
         string = paste(string, j)
       return(trimws(string, which="both"))
     })
     
-    df3$uniprotID.y <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
-                               df3$uniprotID.y, df3$uniprotID.y)
+    ## According to PSP download agreement must make link to their site
+    ## if displaying modification site information derived by PSP
+    ##
+    links <- apply(df3, 1, function(row) {
+      if (grepl('PhosphoSitePlus', row[["entries"]])) {
+        row[["uniprotID.x"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
+                                        row[["uniprotID.x"]], row[["uniprotID.x"]])
+        row[["uniprotID.y"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
+                                        row[["uniprotID.y"]], row[["uniprotID.y"]])
+      } else {
+        row[["uniprotID.x"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+                                        row[["uniprotID.x"]], row[["uniprotID.x"]])
+        row[["uniprotID.y"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+                                        row[["uniprotID.y"]], row[["uniprotID.y"]])
+      }
+      c(row[["uniprotID.x"]], row[["uniprotID.y"]])
+    })
+    df3[,c("uniprotID.x", "uniprotID.y")] <- t(links)
       
+    
     colnames(df3) <- c("Protein", "Protein UniProt ID", "Protein taxid", "Protein organism",
                        "Substrate", "Substrate UniProt ID", "Substrate taxid", "Substrate organism",
                        "Reaction type", "Reaction info")
     
-
     output$data_table <- DT::renderDataTable(
                               datatable(df3, style = "bootstrap", class = "compact",
                                       options = list(
@@ -276,7 +306,8 @@ observe({
                                         columnDefs = list(
                                           list(className = 'dt-body-left'),
                                           list(width='325px', targets=10)),
-                                        pageLength = 10#, server = T
+                                        pageLength = 10,
+                                        scrollY = '500px'
                                       ),
                                       escape = F
                               )
@@ -292,7 +323,7 @@ observe({
                                              input$uniProtID))
       output$SwissModel <- renderUI({  
         tagList("There are no structures for your UniProt Protein.
-                Click link for SwissModel model of ", url)
+                Click link for Swiss-Model model of ", url)
       })
     }
    
@@ -390,12 +421,13 @@ or select a different UniProt ID.")
     pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
                               pdb.data$pdbID, pdb.data$pdbID)
     
+    ## if no structures link to Swiss-Model
     if (nrow(pdb.data) == 0) {
       url <- a(input$uniProtID, href=sprintf("https://swissmodel.expasy.org/repository/uniprot/%s", 
                                              input$uniProtID))
       output$SwissModel <- renderUI({  
         tagList("There are no structures for your UniProt Protein", tags$br(),
-                "Click link for SwissModel model of ", url)
+                "Click link for Swiss-Model model of ", url)
       })
     }
     

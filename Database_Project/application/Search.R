@@ -44,7 +44,18 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
            column(2, textOutput("text2"))),
   
   fluidRow(column(7), column(1, textOutput("upID")),
-           column(3, sliderInput("limit", "Limit Results to:", min=1, max=200, value=10))),
+           column(3, sliderInput("limit", "Limit Relationship Results to:", min=1, max=200, value=10),
+                  bsTooltip("limit", paste0("The limit of relationships to return. ",
+                                            "Note since there can be multiple entries ",
+                                            "per relationship, i.e. a kinase may phosphorylate ",
+                                            "more than one site on a substrate, you may get more ",
+                                            "results than your limit in the table."),
+                            placement = "bottom", trigger = "hover",
+                            options = list(width='200px'))
+                  # bsTooltip("limit", "The limit of relationships to return.\n", 
+                  #           placement = "right", trigger = "hover",
+                  #           options = NULL)
+                  )),
   
   fluidRow(column(7, DT::dataTableOutput("tb_chosen")), column(1),
            column(1, actionButton("getGraph", "Get Graph")),
