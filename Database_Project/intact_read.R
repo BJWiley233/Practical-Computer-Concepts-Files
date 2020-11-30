@@ -4,7 +4,7 @@ library(qdapRegex)
 intact <- read.table("/home/coyote/JHU_Fall_2020/Biological_DBs/Project/data/intact_cut_direction.txt", 
                    header = T, sep = "\t", na.strings = "-", quote = "\"",
                    comment.char = "")
-intact$Alias.es..interactor.B[6]
+
 intact_copy = intact
 colnames(intact_copy)
 
@@ -16,6 +16,8 @@ intact_copy$ID.s..interactor.B <- gsub(".*:", "", intact_copy$ID.s..interactor.B
 intact_copy$ID.s..interactor.B <- ifelse(grepl("EBI-[0-9]+", intact_copy$ID.s..interactor.B),
                                        intact_copy$ID.s..interactor.B, gsub("-.*", "", intact_copy$ID.s..interactor.B))
 
+## 11/29/2020: removed toupper() for protein gene names 
+## For rat and mouse typically only first letter is upper cased
 gene.name.prefered <- function(x) {
   vector <- str_split(x, "\\|")[[1]]
   gnp <- vector[grepl("\\(gene name\\)", vector)][1]
@@ -24,10 +26,12 @@ gene.name.prefered <- function(x) {
     gnp <- vector[grepl("\\(display_short\\)", vector)][1]
     gnp <- toupper(str_match(gnp,"psi-mi:\\s*(.*?)\\s*\\(display_short\\)")[,2])
   } else {
-  gnp <- toupper(str_match(gnp,"uniprotkb:\\s*(.*?)\\s*\\(gene name\\)")[,2])
+    gnp <- ex_between(gnp, "uniprotkb:", "(gene name)")[[1]]
   }
+    
   return(gnp)
 }
+
 
 alt.names <- function(x) {
   vector <- str_split(x, "\\|")[[1]]
@@ -54,7 +58,18 @@ intact_copy$altNamesB <- unlist(lapply(intact_copy$Alias.es..interactor.B, alt.n
 
 intact_copy$detectionMethod <- unlist(ex_between(intact_copy$Interaction.detection.method.s., "(", ")"))
 
-intact_copy$pubmedID <- gsub("\\|.*", "", intact_copy$Publication.Identifier.s.)
+## get all publications beside doi:
+#intact_copy$pubmedID <- gsub("\\|.*", "", intact_copy$Publication.Identifier.s.)
+remove.doi <- ex_between(intact_copy$Publication.Identifier.s., "doi:", "|", extract = F)
+remove.doi2 <- gsub("|doi:.*", "", remove.doi)
+intact_copy$pubmedID <- gsub("\\|", ", ", remove.doi2)
+
+"pubmed:15304344, imex:IM-13884, mint:MINT-5217154" 
+##################################################
+intact_copy$Publication.Identifier.s.[1:200]
+ex_between(intact_copy$Publication.Identifier.s.[1:100], "pubmed:")
+##################################################
+
 
 get.organism <- function(x) {
   organism <- ifelse(is.na(ex_between(x, "(", "(")[[1]][1]), 
@@ -79,6 +94,7 @@ intact_copy$interactionID <- gsub("intact:", "", intact_copy$interactionID)
 intact_copy$biologicalRoleA <- unlist(ex_between(intact_copy$Biological.role.s..interactor.A, "(", ")"))
 intact_copy$biologicalRoleB <- unlist(ex_between(intact_copy$Biological.role.s..interactor.B, "(", ")"))
 
+###############################################
 colnames(intact_copy)
 intact_copy2 <- intact_copy[,c("X.ID.s..interactor.A","ID.s..interactor.B","geneNamePreferredA",
                                "geneNamePreferredB","altNamesA","altNamesB","taxidA","taxidB",
@@ -96,47 +112,39 @@ intact_copy2[,"direction"] <- ""
 ## in IntAct
 ## https://www.ebi.ac.uk/ols/ontologies/mi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FMI_0500&viewMode=All&siblings=true
 for (i in 1:nrow(intact_copy2)) {
+  # if only interatorA then self interaction
+  # isNegative will be blank
   if (is.na(intact_copy2[i,"biologicalRoleB"])) {
-    intact_copy2[i,"direction"]="A->A"
+      intact_copy2[i,"direction"]="A->A"
+    # isNegative will be blank
+  } else if (intact_copy2[i,"X.ID.s..interactor.A"]==intact_copy2[i,"ID.s..interactor.B"]) {
+      intact_copy2[i,"direction"]="A->A"  
   } else if (intact_copy2[i,"biologicalRoleA"]=="inhibitor") {
-    intact_copy2[i,"isNegative"]=T
-    intact_copy2[i,"direction"]="A->B"
+      intact_copy2[i,"isNegative"]=T
+      intact_copy2[i,"direction"]="A->B"
   } else if (intact_copy2[i,"biologicalRoleB"]=="inhibitor") {
-    intact_copy2[i,"isNegative"]=T
-    intact_copy2[i,"direction"]="B->A"
+      intact_copy2[i,"isNegative"]=T
+      intact_copy2[i,"direction"]="B->A"
   } else if (grepl("target", intact_copy2[i,"biologicalRoleA"])) {
-    intact_copy2[i,"isNegative"]=F
-    intact_copy2[i,"direction"]="B->A"
+      intact_copy2[i,"isNegative"]=F
+      intact_copy2[i,"direction"]="B->A"
   } else if (grepl("target", intact_copy2[i,"biologicalRoleB"])) {
-    intact_copy2[i,"isNegative"]=F
-    intact_copy2[i,"direction"]="A->B"
+      intact_copy2[i,"isNegative"]=F
+      intact_copy2[i,"direction"]="A->B"
   } else if (grepl("acceptor", intact_copy2[i,"biologicalRoleA"])) {
-    intact_copy2[i,"isNegative"]=F
-    intact_copy2[i,"direction"]="B->A"
+      intact_copy2[i,"isNegative"]=F
+      intact_copy2[i,"direction"]="B->A"
   } else if (grepl("acceptor", intact_copy2[i,"biologicalRoleB"])) {
-    intact_copy2[i,"isNegative"]=F
-    intact_copy2[i,"direction"]="A->B"
+      intact_copy2[i,"isNegative"]=F
+      intact_copy2[i,"direction"]="A->B"
+    # isNegative will be blank
   } else {
-    intact_copy2[i,"direction"]="A->B"
+      intact_copy2[i,"direction"]="A->B"
   }
 }
 
 colnames(intact_copy2)
 write.table(intact_copy2, "/home/coyote/JHU_Fall_2020/Biological_DBs/Project/data/intact_cleaned_R.txt", 
             row.names = F, sep="\t", quote=F)
-intact_copy2$altNamesA
-# unique(intact_copy[,c("biologicalRoleA","biologicalRoleB")])
-# intact_copy[318,]
-# intact_copy[318:319, c(16,18:20,22:32)]
-# unique(intact_copy$biologicalRoleB)
-# library(dplyr)
-# 
-# intact_copy %>%
-#   select(biologicalRoleA, biologicalRoleB) %>%
-#   group_by(biologicalRoleA, biologicalRoleB) %>%
-#   tally() %>%
-#   arrange(desc(n)) %>%
-#   print(n=25)
-
 
 
