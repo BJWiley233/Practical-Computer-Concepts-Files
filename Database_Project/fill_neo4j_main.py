@@ -22,7 +22,7 @@ import json
 from queries import query_up, query_intact, query_merops2, query_psp2, query_ppase2
 
 userMySQL='root'
-passwordMySQL='Swimgolf1212**'
+passwordMySQL='**'
 hostMySQL='127.0.0.1'
 dbMySQL = 'protTest'
 
@@ -71,7 +71,7 @@ len(ppase_data)
 uri = 'neo4j://localhost:7687'
 user = 'neo4j'
 # you'll need a password after you start 
-password = 'Swimgolf1212**'
+password = '**'
 db = 'protTest'
 
 from fill_neo4j import ProteinExample
