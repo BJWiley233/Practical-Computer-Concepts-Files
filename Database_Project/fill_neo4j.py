@@ -290,6 +290,17 @@ class ProteinExample:
         altGeneNamesB = None if not interaction['altGeneNamesB'] else json.loads(interaction['altGeneNamesB'])
         altProtNamesB = None if not interaction['altProtNamesB'] else json.loads(interaction['altProtNamesB'])
         
+        ## if geneNamePreferred None for A or B
+        if not interaction['nameA'] and altGeneNamesA:
+            interaction['nameA'] = altGeneNamesA[0]
+        elif not interaction['nameA'] and not altGeneNamesA:
+            interaction['nameA'] = interaction['interactorA']
+            
+        if not interaction['nameB'] and altGeneNamesB:
+            interaction['nameB'] = altGeneNamesB[0]
+        elif not interaction['nameB'] and not altGeneNamesB:
+            interaction['nameB'] = interaction['interactorB']
+            
         print("*************************************", interaction['interactionID'], interaction['interactorA'])
 
         query = ("""
@@ -507,7 +518,7 @@ class ProteinExample:
         result = tx.run(query, 
                         proteaseUniprot=interaction['proteaseUniprot'],
                         proteaseTaxId=interaction['proteaseTaxId'],
-                        proteaseGenePreferred=interaction['proteaseGenePreferred']
+                        proteaseGenePreferred=interaction['proteaseGenePreferred'],
                         meropsID=interaction['meropsID'],
                         substrateUniprot=interaction['substrateUniprot'],
                         substrateGenePreferred=interaction['substrateGenePreferred'],
@@ -566,14 +577,11 @@ class ProteinExample:
             method = None
             
             
-        # Only doing proteases from UniProt that have merops IDs
-        # so a will always be in database initially
-        # if we cannot get subsrate info from Uniprot make the Uniprot
-        # id from Merops database the node name
         query = ("""
                  MERGE (a:Protein{uniprotID: $uniProtIDKin, 
                                    taxid: $kinTaxid})
                     ON CREATE SET a.name = $geneNamePreferredKin,
+                                  a.proteinName = $protNamePreferredKin,
                                   a.organism = $kinOrganism,
                                   a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
                     ON MATCH SET  a.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
@@ -581,6 +589,7 @@ class ProteinExample:
                  MERGE (b:Protein{uniprotID: $uniProtIDSub,
                                    taxid: $subTaxid})
                 	ON CREATE SET b.name = $geneNamePreferredSub,
+                                  b.proteinName = $protNamePreferredSub,
                                   b.organism = $subOrganism,
                                   b.altGeneNames = $geneNameAltSub,            
                                   b.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
@@ -621,10 +630,12 @@ class ProteinExample:
                         uniProtIDKin=interaction['uniProtIDKin'],
                         kinTaxid=interaction['kinTaxid'],
                         geneNamePreferredKin=interaction['geneNamePreferredKin'],
+                        protNamePreferredKin=interaction['protNamePreferredKin'],
                         kinOrganism=interaction['kinOrganism'],
                         uniProtIDSub=interaction['uniProtIDSub'],
                         subTaxid=interaction['subTaxid'],
                         geneNamePreferredSub=interaction['geneNamePreferredSub'],
+                        protNamePreferredSub=interaction['protNamePreferredSub'],
                         subOrganism=interaction['subOrganism'],
                         geneNameAltSub=geneNameAltSub,
                         sitePlusMinus7AA=interaction['sitePlusMinus7AA'],
@@ -678,14 +689,11 @@ class ProteinExample:
             method = None
             
             
-        # Only doing proteases from UniProt that have merops IDs
-        # so a will always be in database initially
-        # if we cannot get subsrate info from Uniprot make the Uniprot
-        # id from Merops database the node name
         query = ("""
                  MERGE (a:Protein{uniprotID: $uniProtIDPPase, 
                                    taxid: $ppaseTaxid})
                     ON CREATE SET a.name = $geneNamePreferredPPase,
+                                  a.proteinName = $protNamePreferredPPase,
                                   a.organism = $ppaseOrganism,
                                   a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
                     ON MATCH SET  a.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
@@ -693,6 +701,7 @@ class ProteinExample:
                  MERGE (b:Protein{uniprotID: $uniProtIDSub,
                                    taxid: $subTaxid})
                 	ON CREATE SET b.name = $geneNamePreferredSub,
+                                  b.proteinName = $protNamePreferredSub,
                                   b.organism = $subOrganism,            
                                   b.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
                     ON MATCH SET  b.lastModified = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
@@ -722,10 +731,12 @@ class ProteinExample:
                         uniProtIDPPase=interaction['uniProtIDPPase'],
                         ppaseTaxid=interaction['ppaseTaxid'],
                         geneNamePreferredPPase=interaction['geneNamePreferredPPase'],
+                        protNamePreferredPPase=interaction['protNamePreferredPPase'],
                         ppaseOrganism=interaction['ppaseOrganism'],
                         uniProtIDSub=interaction['uniProtIDSub'],
                         subTaxid=interaction['subTaxid'],
                         geneNamePreferredSub=interaction['geneNamePreferredSub'],
+                        protNamePreferredSub=interaction['protNamePreferredSub'],
                         subOrganism=interaction['subOrganism'],
                         sitePlusMinus5AA=interaction['sitePlusMinus5AA'],
                         literature=interaction['literature'],
@@ -745,29 +756,7 @@ class ProteinExample:
 
 
 ###############################################################################
-
- 
-    def create_interactions(self, database, interaction_set):
-    
-        for a_name, direct, b_name in interaction_set:
-            self.create_interaction(database, a_name, direct, b_name)
-
-
-    def create_interaction(self, database, prot_a, up_or_down, prot_b):
-        if up_or_down not in ["+", "-"]:
-            return "up_or_down only takes '+' or '-'"
-        
-        with self.driver.session(database=database) as session:
-            result = session.run("MATCH (a:Protein{name: $prot_a}) "
-                                 "MATCH (b:Protein{name: $prot_b}) "
-                                 "MERGE (a)-[r:REGULATES {direction:$up_or_down}]->(b) "
-                                 "RETURN a.name, r.direction, b.name", 
-                                 prot_a=prot_a, up_or_down=up_or_down, prot_b=prot_b)  
-            for res in result:
-                print([res["a.name"], res["r.direction"], res["b.name"]])
-
-
-    # TODO
+    # TODO: delete interactions
     def _delete_interaction(self, db, prot_a, up_or_down, prot_b):
         if up_or_down not in ["+", "-"]:
             return "up_or_down only takes '+' or '-'"
@@ -783,15 +772,11 @@ class ProteinExample:
             
             for res in result:
                 return [res["a.name"], res["direction"], res["b.name"]] 
-         
+    
+    # NotImplemented
     def get_recursive_n_interactions(self, protein, n_edges):
         """
-        MATCH p = (n:Protein { name:'C' })<-[:REGULATES*1..2]->(b:Protein) 
-        WITH *, relationships(p) as rs
-        RETURN startNode(last(rs)).name as Protein1, 
-            last(rs).direction as Regulates, 
-            endNode(last(rs)).name as Protein2, 
-            length(p)
+        Implemented in Shiny App
         """   
         with self.driver.session(database=self.database) as session:
             result = session.run("MATCH p = (n:Protein { name:$prot })<-[:REGULATES*1..%d]->(b:Protein) \

@@ -5,6 +5,8 @@ Created on Mon Nov  9 02:11:04 2020
 
 @author: coyote
 """
+##############################################################################
+# Test queries for neo4j
 
 # testing getting entries that overlap in merops and intact to test neo4j
 query_merops = """
@@ -138,6 +140,10 @@ LIMIT 10);
 """
 
 ##############################################################################
+##############################################################################
+##############################################################################
+# Final queries for neo4j
+# Commenting out query code for testing
 
 # query uniprot to initially load neo4j
 query_up = """
@@ -145,7 +151,7 @@ query_up = """
     	u.taxid, u.geneNamesAlternative, u.alternateNames, u.headProteinFamily
     FROM proteinsUniprot u
     /*WHERE u.geneNamesAlternative IS NULL*/
-    /*WHERE u.uniProtID = 'O60307'*/;
+    /*WHERE u.uniProtID IN (%s)*/;
 """
 
 # query intact to initially load neo4j
@@ -196,21 +202,21 @@ WHERE sel.substrateUniprot IS NOT NULL
 
 # query phosphositeplus to initially load neo4j
 query_psp2 = """
-SELECT uniProtIDKin, geneNamePreferredKin, kinTaxid, kinOrganism, 
-	uniProtIDSub, geneNamePreferredSub, geneNameAltSub, subTaxid, subOrganism,
+SELECT uniProtIDKin, geneNamePreferredKin, protNamePreferredKin, kinTaxid, kinOrganism, 
+	uniProtIDSub, geneNamePreferredSub, geneNameAltSub, protNamePreferredSub, subTaxid, subOrganism,
     subModSite, inVivo, inVitro, sitePlusMinus7AA
 FROM kinasePhosphoSitePlus
-WHERE uniProtIDSub IN (%s)
-LIMIT 15;
+/*WHERE uniProtIDSub IN (%s)
+LIMIT 15*/;
 """
 
 # query DEPOD ppases to initially load neo4j
 query_ppase2 = """
-SELECT d.uniProtIDPPase, d.geneNamePreferredPPase, d.ppaseTaxid, d.ppaseOrganism,
-	d.uniProtIDSub, d.geneNamePreferredSub, d.subTaxid, d.subOrganism,
+SELECT d.uniProtIDPPase, d.geneNamePreferredPPase, protNamePreferredPPase, d.ppaseTaxid, d.ppaseOrganism,
+	d.uniProtIDSub, d.geneNamePreferredSub, protNamePreferredSub, d.subTaxid, d.subOrganism,
     d.sitePlusMinus5AA, d.literature, d.inVitro, d.inVivo, d.subDephospoSites
 FROM depodPhosphatase d
-WHERE uniProtIDSub IN (%s)
-LIMIT 15;
+/*WHERE uniProtIDSub IN (%s)
+LIMIT 15*/;
 """
 
