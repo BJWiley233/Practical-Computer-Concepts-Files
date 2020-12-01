@@ -16,11 +16,18 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                       fluidRow(plotlyOutput("plot", width="1200px", height="800px"))
              ),
              tabPanel(title="Graph Data Table",
-                        fluidRow(column(12, 
+                      fluidRow(column(12, 
                                         div(DT::dataTableOutput("data_table"),
                                             style = "font-size:95%;width:1200px")
-                                        )
+                                      )
                         )
+             ),
+             tabPanel(title="Substrates",
+                      fluidRow(column(12, 
+                                      div(DT::dataTableOutput("substrates_table"),
+                                          style = "font-size:95%;width:1200px")
+                                      )
+                      )
              ),
              tabPanel(title="PDB Structures",
                       mainPanel(
@@ -54,6 +61,12 @@ observe({
   
   ## main graph app
   if ("neo" %in% class(G)) {
+    G$nodes$proteinName <- apply(G$nodes, 1, function(x){
+      ifelse(is.na(x[['proteinName']]),
+             strsplit(x[['altProtNames']], "|", fixed=T)[[1]],
+             x[['proteinName']])
+    })
+    
     final <- G$relationships %>%
       group_by(id, startNode, endNode) %>% 
       summarise(
@@ -111,7 +124,8 @@ observe({
                            mode = "text+markers", 
                            text = vs.g$name, 
                            hoverinfo = "text",
-                           hovertext = paste0("Name: ", v.attrs$name, "\n",
+                           hovertext = paste0("Gene Name: ", v.attrs$name, "\n",
+                                              "Protein Name: ", v.attrs$proteinName, "\n",
                                               "UniProt ID: ", v.attrs$uniprotID, "\n",
                                               "Organism: ", v.attrs$organism, "\n",
                                               "TaxID: ", v.attrs$taxid),
@@ -231,12 +245,12 @@ observe({
     ## get table from graph
     relation <- data.frame(G$relationships)
     relation <- relation %>% rename(reaction=name)
-    G2 <- G$nodes[c("id", "organism", "taxid", "name", "uniprotID")] 
+
     
-    df1 <- left_join(relation, G2, by = c("startNode"="id"))
-    df2 <- left_join(df1, G2, by = c("endNode"="id"))
-    df3 <- df2[c("name.x", "uniprotID.x", "taxid.x", "organism.x",
-                 "name.y", "uniprotID.y", "taxid.y", "organism.y",
+    df1 <- left_join(relation, G$nodes, by = c("startNode"="id"))
+    df2 <- left_join(df1, G$nodes, by = c("endNode"="id"))
+    df3 <- df2[c("name.x", "uniprotID.x", "proteinName.x", "taxid.x", "organism.x",
+                 "name.y", "uniprotID.y", "proteinName.y", "taxid.y", "organism.y",
                  "reaction", "entries")]
     
     ## list the entries
@@ -280,9 +294,10 @@ observe({
     df3[,c("uniprotID.x", "uniprotID.y")] <- t(links)
       
     
-    colnames(df3) <- c("Protein", "Protein UniProt ID", "Protein taxid", "Protein organism",
-                       "Substrate", "Substrate UniProt ID", "Substrate taxid", "Substrate organism",
+    colnames(df3) <- c("Prot Gene Name", "Prot UniProt ID", "Prot Protein Name", "Prot taxid", "Prot organism",
+                       "Sub Gene Name", "Sub UniProt ID", "Sub Protein Name", "Sub taxid", "Sub organism",
                        "Reaction type", "Reaction info")
+    
     
     output$data_table <- DT::renderDataTable(
                               datatable(df3, style = "bootstrap", class = "compact",
@@ -296,7 +311,7 @@ observe({
                                         width = "100%",
                                         scrollX=T,
                                         bSortClasses = TRUE,
-                                        targets = 10,
+                                        targets = 12,
                                         render = JS(
                                           "function(data, type, row, meta) {",
                                           "return type === 'display' && data.length > 60 ?",
@@ -305,204 +320,310 @@ observe({
                                         LengthMenu = c(5, 30, 50),
                                         columnDefs = list(
                                           list(className = 'dt-body-left'),
-                                          list(width='325px', targets=10)),
+                                          list(width='325px', targets=12)),
                                         pageLength = 10,
                                         scrollY = '500px'
                                       ),
                                       escape = F
                               )
     )
-    
-    ## pdb structures tab
-    pdb.data <- loadData(structures.query(input$uniProtID))
-    pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
-                              pdb.data$pdbID, pdb.data$pdbID)
-    
-    if (nrow(pdb.data) == 0) {
-      url <- a(input$uniProtID, href=sprintf("https://swissmodel.expasy.org/repository/uniprot/%s", 
-                                             input$uniProtID))
-      output$SwissModel <- renderUI({  
-        tagList("There are no structures for your UniProt Protein.
-                Click link for Swiss-Model model of ", url)
-      })
-    }
-   
-    ################################################################################################
-    ## structures
-    output$PDB_structures <- DT::renderDataTable(
-                                datatable(pdb.data,  style = "bootstrap", class = "compact",
-                                          selection=list(mode = "single", target = "cell"),
-                                          options = list(
-                                            initComplete = JS(
-                                              "function(settings, json) {",
-                                              "$(this.api().table().header()).css({'color': '#fff'});",
-                                              "}")),
-                                          escape = F,
-                                          
-                                )
-               
-    )
-    
-    ################################################################################################
-    ## binding sites and drugs
-    pdb.drug.bind.data <- loadData(drugBankBinding.query(input$uniProtID))
-    
-    pdb.drug.bind.data$drugBankID <- apply(pdb.drug.bind.data, 1, function(x) {
-      if (is.na(x['drugBankID']) & !(is.na(x['ligandShort']))) {
-        sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=%s'>DB Search<a/>", x['ligandShort'])
-      } else if (is.na(x['drugBankID']) & (is.na(x['ligandShort']))) {
-        sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query='>DB Search<a/>", "")
-      } else {
-        sprintf("<a href='https://go.drugbank.com/drugs/%s'>%s<a/>", x['drugBankID'], x['drugBankID'])
-      }
-    })
-    
-    pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
-                                        pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
-    
-    output$binding_drug <- DT::renderDataTable(
-                                datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
-                                          options = list(
-                                            initComplete = JS(
-                                              "function(settings, json) {",
-                                              "$(this.api().table().header()).css({'color': '#fff'});",
-                                              "}"),
-                                            #https://rstudio.github.io/DT/options.html
-                                            autoWidth = T,
-                                            targets = 10,
-                                            render = JS(
-                                              "function(data, type, row, meta) {",
-                                              "return type === 'display' && data.length > 10 ?",
-                                              "'<span title=\"' + data + '\">' + data.substr(0, 10) + '...</span>' : data;",
-                                              "}")
-                                            ),
-                                          colnames = c("UniProt Protein Chain", "PDB ID", "PDB Site ID", "Structure Residue #",
-                                                       "UniProt Residue #", "Residue", "Residue Chain", "Ligand Residue #",
-                                                       "Ligand Short", "Ligand Long", "Ligand Chain", "DrugBank ID"),
-                                          escape = F
-                                )
-    )
-    
-    ################################################################################################
-    ## 3D images from PITT javascript script, see works cited
-    observe ({
-      req(input$PDB_structures_cells_selected)
-      
-      if (length(input$PDB_structures_cells_selected)>0) {
-        pdb <- ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]]
-      } else {
-        pdb=""
-      }
-        output$structure_3d <- renderUI({
-          
-          tabPanel("3D Structure",
-                   tags$head(tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js")),
-                   tags$div(
-                     style="height: 400px; width: 700px: position: relative;",
-                     class='viewer_3Dmoljs',
-                     'data-pdb'=pdb,
-                     'data-backgroundcolor'='0xffffff',
-                     'data-style'='cartoon'))
-          
-        })
-      
-    })
-    ################################################################################################
     ## no neo4j graph
   } else {
     output$plot <- renderPlotly({ empty_plot("No data in neo4j for your protein!
 There may be structure data on other tabs.
 Check 'PDB Structures' or 'PDB Binding Sites and Drugs' tabs
 or select a different UniProt ID.")
-      })
+    })
+  }
+  
+  ################################################################################################
+  ## NEW! strictly a substrates table even if user selects some sort of pathway
+  Rows <- getSubstrates(input$uniProtID)
+  if ("neo" %in% class(Rows)) {
     
-    ## pdb structures tab
-    pdb.data <- loadData(structures.query(input$uniProtID))
-    pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
-                              pdb.data$pdbID, pdb.data$pdbID)
+    rowDF <- dplyr::bind_cols(Rows)
+    colnames(rowDF) <- names(Rows)
+    rowDF$Prot2protNameAlt <- ifelse(rowDF$Prot2protNameAlt=="null", NA, rowDF$Prot2protNameAlt)
     
-    ## if no structures link to Swiss-Model
-    if (nrow(pdb.data) == 0) {
-      url <- a(input$uniProtID, href=sprintf("https://swissmodel.expasy.org/repository/uniprot/%s", 
-                                             input$uniProtID))
-      output$SwissModel <- renderUI({  
-        tagList("There are no structures for your UniProt Protein", tags$br(),
-                "Click link for Swiss-Model model of ", url)
-      })
-    }
+    rowDF$Prot2protName <- apply(rowDF, 1, function(x) {
+      if(is.na(x['Prot2protName'])) {
+        if (!is.na(x['Prot2protNameAlt'])) {
+          return(jsonlite::fromJSON(x['Prot2protNameAlt'][[1]])[1])
+        } else {
+          return(NA)
+        }
+      } else {
+        return(x['Prot2protName'])
+      }
+    })
     
-    ################################################################################################
-    observe ({
-      req(input$PDB_structures_cells_selected)
+    rowDF$`Relationship details` <- lapply(rowDF$`Relationship details`, function(x) {
+      string = ""
+      l <- jsonlite::fromJSON(x[[1]])
+      for (i in 1:length(l)) {
+        string <- paste0(string, '<b>', i, ". ", "</b>")
+        l.i <- jsonlite::fromJSON(l[[i]])
+        if (!is.null(l.i$interactionID)) {
+          if (grepl("EBI-[0-9]+", l.i$interactionID)) {
+            l.i$interactionID = sprintf("<a href=https://www.ebi.ac.uk/intact/interaction/%s>%s</a>",
+                                        l.i$interactionID, l.i$interactionID)
+          } else if (grepl("CLE[0-9]+", l.i$interactionID)) {
+            link.id <- ex_between(l.i$`publicationID(s)`, "[", "]")[[1]]
+            publication <- ex_between(l.i$`publicationID(s)`, "<%", "[")[[1]]
+            publication <- gsub("%", "", publication)
+            l.i$`publicationID(s)` = sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
+                                             link.id, publication)
+          }
+        }
+        
+        for (j in paste(names(l.i), ":", l.i, "<br>")) {
+          string = paste0(string, j)
+        }
+      }
+      return(string)
+    })
+    
+    linksRow <- apply(rowDF, 1, function(row) {
+      if (grepl('PhosphoSitePlus', row[["Relationship details"]])) {
+        row[["Prot1UPID"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
+                                      row[["Prot1UPID"]], row[["Prot1UPID"]])
+        row[["Prot2UPID"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
+                                      row[["Prot2UPID"]], row[["Prot2UPID"]])
+      } else {
+        row[["Prot1UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+                                      row[["Prot1UPID"]], row[["Prot1UPID"]])
+        row[["Prot2UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+                                      row[["Prot2UPID"]], row[["Prot2UPID"]])
+      }
+      c(row[["Prot1UPID"]], row[["Prot2UPID"]])
+    })
+    
+    rowDF[,c("Prot1UPID", "Prot2UPID")] <- t(linksRow)
+    rowDF2 <- rowDF[,c(1:8, 10:13)]
+    
+    colnames(rowDF2) <- c("Prot Gene Name", "Prot UniProt ID", "Prot Protein Name", "Prot taxid", "Prot organism",
+                         "Sub Gene Name", "Sub UniProt ID", "Sub Protein Name", "Sub taxid", "Sub organism",
+                         "Reaction type", "Reaction info")
+    
+    output$substrates_table <- DT::renderDataTable(
+                                datatable(rowDF2, style = "bootstrap", class = "compact",
+                                          options = list(
+                                            initComplete = JS(
+                                              "function(settings, json) {",
+                                              "$(this.api().table().header()).css({'color': '#fff'});",
+                                              "}"),
+                                            # https://github.com/rstudio/DT/issues/171
+                                            autoWidth = T,
+                                            width = "100%",
+                                            scrollX=T,
+                                            bSortClasses = TRUE,
+                                            targets = 12,
+                                            render = JS(
+                                              "function(data, type, row, meta) {",
+                                              "return type === 'display' && data.length > 60 ?",
+                                              "'<span title=\"' + data + '\">' + data.substr(0, 60) + '...</span>' : data;",
+                                              "}"),
+                                            LengthMenu = c(5, 30, 50),
+                                            columnDefs = list(
+                                              list(className = 'dt-body-left'),
+                                              list(width='325px', targets=12)),
+                                            pageLength = 10,
+                                            scrollY = '500px'
+                                          ),
+                                          escape = F
+                                )
+    )
+    
+  }
+  ################################################################################################
+  ## pdb structures tab
+  pdb.data <- loadData(structures.query(input$uniProtID))
+  pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
+                            pdb.data$pdbID, pdb.data$pdbID)
+  
+  if (nrow(pdb.data) == 0) {
+    url <- a(input$uniProtID, href=sprintf("https://swissmodel.expasy.org/repository/uniprot/%s", 
+                                           input$uniProtID))
+    output$SwissModel <- renderUI({  
+      tagList("There are no structures for your UniProt Protein.
+              Click link for Swiss-Model model of ", url)
+    })
+  }
+ 
+  
+  output$PDB_structures <- DT::renderDataTable(
+                              datatable(pdb.data,  style = "bootstrap", class = "compact",
+                                        selection=list(mode = "single", target = "cell"),
+                                        options = list(
+                                          initComplete = JS(
+                                            "function(settings, json) {",
+                                            "$(this.api().table().header()).css({'color': '#fff'});",
+                                            "}")),
+                                        escape = F,
+                                        
+                              )
+  )
 
+  ################################################################################################
+  ## binding sites and drugs
+  pdb.drug.bind.data <- loadData(drugBankBinding.query(input$uniProtID))
+  
+  pdb.drug.bind.data$drugBankID <- apply(pdb.drug.bind.data, 1, function(x) {
+    if (is.na(x['drugBankID']) & !(is.na(x['ligandShort']))) {
+      sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=%s'>DB Search<a/>", x['ligandShort'])
+    } else if (is.na(x['drugBankID']) & (is.na(x['ligandShort']))) {
+      sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query='>DB Search<a/>", "")
+    } else {
+      sprintf("<a href='https://go.drugbank.com/drugs/%s'>%s<a/>", x['drugBankID'], x['drugBankID'])
+    }
+  })
+  
+  pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
+                                      pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
+  
+  output$binding_drug <- DT::renderDataTable(
+                              datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
+                                        options = list(
+                                          initComplete = JS(
+                                            "function(settings, json) {",
+                                            "$(this.api().table().header()).css({'color': '#fff'});",
+                                            "}"),
+                                          #https://rstudio.github.io/DT/options.html
+                                          autoWidth = T,
+                                          targets = 10,
+                                          render = JS(
+                                            "function(data, type, row, meta) {",
+                                            "return type === 'display' && data.length > 10 ?",
+                                            "'<span title=\"' + data + '\">' + data.substr(0, 10) + '...</span>' : data;",
+                                            "}")
+                                          ),
+                                        colnames = c("UniProt Protein Chain", "PDB ID", "PDB Site ID", "Structure Residue #",
+                                                     "UniProt Residue #", "Residue", "Residue Chain", "Ligand Residue #",
+                                                     "Ligand Short", "Ligand Long", "Ligand Chain", "DrugBank ID"),
+                                        escape = F
+                              )
+  )
+  
+  ################################################################################################
+  ## 3D images from PITT javascript script, see works cited
+  observe ({
+    req(input$PDB_structures_cells_selected)
+    
+    if (length(input$PDB_structures_cells_selected)>0) {
+      pdb <- ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]]
+    } else {
+      pdb=""
+    }
       output$structure_3d <- renderUI({
         
         tabPanel("3D Structure",
-                 tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js"),
+                 tags$head(tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js")),
                  tags$div(
                    style="height: 400px; width: 700px: position: relative;",
                    class='viewer_3Dmoljs',
-                   'data-pdb'=ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]],
+                   'data-pdb'=pdb,
                    'data-backgroundcolor'='0xffffff',
                    'data-style'='cartoon'))
         
       })
-    })
     
+  })
     ################################################################################################
-    output$PDB_structures <- DT::renderDataTable(
-      datatable(pdb.data, style = "bootstrap", class = "compact",
-                selection=list(mode = "single", target = "cell"),
-                options = list(
-                  initComplete = JS(
-                    "function(settings, json) {",
-                    "$(this.api().table().header()).css({'color': '#fff'});",
-                    "}")),
-                escape = F,
-                
-      )
-    )
-
-    ################################################################################################
-    ## binding sites and drugs
-    pdb.drug.bind.data <- loadData(drugBankBinding.query(input$uniProtID))
-    
-    pdb.drug.bind.data$drugBankID <- apply(pdb.drug.bind.data, 1, function(x) {
-      if (is.na(x['drugBankID']) & !(is.na(x['ligandShort']))) {
-        sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=%s'>DB Search<a/>", x['ligandShort'])
-      } else if (is.na(x['drugBankID']) & (is.na(x['ligandShort']))) {
-        sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query='>DB Search<a/>", "")
-      } else {
-        sprintf("<a href='https://go.drugbank.com/drugs/%s'>%s<a/>", x['drugBankID'], x['drugBankID'])
-      }
-    })
-    
-    pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
-                                        pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
-    
-    output$binding_drug <- DT::renderDataTable(
-      datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
-                options = list(
-                  initComplete = JS(
-                    "function(settings, json) {",
-                    "$(this.api().table().header()).css({'color': '#fff'});",
-                    "}"),
-                  #https://rstudio.github.io/DT/options.html
-                  autoWidth = T,
-                  targets = 10,
-                  render = JS(
-                    "function(data, type, row, meta) {",
-                    "return type === 'display' && data.length > 10 ?",
-                    "'<span title=\"' + data + '\">' + data.substr(0, 10) + '...</span>' : data;",
-                    "}")
-                ),
-                colnames = c("UniProt Protein Chain", "PDB ID", "PDB Site ID", "Structure Residue #",
-                             "UniProt Residue #", "Residue", "Residue Chain", "Ligand Residue #",
-                             "Ligand Short", "Ligand Long", "Ligand Chain", "DrugBank ID"),
-                escape = F
-      )
-    )
-  }
+    ## no neo4j graph
+#   } else {
+#     output$plot <- renderPlotly({ empty_plot("No data in neo4j for your protein!
+# There may be structure data on other tabs.
+# Check 'PDB Structures' or 'PDB Binding Sites and Drugs' tabs
+# or select a different UniProt ID.")
+#       })
+#     
+#     ## pdb structures tab
+#     pdb.data <- loadData(structures.query(input$uniProtID))
+#     pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
+#                               pdb.data$pdbID, pdb.data$pdbID)
+#     
+#     ## if no structures link to Swiss-Model
+#     if (nrow(pdb.data) == 0) {
+#       url <- a(input$uniProtID, href=sprintf("https://swissmodel.expasy.org/repository/uniprot/%s", 
+#                                              input$uniProtID))
+#       output$SwissModel <- renderUI({  
+#         tagList("There are no structures for your UniProt Protein", tags$br(),
+#                 "Click link for Swiss-Model model of ", url)
+#       })
+#     }
+#     
+#     ################################################################################################
+#     observe ({
+#       req(input$PDB_structures_cells_selected)
+# 
+#       output$structure_3d <- renderUI({
+#         
+#         tabPanel("3D Structure",
+#                  tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js"),
+#                  tags$div(
+#                    style="height: 400px; width: 700px: position: relative;",
+#                    class='viewer_3Dmoljs',
+#                    'data-pdb'=ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]],
+#                    'data-backgroundcolor'='0xffffff',
+#                    'data-style'='cartoon'))
+#         
+#       })
+#     })
+#     
+#     ################################################################################################
+#     output$PDB_structures <- DT::renderDataTable(
+#       datatable(pdb.data, style = "bootstrap", class = "compact",
+#                 selection=list(mode = "single", target = "cell"),
+#                 options = list(
+#                   initComplete = JS(
+#                     "function(settings, json) {",
+#                     "$(this.api().table().header()).css({'color': '#fff'});",
+#                     "}")),
+#                 escape = F,
+#                 
+#       )
+#     )
+# 
+#     ################################################################################################
+#     ## binding sites and drugs
+#     pdb.drug.bind.data <- loadData(drugBankBinding.query(input$uniProtID))
+#     
+#     pdb.drug.bind.data$drugBankID <- apply(pdb.drug.bind.data, 1, function(x) {
+#       if (is.na(x['drugBankID']) & !(is.na(x['ligandShort']))) {
+#         sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=%s'>DB Search<a/>", x['ligandShort'])
+#       } else if (is.na(x['drugBankID']) & (is.na(x['ligandShort']))) {
+#         sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query='>DB Search<a/>", "")
+#       } else {
+#         sprintf("<a href='https://go.drugbank.com/drugs/%s'>%s<a/>", x['drugBankID'], x['drugBankID'])
+#       }
+#     })
+#     
+#     pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
+#                                         pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
+#     
+#     output$binding_drug <- DT::renderDataTable(
+#       datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
+#                 options = list(
+#                   initComplete = JS(
+#                     "function(settings, json) {",
+#                     "$(this.api().table().header()).css({'color': '#fff'});",
+#                     "}"),
+#                   #https://rstudio.github.io/DT/options.html
+#                   autoWidth = T,
+#                   targets = 10,
+#                   render = JS(
+#                     "function(data, type, row, meta) {",
+#                     "return type === 'display' && data.length > 10 ?",
+#                     "'<span title=\"' + data + '\">' + data.substr(0, 10) + '...</span>' : data;",
+#                     "}")
+#                 ),
+#                 colnames = c("UniProt Protein Chain", "PDB ID", "PDB Site ID", "Structure Residue #",
+#                              "UniProt Residue #", "Residue", "Residue Chain", "Ligand Residue #",
+#                              "Ligand Short", "Ligand Long", "Ligand Chain", "DrugBank ID"),
+#                 escape = F
+#       )
+#     )
+#   }
 })
 
             

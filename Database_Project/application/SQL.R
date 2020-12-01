@@ -113,7 +113,7 @@ output$schema <- DT::renderDataTable(datatable(
                         autoWidth = T,
                         columnDefs = list(
                           list(
-                            targets = c(1,4,5,7,8),
+                            targets = c(1,3,5,7,8),
                             render = JS(
                               "function(data, type, row, meta) {",
                               "return type === 'display' && data.length > 15 ?",

@@ -7,18 +7,18 @@ library(dqshiny)
 library(DT)
 library(shinyjs)
 library(plotly)
-library(igraphdata)
 library(dplyr)
 library(jsonlite)
 library(qdapRegex)
 library(emojifont)
 library(shinyBS)
+library(stringr)
 
 loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -44,7 +44,7 @@ structures.query <- function(id) {
 
 ## for the Forum.R placeholder
 intact <- loadData("SELECT * FROM intact")
-colnames(intact)
+
 cols <- c("organismA", "organismB", "detectionMethod", 
           "interactionType", "isNegative")
 intact[cols] <- lapply(intact[cols], factor)
@@ -67,9 +67,13 @@ drugBankBinding.query <- function(id) {
 schema.mysql <- read.table("~/JHU_Fall_2020/Biological_DBs/Project/data_dict.csv",
                            sep = ",", header = T)
 #https://stackoverflow.com/questions/33180058/coerce-multiple-columns-to-factors-at-once
-cols <- c("MySQL.table.name", "Source", "Data.type", 
-          "Neo4j.node.or.edge..property.", "Neo4j.data.type")
+cols <- c("MySQL.table.name", "Data.type", 
+          "Neo4j.node.or.edge..or.property.thereof.", "Neo4j.data.type")
 schema.mysql[cols] <- lapply(schema.mysql[cols], factor)
+
+# levels(schema.mysql$Source) <- unlist(lapply(levels(schema.mysql$Source), function (x) {
+#   rvest::html_text(xml2::read_html(x))
+# }))
 
 ## for shortening arrows in graph
 normalize <- function(x) {x / sqrt(sum(x^2))}
@@ -104,20 +108,18 @@ empty_plot <- function(title = NULL){
 
 
 library(neo4r)
-#library(magrittr)
 library(httr)
 library(igraph)
-library(dplyr)
-#library(purrr)
 library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 
-
+## Function for Graph
+## Used to get Graph Table as well
 getGraph <- function(UP.id, direction, length, limit=10) {
   
   if (direction=="down") {
@@ -141,7 +143,7 @@ getGraph <- function(UP.id, direction, length, limit=10) {
     
     ## Above ne04j query is incorrect, this will
     ## now limit return of relationships correctly at least 
-    ## instead of try to limit entries or nodes
+    ## instead of trying to limit entries or nodes which doesn't work
     "MATCH p = (n:Protein {uniprotID:'%s'})%s() 
       WITH *, relationships(p) AS rs
       RETURN 
@@ -154,8 +156,13 @@ getGraph <- function(UP.id, direction, length, limit=10) {
     return("No results in graph. Try another protein.")
   } else {
  
-    G$nodes$properties <- lapply(G$nodes$properties, 
-                                 function(x) list.remove(x, c("altProtNames", "altGeneNames")))
+    ## tibble needs to be same length
+    for (i in 1:length(G$nodes$properties)) {
+      G$nodes$properties[[i]][['altGeneNames']] <- paste(unlist(G$nodes$properties[[i]][['altGeneNames']]),
+                                                         collapse = "|")
+      G$nodes$properties[[i]][['altProtNames']] <- paste(unlist(G$nodes$properties[[i]][['altProtNames']]),
+                                                         collapse = "|")
+    }
 
     G$nodes <- G$nodes %>%
       unnest_nodes(what = "properties")
@@ -166,8 +173,36 @@ getGraph <- function(UP.id, direction, length, limit=10) {
     
     return(G)
   }
-
 }
+
+## Function to get all substrates from selected UniProt ID
+## Main SIMPLE goal from database
+getSubstrates <- function(UP.id) {
+  Rows <- sprintf(
+    "MATCH p = (n:Protein {uniprotID:'%s'})-[:INTERACTION]->() 
+     WITH *, relationships(p) as rs
+     UNWIND rs as relationship
+     RETURN 
+    	  startNode(relationship).name as Protein1, 
+        startNode(relationship).uniprotID as Prot1UPID,
+        startNode(relationship).proteinName as Prot1protName,
+        startNode(relationship).taxid as Prot1tax,
+        startNode(relationship).organism as Prot1org,
+        endNode(relationship).name as Protein2, 
+        endNode(relationship).uniprotID as Prot2UPID,
+        endNode(relationship).proteinName as Prot2protName,
+        apoc.convert.toJson(endNode(relationship).altProtNames) as Prot2protNameAlt,
+        endNode(relationship).taxid as Prot2tax,
+        endNode(relationship).organism as Prot2org,
+        relationship['name'] as `Interaction type`,
+        apoc.convert.toJson(relationship['entries']) AS `Relationship details`
+    ",  UP.id
+  ) %>%
+    call_neo4j(con, type="row", output = "r")
+  
+  Rows
+}
+
 
 # PRKCD
 # Q05655
