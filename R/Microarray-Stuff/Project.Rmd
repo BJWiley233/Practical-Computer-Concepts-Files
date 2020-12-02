@@ -33,7 +33,8 @@ The dataset I chose is a study of various leukemic B-cell chronic lymphoprolifer
 <br>  
 <br>  
 Below I read in the data matrix using `getGeo()` function so that I can obtain the pheno data.  I will use the pheno data to use for reading in the raw CEL files with the `affy` package `justRMA()` function.  This workflow was obtained from the [Coursera class](https://www.coursera.org/learn/bioconductor) taught by Dr. Kasper Daniel Hansen at JHU for Bioconductor.  The `justRMA()` function is a wrapper which reads in CEL files with optional phenodata and performs `rma()` on the batch of CEL files without need for actually saving the `AffyBatch`.  It is equivalent to performing `rma()` on an `AffyBatch`.
-
+<br>  
+<br>  
 Get matrix, pheno data, and determine groups with >= 20 samples per group.
 ```{r, message=F}
 library(GEOquery)
@@ -105,7 +106,8 @@ write.table(exprs(new.geo.matrix), file=paste0(my.gse,"_matrix.txt"), quote=F, c
 
 
 ##### **Read in the raw CEL files and perform Robust Multi-array Average (RMA)**
-
+<br>  
+<br>  
 We have to read in all the CEL files while performing the RMA as this is mostly likely what the authors did, maybe with a slightly modified RMA algorithm. Most of differences are minor but some are close to lo2(intensity) = 1. 
  
 ```{r, fig.width=10, fig.height=10, message=F}
@@ -137,7 +139,7 @@ abs(sample.raw-sample.matrix)
 max(abs(sample.raw-sample.matrix))
 
 ## write matrix of RMA on raw CEL files for later use
-write.table(exprs(justNorm.data.keep), file = paste0(my.gse,"justRMA_keep_matrix.txt"), 
+write.table(exprs(justNorm.data.keep), file = paste0(my.gse,"_justRMA_keep_matrix.txt"), 
             sep="\t", quote = F)
 ```
 
@@ -208,8 +210,6 @@ b.cell.expr.set
 First we will do correlation plot and heatmap to cluster the samples based on correlation.  If this does not show any outliers, then we will do Coefficient of variation (CV) vs. Mean plot to visualize.  Finally after determining outliers from CV vs. Mean plot we can visualize in heatmap again.
 <br>  
 <br>  
-<br>  
-<br>  
 The initial correlation plot did show some blue but the range of correlation is not far apart so this cannot distinguish outliers completely.
 
 ```{r}
@@ -268,6 +268,8 @@ heatmap.2(abs(data.corr), trace="none", scale = "row",
           lmat = new.lmat, lhei = new.lhei, lwid = new.lwid)
 
 ```
+<br>  
+<br>  
 The CV vs. Mean plot shows there are a few outliers.
 <br>  
 <br>  
@@ -327,6 +329,8 @@ heatmap.2(abs(data.corr.copy), trace="none", scale = "row",
           lmat = new.lmat, lhei = new.lhei, lwid = new.lwid, cexCol = 1)
 ```
 
+<br>  
+<br>  
 Filter genes using Coefficient of variation (CV.  According to [Hackstadt and Hess](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2661050/), "When filtering by variance, we remove genes with low variance across arrays (ignoring treatment). The rationale is that expression for equally expressed genes (EEGs) should not differ greatly between treatment groups, hence leading to small overall variance." (Hackstadt and Hess, 2009)
 ```{r}
 ## remove outliers
@@ -620,10 +624,10 @@ ggplot(pcomps, aes(PC1, PC2, color=leuk)) +
 #####**Using these linear projections of the original data (i.e. cluster centroids, latent variables, etc.), use a classification method to classify the samples into their respective classes.**
 <br>  
 <br>  
-First perform Kmeans clustering analysis on the first 2 principal components to see the accuracy and then try SVM splitting train and test for the diagnosed groups using these 2 principle components and finally training on all the diagnosed groups with all genes to predict the B-CLPD NOS group.
+First perform Kmeans clustering analysis on the first 2 principal components to see the accuracy and then try SVM splitting train and test for the diagnosed groups using these 2 principle components and finally training on all the diagnosed groups with all significant profiling genes to predict the B-CLPD NOS subtype.
 <br>  
 <br>  
-We can see that with Kmeans clustering that it misclassifiers 0 CLL samples, only a couple cMCL samples, but a lot of the SMZL and couple of the cMCL were classified incorrectly as nnMCL in teal color.  This is to be expected and we did not get much separation between nnMCL and SMZL from the PCA plot above.
+We can see that with Kmeans clustering that it misclassifies 0 CLL samples, only a couple cMCL samples, but a lot of the SMZL and couple of the cMCL were classified incorrectly as nnMCL in teal color.  This is to be expected and we did not get much separation between nnMCL and SMZL from the PCA plot above.
 ```{r}
 #pcomps <- data.frame(BH.pairT.pca$x[, 1:2])
 set.seed(1)
@@ -649,6 +653,7 @@ legend(-40, 55, legend=c("CLL truth", "cMCL truth", "nnMCL truth", "SMZL truth")
        col=cols[c(3, 1, 2, 4)], pch=1, pt.cex=2, pt.lwd=2)
 
 ```
+
 <br>  
 <br>  
 What is the accuracy from kmeans clustering?  We get about 91% accuracy with PCA on the ~7,600 significant genes.
@@ -697,11 +702,12 @@ confusionMatrix(y.pred.pca, y.test.pca)
 
 ```
 
-
-We will train with a stratified 70/30 train/test split on the 4 diagnosed groups.  However we will use all 7,600 features we obtained and then we will test this with just the 2 highest principal components.  
 <br>  
 <br>  
-We get 100% accuracy training with all 7,600 genes.  So this should be a good classifier for final classification.
+We will train with a stratified 70/30 train/test split on the 4 diagnosed groups.  However we will use all ~7,600 features we obtained and then we will test this with just the 2 highest principal components.  
+<br>  
+<br>  
+We get 100% accuracy training with all ~7,600 significant genes.  So this should be a good classifier for final classification.
 ```{r}
 library(e1071)
 
@@ -725,7 +731,7 @@ confusionMatrix(y.pred, y.test)
 
 
 
-First see how SVM does on classifying B-CLPD NOS group vs the SVM on the 2 highest principal components as well as finally finishing with predicting B-CLPD NOS group using all ~7,600 genes.  We need to perform PCA again with all 157 samples excluding outliers.
+First see how SVM does on classifying B-CLPD NOS subtype on the 2 highest principal components as well as finally finishing with predicting B-CLPD NOS subtype using all ~7,600 genes.  We need to perform PCA again with all 157 samples excluding outliers.
 ```{r}
 ## filter the df of B-CLPD NOS and diagnosed groups for both of the ANOVA and pairwise T-tests
 ## already ordered by sample from before
@@ -759,7 +765,8 @@ table(c("CLL", "cMCL", "nnMCL", "SMZL")[order(c(3, 1, 2, 4))][as.numeric(as.char
 
 ```
 
-
+<br>  
+<br>  
 Plot with predictions from SVM along with the known subtypes.  The B-CLPD NOS are indicated in black squares around the predictions.
 ```{r}
 ## need to map back
@@ -813,7 +820,7 @@ table("pred.pca"=pred.pca, "pred.all.sig.genes"=pred.all.sig.genes)
 #####**Finally, using the top 5 discriminant genes (positive and negative direction) from your analysis, go to NCBI’s DAVID and look up the gene information.  Provide the gene name and functional information (associated pathways, GO terms, etc) for these 10 genes.**
 <br>  
 <br>  
-I am going to actually include the top discriminant genes positive and negative for all four groups CLL,cMCL, nnMCL, SMZL.  So there will be 40 total.
+I am going to actually include the top discriminant genes positive and negative for all four groups CLL, cMCL, nnMCL, SMZL.  So there will be 40 total.
 ```{r, }
 ## put in dataframe
 sig.genes.df <- data.frame(sig.genes.leuk.type) 
@@ -876,7 +883,7 @@ diff.exp.genes
 
 <br>  
 <br>  
-Just by looking at CLL and cMLC top 5 positively regulated genes we can see they match the paper by the authors.  As well as some of the other positively regulated notables for these 2 subtypes.
+Just by looking at CLL and cMLC top 5 positively regulated genes we can see they match the [paper]() by the authors.  As well as some of the other positively regulated notables for these 2 subtypes.
 ```{r}
 diff.exp.genes[(diff.exp.genes$type=="CLL" | diff.exp.genes$type=="cMCL") 
                 & diff.exp.genes$direction=="positive", ]
@@ -892,7 +899,7 @@ notables[c(6:10, 21:29),]
 
 <br>  
 <br>  
-####**Use the `RDAVIDWebService` package to annotate the differentially expressed profiling genes.
+####**Use the `RDAVIDWebService` package to annotate the differentially expressed profiling genes.**
 <br>  
 <br>  
 First get Go IDs and associated Go terms and make dataframe.  Then in addition will make separate dataframes including gene names for the following other annotations:
@@ -1043,7 +1050,6 @@ mint <- make.annot.df("MINT") ## SOX5 twice so 16
 ## UCSC_TFBS
 ucsc.tfbs <- make.annot.df("UCSC_TFBS") ## SOX5 twice so 38
 ucsc.tfbs[ucsc.tfbs$probe=="230441_at", "UCSC_TFBS"]
-
 
 
 ```
