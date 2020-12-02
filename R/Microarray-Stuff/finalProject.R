@@ -27,7 +27,7 @@ new.geo.matrix <- my.geo.matrix[, keep]
 new.pdata <- as.data.frame(pData(new.geo.matrix), stringsAsFactors=FALSE)
 newgroups <- gsub("GSM.* ", "", new.pdata$title)
 newgroups <- gsub(" .*", "", newgroups)
-## sanity all larger than 0
+## sanity all larger than 20
 all(table(newgroups)>20)
 new.pdata <- new.pdata[, c("title", "geo_accession", "source_name_ch1")]
 row.names(new.pdata) = paste0(row.names(new.pdata), '.CEL.gz')
@@ -372,7 +372,7 @@ for (i in 1:nrow(diagnosed.groups.keep.anova)) {
   for (j in 1:nrow(m)) {
     for (k in 1:2) {
       key <- as.character(m[j,k])
-      t.list[[key]]$pval <- c( t.list[[key]]$pval, pval=m[j,"value"])
+      t.list[[key]]$pval <- c(t.list[[key]]$pval, pval=m[j,"value"])
       t.list[[key]]$fc <- c(t.list[[key]]$fc, fc=m[j,"fc"])
       #t.list[[key]] <- c(t.list[[key]], list(pval=m[j,"value"], fc=m[k, "fc"]))
     }

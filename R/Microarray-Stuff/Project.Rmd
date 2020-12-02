@@ -1,0 +1,1049 @@
+---
+title: "Final Project"
+output:
+  pdf_document:
+header-includes:
+    - \usepackage {hyperref}
+    - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/project/")
+```
+
+### Brian Wiley
+### Final Project
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) 
+
+#### Summary
+<br>  
+<br>  
+For a final project, you will be conducting an analysis pipeline in attempt to answer some questions about the data set being used.  The data selected should include some sort of class structure with different levels (e.g. disease vs. normal, treated vs. non-treated, age<65 vs. age≥65, low dose vs. high dose vs. control etc.).
+<br>  
+<br>  
+Each project will include analysis of a publicly available data set from some expression database (e.g., Stanford MicroArray Database, Gene Expression Omnibus, EMBL ArrayExpress).
+<br>  
+<br>  
+##### **Obtain dataset from expression database.** 
+<br>  
+<br>  
+The dataset I chose is a study of various leukemic B-cell chronic lymphoproliferative disorders (B-CLPD). The accession id is [GSE79196](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE79196).  This data set contains 189 samples with 159 belonging to a specific diagnosed B-CLPD of 1 of 9 different types and 30 samples belonging to B-CLPD not otherwise specified (B-CLPD NOS).  The RNA samples were process on the Affymetrix U133 Plus2.0 array.
+<br>  
+<br>  
+Below I read in the data matrix using `getGeo()` function so that I can obtain the pheno data.  I will use the pheno data to use for reading in the raw CEL files with the `affy` package `justRMA()` function.  This workflow was obtained from the [Coursera class](https://www.coursera.org/learn/bioconductor) taught by Dr. Kasper Daniel Hansen at JHU for Bioconductor.  The `justRMA()` function is a wrapper which reads in CEL files with optional phenodata and performs `rma()` on the batch of CEL files without need for actually saving the `AffyBatch`.  It is equivalent to performing `rma()` on an `AffyBatch`.
+
+Get matrix, pheno data, and determine groups with >= 20 samples per group.
+```{r, message=F}
+library(GEOquery)
+library(affy)
+
+my.gse <- "GSE79196"
+## commenting out after download
+#my.geo.matrix <- getGEO(my.gse, AnnotGPL = T, getGPL = F, destdir=".")
+#my.geo.matrix <- my.geo.matrix[[1]]
+my.geo.matrix <- getGEO(file=paste0(my.gse,"_series_matrix.txt.gz"), AnnotGPL = T, getGPL = F)
+
+my.pdata <- as.data.frame(pData(my.geo.matrix), stringsAsFactors=FALSE)
+
+colnames(my.pdata)
+head(my.pdata[, c("title", "geo_accession", "source_name_ch1")])
+my.pdata <- my.pdata[, c("title", "geo_accession", "source_name_ch1")]
+row.names(my.pdata) = paste0(row.names(my.pdata), '.CEL.gz')
+## write ALL of the samples to annotated df including groups with < 20 samples
+write.table(my.pdata, file=paste0(my.gse,"_PhenoData_ALL.txt"), quote=F, sep = "\t")
+
+## determine which groups > 20
+groups <- gsub("GSM.* ", "", my.pdata$title)
+groups <- gsub(" .*", "", groups)
+big.groups <- names(table(groups)[table(groups)>20])
+big.groups
+
+## remove samples where total of group < 20
+## write the keep indices to file
+keep <- groups %in% big.groups
+write.table(data.frame(as.numeric(keep), keep), "keep.txt", quote = F)
+```
+
+##### **Writing GEO matrix to file so we can just compare the `rma()` on the raw CEL files**
+<br>  
+<br>  
+```{r, fig.height=4, fig.width=6}
+new.geo.matrix <- my.geo.matrix[, keep]
+new.pdata <- as.data.frame(pData(new.geo.matrix), stringsAsFactors=FALSE)
+newgroups <- gsub("GSM.* ", "", new.pdata$title)
+newgroups <- gsub(" .*", "", newgroups)
+## sanity all larger than 20 samples
+all(table(newgroups)>20)
+
+## write selected samples pheno data to file
+new.pdata <- new.pdata[, c("title", "geo_accession", "source_name_ch1")]
+row.names(new.pdata) = paste0(row.names(new.pdata), '.CEL.gz')
+## will use this text file when reading in CELs into AffyBatch for large groups only
+write.table(new.pdata, file=paste0(my.gse,"_SelectPhenoData.txt"), quote=F, sep = "\t")
+## Will use to confirm if rma() on AffyBatch is different than author's matrix
+## this can be space delimited since it's just probes and intensities
+#https://stackoverflow.com/questions/2478352/write-table-writes-unwanted-leading-empty-column-to-header-when-has-rownames
+write.table(exprs(new.geo.matrix), file=paste0(my.gse,"_matrix.txt"), quote=F, col.names = NA)
+
+```
+
+
+##### **Getting the raw CEL files with `getGEOSuppFiles()`.  This will be commented out since I already downloaded this and is over 1GB in size.** {#q3}
+<br>  
+<br>  
+```{r, message=F}
+# getOption('timeout') ## might need to change this depending on size
+# options(timeout=1000)
+# dir.create("geo_downloads")
+# a <- getGEOSuppFiles(my.gse, makeDirectory=T, baseDir="./geo_downloads")
+# ## untar
+# untar(cel.path, exdir=paste0("geo_downloads/", my.gse, "/CEL"))
+```
+
+
+
+##### **Read in the raw CEL files and perform Robust Multi-array Average (RMA)**
+
+We have to read in all the CEL files while performing the RMA as this is mostly likely what the authors did, maybe with a slightly modified RMA algorithm. Most of differences are minor but some are close to lo2(intensity) = 1. 
+ 
+```{r, fig.width=10, fig.height=10, message=F}
+## we can start here when re-opening Rmarkdown if reading raw files
+library(affy)
+
+cel.path <- paste0("geo_downloads/", my.gse, "/CEL")
+# get file names
+my.cels <- list.files(paste0("geo_downloads/", my.gse, "/CEL"), pattern = "*.CEL")
+## confirm CELS in correct order
+## filenames have P followed by sample # in them
+my.pdata <- read.table(paste0(my.gse,"_PhenoData_ALL.txt"), sep = "\t")
+all(gsub("_P[0-9]*", "", my.cels) == paste0(my.pdata$geo_accession, '.CEL.gz'))
+## all correct order so read in with pheno data
+justNorm.data <- justRMA(celfile.path=cel.path,
+                         phenoData=paste0(my.gse,"_PhenoData_ALL.txt"),
+                         compress=T)
+
+## subset just the large groups
+keep <- read.table("keep.txt", )[,2]
+justNorm.data.keep <- justNorm.data[, keep]
+
+## Confirm differences in first 3 kept samples for first 10 intensities
+geo.matrix <- read.table(pipe(paste0("cut -f1,2,3,4 -d' ' ", my.gse,"_matrix.txt")), header = T)
+sample.matrix <- as.matrix(geo.matrix[1:10,])
+sample.raw <- exprs(justNorm.data.keep)[1:10, 1:3]
+## what are differences?
+abs(sample.raw-sample.matrix)
+max(abs(sample.raw-sample.matrix))
+
+## write matrix of RMA on raw CEL files for later use
+write.table(exprs(justNorm.data.keep), file = paste0(my.gse,"justRMA_keep_matrix.txt"), 
+            sep="\t", quote = F)
+```
+
+
+##### **Reading in final matrix that we saved for samples of groups >= 20**
+
+
+```{r, message=F, fig.height=5, fig.width=7}
+## we can start here when re-opening Rmarkdown with matrix for large groups from RMA on raw data
+library(affy)
+
+my.gse <- "GSE79196"
+mat <- as.matrix(read.table(paste0(my.gse,"justRMA_keep_matrix.txt"),
+                            sep = "\t", header = T))
+annot <- AnnotatedDataFrame(read.table(paste0(my.gse,"_SelectPhenoData.txt"),
+                                       sep = "\t", header = T))
+b.cell.expr.set <- ExpressionSet(assayData = mat,
+                                 phenoData = annot)
+## diagnosis groups
+groups <- gsub(" .*", "", pData(b.cell.expr.set)$title)
+
+## add in the featureData
+
+# https://www.biostars.org/p/254040/
+# http://biolearnr.blogspot.com/2017/05/bfx-clinic-getting-up-to-date.html
+# most of code below comes up link above from BFX clinic to map probes to genes
+# BiocManager::install("hgu133plus2.db")
+library(hgu133plus2.db)
+library(dplyr)
+
+db.annotation.all <- AnnotationDbi::select(
+  x = hgu133plus2.db,
+  keys = rownames(b.cell.expr.set),
+  #columns = c("PROBEID", "ENSEMBL", "ENTREZID", "SYMBOL"),
+  columns = c("PROBEID", "SYMBOL"),
+  keytype = "PROBEID"
+)
+## are all probes in db and in order?
+all(rownames(b.cell.expr.set) %in% db.annotation.all$PROBEID)
+all(rownames(b.cell.expr.set) == unique(db.annotation.all$PROBEID))
+
+dup.ids <- db.annotation.all$PROBEID[duplicated(db.annotation.all$PROBEID)] %>%
+   unique  %>%
+   sort
+
+## few examples, I have seen this before
+db.annotation.all[ db.annotation.all$PROBEID == dup.ids[1], ]
+db.annotation.all[ db.annotation.all$PROBEID == dup.ids[40], ]
+
+## this will concatenate all genes mapped to a probe
+db.annot.mult.mapping <- db.annotation.all %>% 
+  group_by(PROBEID) %>%
+  summarise(PROBEID=PROBEID,
+            genes = paste0(SYMBOL, collapse = "|")) %>%
+  slice(1)
+
+## finally assign featureData
+featureData(b.cell.expr.set) <- AnnotatedDataFrame(db.annot.mult.mapping)
+b.cell.expr.set
+```
+
+
+
+
+##### **First test for outlier samples and provide visual proof.  Remove these outliers.**
+<br>  
+<br>  
+First we will do correlation plot and heatmap to cluster the samples based on correlation.  If this does not show any outliers, then we will do Coefficient of variation (CV) vs. Mean plot to visualize.  Finally after determining outliers from CV vs. Mean plot we can visualize in heatmap again.
+<br>  
+<br>  
+<br>  
+<br>  
+The initial correlation plot did show some blue but the range of correlation is not far apart so this cannot distinguish outliers completely.
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+## set dataframe for expressions
+df <- exprs(b.cell.expr.set)
+colnames(df) <- gsub("\\..*", "", colnames(df))
+colnames(df) <- paste0(groups, "_", colnames(df))
+
+## correlation
+data.corr <- cor(df, use="pairwise.complete.obs", method="pearson")
+
+melt.data.cor <- melt(data.corr)
+mid <- (min(melt.data.cor$value)+max(melt.data.cor$value))/2
+
+ggplot(melt.data.cor, aes(x=Var1, y=Var2, fill=value)) +
+  geom_tile(color="white") +
+  scale_fill_gradient2(low="blue", mid="black", high="yellow",
+                       midpoint=mid, 
+                       limit=c(min(melt.data.cor$value), 1),
+                       name="Pearson\nCorr.") +
+  theme(axis.text.x=element_text(angle=90),
+        axis.title=element_blank(),
+        plot.title=element_text(hjust=0.5)) +
+  ggtitle("Different leukemic B-cell chronic lymphoproliferative disorders (B-CLPD)\nCorrelation Plot")
+
+```
+
+<br>  
+<br>  
+The heatmap of the correlation shows pretty normally distributed clustering and correlation.
+```{r, message=F, fig.height=6, fig.width=8}
+## heatmap
+library(gplots)
+library(RColorBrewer)
+
+cols <- RColorBrewer::brewer.pal(length(table(groups)), "Set1")
+colors <- cols[as.factor(groups)]
+
+# b l t r
+pm <- par()$mar
+par(mar=c(4.5, 4.1, 4.1, 2.1))
+
+po <- par()$oma
+par(oma=c(3.6,0,0,0))
+
+new.lmat=rbind(c(0,3,4), c(0,1,2))
+new.lhei=c(0.9,3.0)
+new.lwid=c(0.5,4,1)
+
+heatmap.2(abs(data.corr), trace="none", scale = "row",
+          colCol = colors, key=T, dendrogram="column",
+          labCol = gsub("_.*_", "_", colnames(df)),
+          lmat = new.lmat, lhei = new.lhei, lwid = new.lwid)
+
+```
+The CV vs. Mean plot shows there are a few outliers.
+<br>  
+<br>  
+```{r, message=F, fig.height=4, fig.width=5}
+library(qdapRegex)
+means = apply(df, 2, function(x) mean(x, na.rm=T))
+cvs = apply(df, 2, function(x) sd(x)/mean(x))
+
+## plot
+plot(means, cvs, xlab = "Mean", ylab = "CV", col="red", pch=20,
+     xlim = c(min(means), max(means)*1.1))
+title("Different leukemic B-CLPDs\nSample CV vs. Mean")
+abline(h=0.407, lty=2)
+abline(v=5.23, lty=3)
+text(means, cvs, labels=ex_between(colnames(df),"_","_"),
+     pos = 1, cex=0.6)
+
+
+```
+
+
+<br>  
+<br>  
+Show where the outliers samples are in heatmap.
+<br>  
+<br>  
+```{r, fig.height=5, fig.width=8}
+outliers <- c(which(means>5.23), which(cvs<0.407))
+## What are the outliers
+outliers # 3 B-CLPD and 1 SMZL
+
+#https://stackoverflow.com/questions/60798208/how-to-bold-a-group-of-labels-or-branches-in-heatmap-2-in-r
+library(purrr)
+make_bold_names <- function(mat, rc_fun, rc_names) {
+  bold_names <- rc_fun(mat)
+  ids <- rc_names %>% match(rc_fun(mat))
+  ids %>%
+    walk(
+      function(i)
+        bold_names[i] <<-
+        bquote(bold(.(rc_fun(mat)[i]))) %>%
+        as.expression()
+    )
+  bold_names
+}
+
+data.corr.copy <- data.corr
+colnames(data.corr.copy)[outliers] <- paste(colnames(data.corr.copy)[outliers], "    **")
+colnames(data.corr.copy)[-outliers] <- paste(colnames(data.corr.copy)[-outliers], "      ")
+
+
+par(mar=c(4.5, 4.1, 4.1, 2.1))
+par(oma=c(6.1,0,0,0))
+heatmap.2(abs(data.corr.copy), trace="none", scale = "row", 
+          colCol = colors, key=F, dendrogram="column",
+          labCol = gsub("_.*_", "_", make_bold_names(data.corr.copy,colnames, outliers)),
+          lmat = new.lmat, lhei = new.lhei, lwid = new.lwid, cexCol = 1)
+```
+
+Filter genes using Coefficient of variation (CV.  According to [Hackstadt and Hess](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2661050/), "When filtering by variance, we remove genes with low variance across arrays (ignoring treatment). The rationale is that expression for equally expressed genes (EEGs) should not differ greatly between treatment groups, hence leading to small overall variance." (Hackstadt and Hess, 2009)
+```{r}
+## remove outliers
+df.rem.out <- df[, -outliers]
+dim(df.rem.out)
+annot.rem.out <- annot[-outliers, ]
+dim(annot.rem.out)
+group.rem.out <- groups[-outliers]
+
+## For non-specific filter exprs should be un-logged?
+#https://math.usu.edu/jrstevens/stat5570/3.2.Filtering.pdf
+df.unlogged <- 2^df.rem.out
+
+cv.genes = apply(df.unlogged, 1, function(x) sd(x)/mean(x))
+quant <- quantile(cv.genes, probs = c(0.1, 0.25, 0.5, 0.75, 0.9))
+df.filter <- df.rem.out[cv.genes >= quant[1], ]
+dim(df.filter)
+
+#diff.exp.genes$probe %in% rownames(df.filter)
+```
+
+
+#####**Next, conduct some method of feature selection with a statistical test or other machine learning method.  The type of test will depend upon how many factor levels are included in your data set.  For example. two conditions would require a two-sample test, while greater than two conditions would require other tests.**
+<br>  
+<br>  
+I will first be performing ANOVA on the different samples for the 4 groups with diagnosis with which we will then adjust for multiplicity to confirm which genes are differential expressed amongst groups, i.e. at least one group is different.  Then I will filter from those, the genes which characterize or profile the sub-type.  That is, only selecting genes in which the all the p-values are statically significant between 1 group vs. the rest, e.g. a 1 vs. All significance.  Then we can use these features to perform both a cluster analysis as well as SVM on the B-CLPD NOS group to characterize those into their respective predicted sub group of B-CLPD and compare the accuracy of methods.  These methods however cannot be compared on the B-CLPD NOS group because we don't have truth labels and their are different methods, unsupervised for kmeans vs supervised with SVM.
+<br>  
+<br>  
+First order groups and set aside B-CLPD NOS group. 
+```{r}
+## first order the samples by group
+groups.ord <- group.rem.out[order(group.rem.out)]
+df.ord <- df.filter[, order(group.rem.out)]
+dim(df.ord)
+colnames(df.ord)[1:5]
+annot.ord <- annot.rem.out[order(group.rem.out), ] 
+
+## this is what we are trying to predict
+B.CLPD <- grep("B-CLPD", groups.ord)
+diagnosed.groups.df <- df.ord[, -B.CLPD]
+annot.diagnosed.groups <- annot.ord[-B.CLPD, ]
+dim(diagnosed.groups.df)
+dim(annot.diagnosed.groups)
+diagnosed.groups <- groups.ord[-B.CLPD]
+table(diagnosed.groups)
+
+```
+
+<br>  
+<br>  
+Perform ANOVA on all genes and adjust for multiplicity filtering for significants genes using confidence level of 99% or .01 alpha.
+```{r, }
+anova.all.genes <- function(x, groups) {
+  d <- cbind(reshape2::melt(x), groups)
+  a <- summary(aov(value~groups, d))
+  pval <- a[[1]][1,5]
+  return(pval)
+}
+
+anova.all.pval <- apply(diagnosed.groups.df, 1, anova.all.genes,
+                        groups=diagnosed.groups)
+
+# adjust p-values
+p.adj <- p.adjust(anova.all.pval, method = "BH")
+diagnosed.groups.keep.anova <- diagnosed.groups.df[p.adj<.01, ]
+nrow(diagnosed.groups.keep.anova)
+
+```
+
+<br>  
+<br>  
+#####**Now perform a novel function on each gene for defining the genes that separate one group from the rest with all p-values being significant.  An example of a `pairwise.t.test()` with "melting modification" would be which is the output from `t.list()` inside the for loop:**
+<br>  
+<br>  
+```$cMCL
+$cMCL$pval
+        pval         pval         pval 
+0.0005676161 0.1170199554 0.0596549565 
+
+$cMCL$fc
+       fc        fc        fc 
+-1.085794 -1.045249 -1.058075 
+
+
+$CLL
+$CLL$pval
+        pval         pval         pval 
+5.676161e-04 1.315473e-06 5.614498e-07 
+
+$CLL$fc
+       fc        fc        fc 
+-1.085794 -1.134925 -1.148851 
+
+
+$nnMCL
+$nnMCL$pval
+        pval         pval         pval 
+1.315473e-06 1.170200e-01 6.702023e-01 
+
+$nnMCL$fc
+       fc        fc        fc 
+-1.134925 -1.045249 -1.012271 
+
+
+$SMZL
+$SMZL$pval
+        pval         pval         pval 
+5.614498e-07 5.965496e-02 6.702023e-01 
+
+$SMZL$fc
+       fc        fc        fc 
+-1.148851 -1.058075 -1.012271 
+```
+<br>  
+<br>  
+We see above that the only sub-type that have significant p-value < .01 against all other sub-types is CLL so this gene we keep for classification.
+<br>  
+<br>  
+We will also use the `pairwise.fc()` function from the `MKmisc` package but need to confirm the pairwise order is same as `pairwise.t.test()`
+```{r, }
+## test order of pairwise.fc() and pairwise.t.test() as they are different pacakges
+library(MKmisc)
+
+i = nrow(diagnosed.groups.keep.anova)
+d <- diagnosed.groups.keep.anova[i, ]
+
+pair.t <- pairwise.t.test(x=d, g=diagnosed.groups, p.adjust.method = "BH")
+p <- pair.t$p.value
+m <- melt(p)
+m <- m[!is.na(m$value),]
+
+fc <- pairwise.fc(x=d, g=diagnosed.groups)
+fc
+fc.df <- data.frame(do.call(rbind, strsplit(names(fc), " vs ")))
+
+## columns diff order but are all rows same so we are good
+all(m[,c("Var2", "Var1")] == fc.df)
+```
+
+<br>  
+<br>  
+Perform function in loop for all genes
+```{r, }
+probes <- rownames(diagnosed.groups.keep.anova)
+## list to keep the significant profiling genes/probes
+sig.genes <- list()
+## list to keep the indices of those genes
+sig.genes.idx <- c()
+## list that will hold the final dataframe information
+sig.genes.leuk.type <- list(type=c(), probe=c(), avg.p=c(), avg.fc=c())
+## used to append arrays in sig.genes.leuk.type
+count = 1
+
+for (i in 1:nrow(diagnosed.groups.keep.anova)) {
+  d <- diagnosed.groups.keep.anova[i, ]
+  #d <- diagnosed.groups.df["204913_s_at", ]
+  probe <- probes[i]
+  pair.t <- pairwise.t.test(x=d, g=diagnosed.groups, p.adjust.method = "BH")
+  
+
+  ## We need to rearrange the p.value table so we can see
+  ## by rows for each group the p-value against the 3 other groups
+  ## i.e. 6 pvals correspond to 6 x 2 = 12 differences or 4 groups x 3 comparisons
+  ## for each group against the other 3
+  p <- pair.t$p.value
+  m <- melt(p)
+  m <- m[!is.na(m$value),]
+  
+  ## From help menu:
+  ## The fold changes are returned in a slightly modified form if mod.fc = TRUE. 
+  ## Fold changes FC which are smaller than 1 are reported as to -1/FC.
+  ## Also it unlogs the fold change in the function with the code
+  ##    if (log) {
+  ##  logFC <- ave(xj, ...) - ave(xi, ...)
+  ##  FC <- base^logFC
+  ##  }
+  fc <- pairwise.fc(x=d, g=diagnosed.groups)
+  # confirmd above loop same order as pairwise.t.test
+  m$fc <- fc
+  
+  ## will be a 4x3 list for each group vs other 3, pretty nifty!
+  t.list <- list()
+  for (j in 1:nrow(m)) {
+    for (k in 1:2) {
+      key <- as.character(m[j,k])
+      t.list[[key]]$pval <- c(t.list[[key]]$pval, pval=m[j,"value"])
+      t.list[[key]]$fc <- c(t.list[[key]]$fc, fc=m[j,"fc"])
+      #t.list[[key]] <- c(t.list[[key]], list(pval=m[j,"value"], fc=m[k, "fc"]))
+    }
+  }
+  
+  ## only has completely different expression in one type verse the rest
+  ## not interested in the gene expression is differentially expressed
+  ## for example if gene is same in mMCL and CLL and same in nnMCL and SMZL
+  ## but different between the two subsets that would be BH signficant but
+  ## wouldn't help use in assigning leukemia type expression PROFILES
+  significant <- names(which(lapply(t.list, function(x) all(x$pval < .01)) == T))
+  bool <- length(significant) > 0
+  if (bool) { 
+    sig.genes[[probe]] <- significant
+    for (leuk in significant) {
+      sig.genes.leuk.type$type[count]=leuk
+      sig.genes.leuk.type$probe[count]=probe
+      sig.genes.leuk.type$avg.p[count]=mean(t.list[[leuk]]$pval)
+      sig.genes.leuk.type$avg.fc[count]=mean(t.list[[leuk]]$fc)
+      count=count+1
+    }
+  }
+  sig.genes.idx[i] <- bool
+}
+## total bool = T should be the length of nice significant gene list
+sum(sig.genes.idx) == length(sig.genes)
+
+
+
+```
+
+<br>  
+<br>  
+Provide the number of genes retained with the associated score (p-value, weight, test statistic, etc.) and threshold value that you used.  Plot the scores of those genes retained in a histogram.  The p-value retained for these genes were an average of the 3 p-values that were all < .01 in the function above.
+```{r, }
+cat(sum(sig.genes.idx), "signifcant profiling genes")
+
+## put in dataframe
+sig.genes.df <- data.frame(sig.genes.leuk.type) 
+## some genes have significant 1 vs. ALL for multiple sub-types
+## this may be longer that genes because the gene may be completely different
+## for more than 1 type, i.e. 'gene6' has adjusted 
+## 3 pvals < .01 for cMCL verse the other 3 and also 
+## 3 pvals < .01 for nnMCL verse the other 3
+dim(sig.genes.df)
+head(sig.genes.df)
+sig.genes.df.final <- sig.genes.df[order(sig.genes.df$avg.p),]
+
+hist(sig.genes.df.final$avg.p)
+```
+
+<br>  
+<br>  
+Next, subset your data by the genes that you determined and use one of the clustering or dimensionality reduction methods discussed in class to visualize the samples in two-dimensional space (xy scatter plot, dendrogram, etc.).
+<br>  
+<br>  
+First putting into expression set then plotting with PCA.  We get pretty good results in the PCA plot.
+```{r}
+## subset based on significant profiling scores
+diagnosed.groups.keep.anova.pairT <- diagnosed.groups.keep.anova[sig.genes.idx, ]
+dim(diagnosed.groups.keep.anova.pairT)
+
+## put back into ExpressionSet with featureData
+colnames(diagnosed.groups.keep.anova.pairT) <-
+  paste0(gsub(".*_", "", colnames(diagnosed.groups.keep.anova.pairT)), ".CEL.gz")
+
+significant.expset <- ExpressionSet(assayData=diagnosed.groups.keep.anova.pairT,
+                                    phenoData=annot.diagnosed.groups)
+
+db.annotation <- AnnotationDbi::select(
+  x = hgu133plus2.db,
+  keys = rownames(significant.expset),
+  columns = c("PROBEID", "SYMBOL"),
+  keytype = "PROBEID"
+)
+## same order?
+all(rownames(significant.expset)==unique(db.annotation$PROBEID))
+
+dup.ids <- db.annotation$PROBEID[table(db.annotation$PROBEID) > 1] %>%
+  unique %>%
+  sort
+
+db.annot.mult.mapping.significant <- db.annotation %>% 
+  group_by(PROBEID) %>%
+  summarise(PROBEID=PROBEID,
+            genes = paste0(SYMBOL, collapse = "|")) %>%
+  dplyr::slice(1)
+
+featureData(significant.expset) <- AnnotatedDataFrame(db.annot.mult.mapping)
+
+## plot PCA
+signficant.exprs <- exprs(significant.expset)
+BH.pairT.pca <- prcomp(t(signficant.exprs))
+pcomps <- data.frame(BH.pairT.pca$x[, 1:2])
+dim(pcomps)
+pcomps$leuk <- diagnosed.groups
+
+ggplot(pcomps, aes(PC1, PC2, color=leuk)) +
+  geom_point() +
+  ggtitle("PCA Plot Different leukemic B-CLPDs, PC1 vs PC2") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+#####**Using these linear projections of the original data (i.e. cluster centroids, latent variables, etc.), use a classification method to classify the samples into their respective classes.**
+<br>  
+<br>  
+First perform Kmeans clustering analysis on the first 2 principal components to see the accuracy and then try SVM splitting train and test for the diagnosed groups using these 2 principle components and finally training on all the diagnosed groups with all genes to predict the B-CLPD NOS group.
+<br>  
+<br>  
+We can see that with Kmeans clustering that it misclassifiers 0 CLL samples, only a couple cMCL samples, but a lot of the SMZL and couple of the cMCL were classified incorrectly as nnMCL in teal color.  This is to be expected and we did not get much separation between nnMCL and SMZL from the PCA plot above.
+```{r}
+#pcomps <- data.frame(BH.pairT.pca$x[, 1:2])
+set.seed(1)
+cl <- kmeans(pcomps[,1:2], centers=4, iter.max=20)
+
+## map colors to the clusters from kmeans
+#3 CLL red #e84a31
+#1 cMCL green #7fcc1e
+#2 nnMCL teal #1eccba
+#4 SMZL purple #cb61f3
+cols <- c("#7fcc1e", "#1eccba", "#e84a31", "#cb61f3")
+cols.pred <- plyr::mapvalues(cl$cluster, from=c(1,2,3,4), to=cols)
+# 3,1,2,4
+cols.truth <- plyr::mapvalues(diagnosed.groups, from=c("CLL", "cMCL", "nnMCL", "SMZL"), to=cols[c(3, 1, 2, 4)])
+
+
+plot(pcomps[,1:2], col=cols.pred, cex=1, pch=16,
+     main="K-means Cluster with K=4 on PCA=2\nwith Ground Truth")
+points(cl$centers, col=cols, pch = '*' , cex=4.5)
+
+points(pcomps, col = cols.truth, cex=2, lwd=2)
+legend(-40, 55, legend=c("CLL truth", "cMCL truth", "nnMCL truth", "SMZL truth"),
+       col=cols[c(3, 1, 2, 4)], pch=1, pt.cex=2, pt.lwd=2)
+
+```
+<br>  
+<br>  
+What is the accuracy from kmeans clustering?  We get about 91% accuracy with PCA on the ~7,600 significant genes.
+```{r}
+library(caret)
+
+# 3,1,2,4
+pred <- cl$cluster
+levels(pred) <- unique(cl$cluster)
+truth <- plyr::mapvalues(diagnosed.groups, from=c("CLL", "cMCL", "nnMCL", "SMZL"), to=c(3, 1, 2, 4))
+truth <- as.numeric(truth)
+levels(truth) <- unique(truth)
+
+confusionMatrix(factor(pred), factor(truth))
+
+```
+
+
+#####**Now trying SVM**
+<br>  
+<br>  
+We will train with a stratified 70/30 train/test split on the 2 PCA components for the 4 diagnosed groups.  Here we get a 92% accuracy rate so slightly better than kmeans.  
+```{r}
+X.pca <- pcomps[,1:2]
+## for simplicity we will assign same order to the classes from kmeans
+#truth <- plyr::mapvalues(diagnosed.groups, from=c("CLL", "cMCL", "nnMCL", "SMZL"), to=c(3, 1, 2, 4))
+X.pca$subtype <- as.factor(as.numeric(truth))
+
+set.seed(1)
+## get stratified index
+## https://stackoverflow.com/questions/20776887/stratified-splitting-the-data
+train.idx <- caret::createDataPartition(diagnosed.groups, p=0.7, list=F)
+table(diagnosed.groups[train.idx])/table(diagnosed.groups)
+
+
+train.pca <- X.pca[train.idx, ]
+train.pca$subtype
+test.pca <- X.pca[-train.idx, -ncol(X.pca)]
+y.test.pca <- X.pca$subtype[-train.idx]
+
+svm.model.bcell.pca <- e1071::svm(subtype ~ ., data = train.pca, kernel = 'radial')
+y.pred.pca <- predict(svm.model.bcell.pca, test.pca)
+
+## accuracy
+confusionMatrix(y.pred.pca, y.test.pca)
+
+```
+
+
+We will train with a stratified 70/30 train/test split on the 4 diagnosed groups.  However we will use all 7,600 features we obtained and then we will test this with just the 2 highest principal components.  
+<br>  
+<br>  
+We get 100% accuracy training with all 7,600 genes.  So this should be a good classifier for final classification.
+```{r}
+library(e1071)
+
+X <- data.frame(t(signficant.exprs))
+## for simplicity we will assign same order to the classes from kmeans
+#truth <- plyr::mapvalues(diagnosed.groups, from=c("CLL", "cMCL", "nnMCL", "SMZL"), to=c(3, 1, 2, 4))
+X$subtype <- as.factor(as.numeric(truth))
+
+## use same indices
+train <- X[train.idx, ]
+train$subtype
+test <- X[-train.idx, -ncol(X)]
+y.test <- X$subtype[-train.idx]
+
+svm.model.bcell <- e1071::svm(subtype ~ ., data = train, kernel = 'radial')
+y.pred <- predict(svm.model.bcell, test)
+
+## 100% accuracy
+confusionMatrix(y.pred, y.test)
+```
+
+
+
+First see how SVM does on classifying B-CLPD NOS group vs the SVM on the 2 highest principal components as well as finally finishing with predicting B-CLPD NOS group using all ~7,600 genes.  We need to perform PCA again with all 157 samples excluding outliers.
+```{r}
+## filter the df of B-CLPD NOS and diagnosed groups for both of the ANOVA and pairwise T-tests
+## already ordered by sample from before
+all.groups.df <- df.ord[p.adj<.01, ]
+all.groups.df2 <- all.groups.df[sig.genes.idx, ]
+## sanity check
+all(row.names(all.groups.df2)==row.names(diagnosed.groups.keep.anova.pairT))
+
+## plot PCA
+all.groups.pca <- prcomp(t(all.groups.df2))
+all.groups.pcomps <- data.frame(all.groups.pca$x[, 1:2])
+all.groups.pcomps$leuk <- groups.ord
+
+## train on all diagnosed groups, change to assign mappings with NOS types = 0
+## unfortunately e1071 requires factors where we have to unfactor it back later
+## same numbers as labels from before
+all.groups.pcomps$leuk.number <- factor(as.numeric(plyr::mapvalues(all.groups.pcomps$leuk, from=c("B-CLPD", "CLL", "cMCL", "nnMCL", "SMZL"), to=c(0, 3, 1, 2, 4))))
+
+set.seed(1)
+svm.model.bcell.pca.all.diagnosed <- e1071::svm(leuk.number ~ ., data = all.groups.pcomps[-B.CLPD, c(1,2,4)], kernel = 'radial')
+## predict 
+BCDLP.NOS.predict <- predict(svm.model.bcell.pca.all.diagnosed, all.groups.pcomps[B.CLPD, c(1,2)])
+
+#3 CLL red #e84a31
+#1 cMCL green #7fcc1e
+#2 nnMCL teal #1eccba
+#4 SMZL purple #cb61f3
+# what are predictions?
+cat("Predictions:")
+table(c("CLL", "cMCL", "nnMCL", "SMZL")[order(c(3, 1, 2, 4))][as.numeric(as.character(BCDLP.NOS.predict))])
+
+```
+
+
+Plot with predictions from SVM along with the known subtypes.  The B-CLPD NOS are indicated in black squares around the predictions.
+```{r}
+## need to map back
+## e1071 and ggplot2 not super compatible
+all.groups.pcomps$subtype.all <- 
+  c(as.numeric(as.character(BCDLP.NOS.predict)), 
+    as.numeric(as.character(all.groups.pcomps$leuk.number[-B.CLPD])))
+all.groups.pcomps$subtype.all <- plyr::mapvalues(all.groups.pcomps$subtype.all, from=c(3, 1, 2, 4), to=c("CLL", "cMCL", "nnMCL", "SMZL"))
+
+ggplot(all.groups.pcomps, aes(PC1, PC2, color=subtype.all)) +
+  geom_point() +
+  geom_point(data=all.groups.pcomps[B.CLPD,], aes(PC1, PC2), color="black", shape=0, size=3) +
+  ggtitle("PCA Plot Different leukemic B-CLPDs\n with SVM predictions for NOS types, PC1 vs PC2") +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+```
+
+<br>  
+<br>  
+Run SVM on all ~7,600 profiling genes.
+```{r}
+## X is the entire train set of diagnosed groups of 130 samples
+#3 CLL red #e84a31
+#1 cMCL green #7fcc1e
+#2 nnMCL teal #1eccba
+#4 SMZL purple #cb61f3
+dim(X)
+X$subtype
+
+## test set is the 27 B-CLPD NOS samples
+test <- data.frame(t(all.groups.df2[,B.CLPD]))
+dim(test)
+
+
+svm.model.bcell.all <- e1071::svm(subtype ~ ., data = X, kernel = 'radial')
+B.CLPD.NOS.pred.all.features <- predict(svm.model.bcell.all, test)
+## What are the predicted groups
+c("CLL", "cMCL", "nnMCL", "SMZL")[order(c(3, 1, 2, 4))][as.numeric(as.character(B.CLPD.NOS.pred.all.features))]
+table(c("CLL", "cMCL", "nnMCL", "SMZL")[order(c(3, 1, 2, 4))][as.numeric(as.character(B.CLPD.NOS.pred.all.features))])
+```
+
+
+We can see that the predictions are slightly different (5 total differences) when training with all the features compared to just the top 2 principal components.
+```{r, }
+pred.pca <- c("CLL", "cMCL", "nnMCL", "SMZL")[order(c(3, 1, 2, 4))][as.numeric(as.character(BCDLP.NOS.predict))]
+pred.all.sig.genes <- c("CLL", "cMCL", "nnMCL", "SMZL")[order(c(3, 1, 2, 4))][as.numeric(as.character(B.CLPD.NOS.pred.all.features))]
+table("pred.pca"=pred.pca, "pred.all.sig.genes"=pred.all.sig.genes)
+```
+
+
+#####**Finally, using the top 5 discriminant genes (positive and negative direction) from your analysis, go to NCBI’s DAVID and look up the gene information.  Provide the gene name and functional information (associated pathways, GO terms, etc) for these 10 genes.**
+<br>  
+<br>  
+I am going to actually include the top discriminant genes positive and negative for all four groups CLL,cMCL, nnMCL, SMZL.  So there will be 40 total.
+```{r, }
+## put in dataframe
+sig.genes.df <- data.frame(sig.genes.leuk.type) 
+
+## put back into ExpressionSet with featureData
+colnames(diagnosed.groups.keep.anova.pairT) <-
+  paste0(gsub(".*_", "", colnames(diagnosed.groups.keep.anova.pairT)), ".CEL.gz")
+
+significant.expset <- ExpressionSet(assayData=diagnosed.groups.keep.anova.pairT,
+                                    phenoData=annot.diagnosed.groups)
+
+db.annotation <- AnnotationDbi::select(
+  x = hgu133plus2.db,
+  keys = rownames(significant.expset),
+  columns = c("PROBEID", "SYMBOL"),
+  keytype = "PROBEID"
+)
+## same order?
+all(rownames(significant.expset)==unique(db.annotation$PROBEID))
+
+dup.ids <- db.annotation$PROBEID[table(db.annotation$PROBEID) > 1] %>%
+  unique %>%
+  sort
+
+db.annot.mult.mapping.significant <- db.annotation %>% 
+  group_by(PROBEID) %>%
+  summarise(PROBEID=PROBEID,
+            genes = paste0(SYMBOL, collapse = "|")) %>%
+  dplyr::slice(1)
+
+featureData(significant.expset) <- AnnotatedDataFrame(db.annot.mult.mapping)
+
+## assign gene names from hgu133plus2.db with the featureData from earlier
+## again genes can be on multiple rows if they profile more than 1 subtype, but this is a small percentage
+sig.genes.df.with.names <- dplyr::left_join(x=sig.genes.df, y=featureData(significant.expset)@data, by=c("probe"="PROBEID"))
+
+## order by pval
+sig.genes.df.with.names <- sig.genes.df.with.names[order(sig.genes.df.with.names$avg.p),]
+
+## since there are duplicate gene probes in a single group
+## i.e. cMCL has SOX11 twice keep the lowest pvalue row
+## so we can obtain top 5 + and - for each group for 40 total
+grouped.by.type <- sig.genes.df.with.names %>% group_by(type)
+unique.sig.genes.df.with.names <- grouped.by.type[!duplicated(grouped.by.type[,c(1,5)]),]
+
+## since we want to group of 5 for + and - we can create a direction for grouping
+unique.sig.genes.df.with.names$direction <- ifelse(unique.sig.genes.df.with.names$avg.fc>0, "positive", "negative")
+
+## some genes are NA so lose those
+unique.sig.genes.df.with.names <- unique.sig.genes.df.with.names[!unique.sig.genes.df.with.names$genes=="NA",]
+
+## group and slice 5 for each subtype up and down
+diff.exp.genes.dir <- unique.sig.genes.df.with.names %>% 
+  group_by(type, direction) 
+
+diff.exp.genes <- diff.exp.genes.dir %>%
+  slice_min(avg.p, n=5)
+diff.exp.genes
+```
+
+<br>  
+<br>  
+Just by looking at CLL and cMLC top 5 positively regulated genes we can see they match the paper by the authors.  As well as some of the other positively regulated notables for these 2 subtypes.
+```{r}
+diff.exp.genes[(diff.exp.genes$type=="CLL" | diff.exp.genes$type=="cMCL") 
+                & diff.exp.genes$direction=="positive", ]
+
+## other notable genes in CLL and cMCL that are up-regulated in each
+diff.exp.genes.notables <- diff.exp.genes.dir[(diff.exp.genes.dir$type=="CLL" |
+                                                 diff.exp.genes.dir$type=="cMCL") &
+                                                  diff.exp.genes.dir$avg.fc>0,]
+notables <- diff.exp.genes.notables %>% slice_min(avg.p, n=15)
+notables[c(6:10, 21:29),]
+```
+
+
+<br>  
+<br>  
+####**Use the `RDAVIDWebService` package to annotate the differentially expressed profiling genes.
+<br>  
+<br>  
+First get Go IDs and associated Go terms and make dataframe.  Then in addition will make separate dataframes including gene names for the following other annotations:
+<br>  
+<br>  
+1. KEGG_PATHWAY
+2. REACTOME_PATHWAY
+3. MINT
+4. INTACT
+5. UCSC_TFBS
+
+```{r,}
+library(RDAVIDWebService)
+david <- DAVIDWebService$new(email="bwiley4@jh.edu", url="https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
+result <- addList(david, diff.exp.genes$probe,
+                  idType="AFFYMETRIX_3PRIME_IVT_ID",
+                  listName="Top5All", listType="Gene")
+
+## see 39 of the 40 probe ids were annotated
+david
+## get GO and Paths/interactions, need to set at least 1 annotation 
+## that has 100% of the IDs so there are rows for each annotation = number of IDs
+## that is pretty silly
+setAnnotationCategories(david, c("GOTERM_CC_DIRECT",
+                                 "KEGG_PATHWAY", "REACTOME_PATHWAY",
+                                 "MINT", "INTACT", "UCSC_TFBS", "ENSEMBL_GENE_ID"))
+
+## get annotations selected, returns sparse matrix for your probes for each annotation
+## need novel way to convert below
+annotTable <- RDAVIDWebService::getFunctionalAnnotationTable(david)
+memberships <- RDAVIDWebService::membership(annotTable)
+cat("Gene Names\n")
+annotTable@Genes ## gene names
+nrow(annotTable@Genes) ## 40 since I have 4 groups, you should have 10
+
+## now there are only 39 rows find which id is missing
+## since we can't set annotTable@Genes[,"ID"] as names with 40 on list of 39
+nrow(memberships$KEGG_PATHWAY) ## this is 40
+all(lapply(memberships, function(x) nrow(x))==nrow(diff.exp.genes)) ## now all are 40 in length good, 10 for you
+
+
+## add full genes names to your results
+diff.exp.genes.with.names <- left_join(diff.exp.genes, annotTable@Genes[,1:2], by=c("probe"="ID"))
+
+## BELOW to add column for go ids and columns for go terms
+## GO comes with a dictionary mapping of ids to terms, pretty nice
+go.matrix <- as.data.frame(memberships$GOTERM_CC_DIRECT)
+go.dict <- annotTable@Dictionary$GOTERM_CC_DIRECT
+## above is not real dict, lists are real dicts in R
+go.dict.real.dict <- setNames(split(go.dict[,2], seq(nrow(go.dict))), go.dict[,1])
+## Example 'endoplasmic reticulum'
+go.dict.real.dict$`GO:0005783`
+
+## create adjacency lists from sparse go matrix for ids and use dict for terms
+go.ids.per.probe <- apply(go.matrix, 1, function(x) colnames(go.matrix)[which(x==TRUE)])
+names(go.ids.per.probe) <- annotTable@Genes[,"ID"]
+go.terms.per.probe <- lapply(go.ids.per.probe, function(x) sapply(x, function(y) go.dict.real.dict[[y]]))
+names(go.terms.per.probe) <- annotTable@Genes[,"ID"]
+
+## make GO ID dataframe and join
+## set the collapse to any delimter you want with your annotations
+## NCBI David uses comma separated
+## This is really a matrix need to convert
+## https://stackoverflow.com/questions/4227223/convert-a-list-to-a-data-frame
+goid.list <- lapply(go.ids.per.probe, function(x) paste0(x, collapse = ", "))
+goid.df <- data.frame(matrix(unlist(goid.list), nrow=length(goid.list), byrow = T), stringsAsFactors = FALSE)
+colnames(goid.df) <- "goIDs"
+rownames(goid.df) <- annotTable@Genes[,"ID"]
+goid.df$ID <- annotTable@Genes[,"ID"]
+## add go terms to differential expression dataframe
+diff.exp.genes.with.names.goids <- left_join(diff.exp.genes.with.names, 
+                                             goid.df, by=c("probe"="ID"))
+
+
+# same for terms
+goTerm.list <- lapply(go.terms.per.probe, function(x) paste0(x, collapse = ", "))
+goTerm.df <- data.frame(matrix(unlist(goTerm.list), nrow=length(goTerm.list), byrow = T), 
+                        stringsAsFactors = FALSE)
+colnames(goTerm.df) <- "goTerms"
+rownames(goTerm.df) <- annotTable@Genes[,"ID"]
+goTerm.df$ID <- annotTable@Genes[,"ID"]
+## add go terms to differential expression dataframe
+diff.exp.genes.with.names.goidsAndTerms <- left_join(diff.exp.genes.with.names.goids, 
+                                                     goTerm.df, by=c("probe"="ID"))
+
+
+cat(sum(diff.exp.genes.with.names.goidsAndTerms$goIDs != ""), "entries for", "Go IDs")
+cat(sum(diff.exp.genes.with.names.goidsAndTerms$goTerms != ""), "entries for", "Go Terms")
+## so for me two of the probes matched (SOX5) so 37 is really 36
+
+diff.exp.genes.with.names.goidsAndTerms
+## write go annotation to file
+write.table(diff.exp.genes.with.names.goidsAndTerms, file = "GoIDs_and_Terms.txt", 
+            row.names = F, sep = "\t", quote = F)
+
+```
+
+<br>  
+<br> 
+Repeat for 5 other annotations.  See zip folder will all the annotation files.
+```{r, }
+## repeat for other annotations but make individual dataframes
+## i.e. the original columns of diff.exp.genes and new column for 
+## each of "KEGG_PATHWAY", "REACTOME_PATHWAY", "MINT", "INTACT", "UCSC_TFBS"
+memberships <- RDAVIDWebService::membership(annotTable)
+names(memberships)
+
+# make annotation dataframe function
+make.annot.df <- function(annotation) {
+  matrix <- as.data.frame(memberships[[annotation]])
+  annot.per.probe <- apply(matrix, 1, function(x) colnames(matrix)[which(x==TRUE)])
+  names(annot.per.probe) <- annotTable@Genes[,"ID"]
+  
+  annot.list <- lapply(annot.per.probe, function(x) paste0(x, collapse = ", "))
+  annot.df <- data.frame(matrix(unlist(annot.list), nrow=length(annot.list), byrow = T), 
+                         stringsAsFactors = FALSE)
+  colnames(annot.df) <- annotation
+  rownames(annot.df) <- annotTable@Genes[,"ID"]
+  annot.df$ID <- annotTable@Genes[,"ID"]
+  ## add add annotation to differential expression dataframe with full gene names
+  diff.exp.genes.with.names.annot <- left_join(diff.exp.genes.with.names, 
+                                               annot.df, by=c("probe"="ID"))
+  cat(sum(diff.exp.genes.with.names.annot[annotation] != ""), "entries for", annotation)
+  
+  ## write to file
+  write.table(diff.exp.genes.with.names.annot, file = paste0(annotation,".txt"),
+              row.names = F, sep = "\t", quote = F)
+  
+  diff.exp.genes.with.names.annot
+  
+}
+
+## KEGG
+kegg.df <- make.annot.df("KEGG_PATHWAY")  ## SOX5 empty
+head(kegg.df)
+
+## REACTOME
+reactome <- make.annot.df("REACTOME_PATHWAY") ## SOX5 empty
+head(reactome)
+
+## IntAct, lot of entries here!
+intact <- make.annot.df("INTACT") ## again SOX5 twice so really 31
+intact[intact$probe=="203072_at", "INTACT"]
+
+## MINT
+mint <- make.annot.df("MINT") ## SOX5 twice so 16
+
+## UCSC_TFBS
+ucsc.tfbs <- make.annot.df("UCSC_TFBS") ## SOX5 twice so 38
+ucsc.tfbs[ucsc.tfbs$probe=="230441_at", "UCSC_TFBS"]
+
+
+
+```

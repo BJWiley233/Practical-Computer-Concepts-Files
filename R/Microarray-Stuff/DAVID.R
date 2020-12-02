@@ -4,8 +4,12 @@ write.table(diff.exp.genes, file = "diff.exp.genes.txt", quote=F, sep="\t", row.
 write.table(diff.exp.genes$probe, file = "probes.txt", quote=F, sep="\t", row.names = F,
             col.names = F)
 
-diff.exp.genes <- read.table(file = "diff.exp.genes.txt", sep="\t", header=T)
 
+setwd("/home/coyote/JHU_Fall_2020/Data_Analysis/project")
+diff.exp.genes2 <- read.table(file = "diff.exp.genes.txt", sep="\t", header=T)
+class(diff.exp.genes2$probe)
+class(diff.exp.genes$probe)
+class(diff.exp.genes$probe)
 ## got fix your java certificates first
 ## https://support.bioconductor.org/p/72188/
 library(RDAVIDWebService)
@@ -99,6 +103,7 @@ names(memberships)
 # memberships$KEGG_PATHWAY
 # annotation <- "KEGG_PATHWAY"
 
+# make annotation dataframe function
 make.annot.df <- function(annotation) {
   matrix <- as.data.frame(memberships[[annotation]])
   annot.per.probe <- apply(matrix, 1, function(x) colnames(matrix)[which(x==TRUE)])
