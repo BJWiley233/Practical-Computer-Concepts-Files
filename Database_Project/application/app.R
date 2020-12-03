@@ -18,7 +18,7 @@ loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -114,7 +114,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "**", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 
@@ -186,6 +186,7 @@ getSubstrates <- function(UP.id) {
     	  startNode(relationship).name as Protein1, 
         startNode(relationship).uniprotID as Prot1UPID,
         startNode(relationship).proteinName as Prot1protName,
+        apoc.convert.toJson(startNode(relationship).altProtNames) as Prot1protNameAlt,
         startNode(relationship).taxid as Prot1tax,
         startNode(relationship).organism as Prot1org,
         endNode(relationship).name as Protein2, 

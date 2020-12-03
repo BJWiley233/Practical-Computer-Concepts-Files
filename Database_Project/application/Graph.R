@@ -61,11 +61,27 @@ observe({
   
   ## main graph app
   if ("neo" %in% class(G)) {
-    G$nodes$proteinName <- apply(G$nodes, 1, function(x){
-      ifelse(is.na(x[['proteinName']]),
-             strsplit(x[['altProtNames']], "|", fixed=T)[[1]],
-             x[['proteinName']])
-    })
+    
+    ## Needs at least 1 protein to have a proteinName attribute needs fixing.
+    # G$nodes$proteinName <- apply(G$nodes, 1, function(x){
+    #   ifelse(is.na(x[['proteinName']]),
+    #          strsplit(x[['altProtNames']], "|", fixed=T)[[1]],
+    #          x[['proteinName']])
+    # })
+    if ("proteinName" %in% colnames(G$nodes)) {
+      G$nodes$proteinName <- apply(G$nodes, 1, function(x) {
+        ifelse(is.na(x[['proteinName']]),
+               strsplit(x[['altProtNames']], "|", fixed=T)[[1]][1],
+               x[['proteinName']])
+      })
+      ## might need to check if alt names is in there too but should really
+      ## always be there with the Merge in Neo4j by Python class.
+    } else {
+      G$nodes$proteinName <- apply(G$nodes, 1, function(x) {
+        strsplit(x[['altProtNames']], "|", fixed=T)[[1]][1]
+        
+      })
+    }
     
     final <- G$relationships %>%
       group_by(id, startNode, endNode) %>% 
@@ -102,7 +118,7 @@ observe({
     e.colors <- c("orchid", "orange", "#4444fb", "#5cf61d", "#6b6bae", 
                   "#0cf3fa", "#f20e42", "#cdafb6", "#8bd0f8", "#b40fb9", "#fdfbfd")
     
-    #vertex_attr(graph_object, "UniProt ID", index = V(graph_object)) <- node.data.g$uniprotID
+    
     v.attrs <- vertex_attr(graph_object)
     edge_attr(graph_object, "color", index = E(graph_object)) <- 
       e.colors[as.factor(edge_attr(graph_object)$name)]
@@ -283,6 +299,12 @@ observe({
                                         row[["uniprotID.x"]], row[["uniprotID.x"]])
         row[["uniprotID.y"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
                                         row[["uniprotID.y"]], row[["uniprotID.y"]])
+      } ## CHEBI
+      else if (grepl('CHEBI', row[["uniprotID.y"]])) {
+        row[["uniprotID.x"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+                                      row[["uniprotID.x"]], row[["uniprotID.x"]])
+        row[["uniprotID.y"]] <- sprintf("<a href='https://www.ebi.ac.uk/chebi/searchId.do;?chebiId=%s'>%s</a>", 
+                                      row[["uniprotID.y"]], row[["uniprotID.y"]])
       } else {
         row[["uniprotID.x"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
                                         row[["uniprotID.x"]], row[["uniprotID.x"]])
@@ -343,8 +365,24 @@ or select a different UniProt ID.")
     
     rowDF <- dplyr::bind_cols(Rows)
     colnames(rowDF) <- names(Rows)
+    rowDF$Prot1protNameAlt <- ifelse(rowDF$Prot1protNameAlt=="null", NA, rowDF$Prot1protNameAlt)
     rowDF$Prot2protNameAlt <- ifelse(rowDF$Prot2protNameAlt=="null", NA, rowDF$Prot2protNameAlt)
     
+    ## if Protein name is blank get first alternative
+    rowDF$Prot1protName <- apply(rowDF, 1, function(x) {
+      if(is.na(x['Prot1protName'])) {
+        if (!is.na(x['Prot1protNameAlt'])) {
+          return(jsonlite::fromJSON(x['Prot1protNameAlt'][[1]])[1])
+        } else {
+          return(NA)
+        }
+      } else {
+        return(x['Prot1protName'])
+      }
+    }
+    )
+    
+    ## if Sub name is blank get first alternative
     rowDF$Prot2protName <- apply(rowDF, 1, function(x) {
       if(is.na(x['Prot2protName'])) {
         if (!is.na(x['Prot2protNameAlt'])) {
@@ -383,23 +421,31 @@ or select a different UniProt ID.")
       return(string)
     })
     
+    # Links to PSP, UniProt, and CHEBI
     linksRow <- apply(rowDF, 1, function(row) {
       if (grepl('PhosphoSitePlus', row[["Relationship details"]])) {
-        row[["Prot1UPID"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
+        row[["Prot1UPID"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>",
                                       row[["Prot1UPID"]], row[["Prot1UPID"]])
-        row[["Prot2UPID"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
+        row[["Prot2UPID"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>",
                                       row[["Prot2UPID"]], row[["Prot2UPID"]])
-      } else {
+      } ## CHEBI
+      else if (grepl('CHEBI', row[["Prot2UPID"]])) {
         row[["Prot1UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
                                       row[["Prot1UPID"]], row[["Prot1UPID"]])
-        row[["Prot2UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+        row[["Prot2UPID"]] <- sprintf("<a href='https://www.ebi.ac.uk/chebi/searchId.do;?chebiId=%s'>%s</a>", 
+                                      row[["Prot2UPID"]], row[["Prot2UPID"]])
+      } else {
+        row[["Prot1UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>",
+                                      row[["Prot1UPID"]], row[["Prot1UPID"]])
+        row[["Prot2UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>",
                                       row[["Prot2UPID"]], row[["Prot2UPID"]])
       }
       c(row[["Prot1UPID"]], row[["Prot2UPID"]])
     })
     
     rowDF[,c("Prot1UPID", "Prot2UPID")] <- t(linksRow)
-    rowDF2 <- rowDF[,c(1:8, 10:13)]
+    #rowDF2 <- rowDF[,c(1:8, 10:13)]
+    rowDF2 <- rowDF[,c(1:3, 5:9, 11:14)]
     
     colnames(rowDF2) <- c("Prot Gene Name", "Prot UniProt ID", "Prot Protein Name", "Prot taxid", "Prot organism",
                          "Sub Gene Name", "Sub UniProt ID", "Sub Protein Name", "Sub taxid", "Sub organism",
