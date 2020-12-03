@@ -10,11 +10,11 @@ import create_mysql_db
 from create_mysql_db import *
 import pandas as pd
 from io import StringIO
-#import requests
 import numpy as np
 import json
-#import xml.etree.ElementTree as ET
 import re
+
+
 
 """
 preprocess with R
@@ -28,7 +28,7 @@ preprocess with R
 """
 
 user='root'
-password="********"
+password='Swimgolf1212**'
 host='127.0.0.1'
 db_name = "protTest"
 
@@ -63,7 +63,7 @@ TABLES['intact'] = (
     "    interactionType TINYTEXT NOT NULL,"
     "    biologicalRoleA VARCHAR(45) DEFAULT NULL,"
     "    biologicalRoleB VARCHAR(45) DEFAULT NULL,"
-    "    pubmedID VARCHAR(45) DEFAULT NULL,"
+    "    publicationID VARCHAR(255) DEFAULT NULL,"
     "    sourceDB VARCHAR(45) DEFAULT NULL,"
     "    isNegative BOOLEAN DEFAULT FALSE,"
     "    direction CHAR(5) NOT NULL"
@@ -88,7 +88,23 @@ intact = pd.read_csv("../data/intact_cleaned_R.txt", sep="\t", na_values="NA")
 df_final = intact.replace({np.nan: None})
 len(df_final)
 df_final_unique = df_final.drop_duplicates()
+### Fixed CHEBI 
+A = [itm[0] for itm in df_final_unique['X.ID.s..interactor.A'].str.findall('CHEBI.*') if len(itm)>0]
+df_final_unique[df_final_unique['ID.s..interactor.B'].str.match('CHEBI.*')==True]
+##################################################################
 len(df_final_unique)
+## Found out these CHEBI molecules could be good to link to CHEBI
+## 12/3/2020 Fixed the R data cleaning script
+A = [itm[0] for itm in df_final_unique['X.ID.s..interactor.A'].str.findall('^[0-9]{5,6}$') if len(itm)>0]
+len(A)
+len(np.unique(A))
+hasB = df_final_unique['ID.s..interactor.B'][df_final_unique['ID.s..interactor.B'].notnull()]
+B = [itm[0] for itm in hasB.str.findall('^[0-9]{5,6}$') if len(itm)>0]
+len(B)
+## test updating these in Neo4j with Cypher csv query
+len(np.unique(B))
+len(np.unique(np.concatenate([A, B])))
+##################################################################
 
 log_file = "intact_not_entered.log"
 open(log_file, 'w').close()
@@ -119,6 +135,10 @@ for idx, row in df_final_unique.iterrows():
         interactionType = "dephosphorylation"
     elif row["interactionType"] == "protein cleavage":
         interactionType = "proteolysis"
+    ## if cleavage and uniprot ids for both 
+    elif row["interactionType"] == "cleavage reaction":
+        if len(row["X.ID.s..interactor.A"])==6 and len(row["X.ID.s..interactor.A"])==6:
+            interactionType = "proteolysis"     
     else:
         interactionType = row["interactionType"]
     

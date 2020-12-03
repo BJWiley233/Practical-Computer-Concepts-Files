@@ -163,6 +163,7 @@ class ProteinExample:
             return "Need to call ProteinExample.use_database(database)"
         for interaction in interactions:
             direct = str.split(interaction['direction'], "->")
+            ## if self interaction
             if len(np.unique(direct)) == 1:
                 with self.driver.session(database=self.database) as session:   
                     result = session.write_transaction(
@@ -176,7 +177,7 @@ class ProteinExample:
                         print("Created: ", [res["from"],
                                             res["interaction"],
                                             res["to"]])
-                   
+            ## not self interaction       
             else:
                 with self.driver.session(database=self.database) as session:
                     result = session.write_transaction(
@@ -258,6 +259,7 @@ class ProteinExample:
         """ % (interaction['nodeTypeA'], from_, to_, from_, to_))
         
         result = tx.run(query, 
+                        ## had to use placeholder instead for the node types
                         #nodeTypeA=interaction['nodeTypeA'],
                         interactorA=interaction['interactorA'],
                         taxidA=interaction['taxidA'],
