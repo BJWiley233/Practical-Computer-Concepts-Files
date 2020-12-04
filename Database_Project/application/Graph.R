@@ -1,4 +1,18 @@
+library(RMySQL)
+library(DBI)
+library(shiny)
+library(shinythemes)
+library(shinyWidgets)
+library(dqshiny)
+library(DT)
+library(shinyjs)
+library(plotly)
 library(dplyr)
+library(jsonlite)
+library(qdapRegex)
+library(emojifont)
+library(shinyBS)
+library(stringr)
 
 output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                       tags$style(HTML("
@@ -56,6 +70,7 @@ observe({
   req(input$uniProtID)
   name <- dat[dat$uniProtID==input$uniProtID, "geneNamePreferred"]
 
+  #' \link[app.R]{getGraph}
   G <- getGraph(input$uniProtID, input$direction,
                 as.numeric(input$length), limit=as.numeric(input$limit))
   
@@ -278,11 +293,18 @@ observe({
           l$interactionID = sprintf("<a href=https://www.ebi.ac.uk/intact/interaction/%s>%s</a>",
                                     l$interactionID, l$interactionID)
         } else if (grepl("CLE[0-9]+", l$interactionID)) {
-          link.id <- ex_between(l$`publicationID(s)`, "[", "]")[[1]]
-          publication <- ex_between(l$`publicationID(s)`, "<%", "[")[[1]]
-          publication <- gsub("%", "", publication)
-          l$`publicationID(s)` = sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
-                                         link.id, publication)
+          if (!is.null(l$`publicationID(s)`)) {
+            link.id <- ex_between(l$`publicationID(s)`, "[", "]")[[1]]
+            publication <- ex_between(l$`publicationID(s)`, "<%", "[")[[1]]
+            publication <- gsub("%", "", publication)
+            l$`publicationID(s)` <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
+                                              link.id, publication)
+            l$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+                                         x['Prot2UPID'],  l$interactionID)
+          } else {
+            l.i$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+                                         x['Prot2UPID'],  l$interactionID)
+          }
         }
       }
       for (j in paste(names(l), ":", l, "<br>"))
@@ -360,8 +382,10 @@ or select a different UniProt ID.")
   
   ################################################################################################
   ## NEW! strictly a substrates table even if user selects some sort of pathway
+  ## Ne4j query returns "row" type instead of "graph" type
+  #' \link[app.R]{getSubstrates}
   Rows <- getSubstrates(input$uniProtID)
-  if ("neo" %in% class(Rows)) {
+  if ("neo" %in% class(Rows) & length(Rows) > 0) {
     
     rowDF <- dplyr::bind_cols(Rows)
     colnames(rowDF) <- names(Rows)
@@ -395,22 +419,32 @@ or select a different UniProt ID.")
       }
     })
     
-    rowDF$`Relationship details` <- lapply(rowDF$`Relationship details`, function(x) {
+    ## Add links to Relationships
+    rowDF$`Relationship details` <- apply(rowDF, 1, function(x) {
       string = ""
-      l <- jsonlite::fromJSON(x[[1]])
+      l <- jsonlite::fromJSON(x["Relationship details"][[1]])
       for (i in 1:length(l)) {
         string <- paste0(string, '<b>', i, ". ", "</b>")
         l.i <- jsonlite::fromJSON(l[[i]])
         if (!is.null(l.i$interactionID)) {
+          ## intact
           if (grepl("EBI-[0-9]+", l.i$interactionID)) {
             l.i$interactionID = sprintf("<a href=https://www.ebi.ac.uk/intact/interaction/%s>%s</a>",
                                         l.i$interactionID, l.i$interactionID)
+            ## merops
           } else if (grepl("CLE[0-9]+", l.i$interactionID)) {
-            link.id <- ex_between(l.i$`publicationID(s)`, "[", "]")[[1]]
-            publication <- ex_between(l.i$`publicationID(s)`, "<%", "[")[[1]]
-            publication <- gsub("%", "", publication)
-            l.i$`publicationID(s)` = sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
-                                             link.id, publication)
+            if (!is.null(l.i$`publicationID(s)`)) {
+              link.id <- ex_between(l.i$`publicationID(s)`, "[", "]")[[1]]
+              publication <- ex_between(l.i$`publicationID(s)`, "<%", "[")[[1]]
+              publication <- gsub("%", "", publication)
+              l.i$`publicationID(s)` <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
+                                                link.id, publication)
+              l.i$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+                                           x['Prot2UPID'],  l.i$interactionID)
+            } else {
+              l.i$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+                                           x['Prot2UPID'],  l.i$interactionID)
+            }
           }
         }
         
@@ -420,6 +454,31 @@ or select a different UniProt ID.")
       }
       return(string)
     })
+    # rowDF$`Relationship details` <- lapply(rowDF$`Relationship details`, function(x) {
+    #   string = ""
+    #   l <- jsonlite::fromJSON(x[[1]])
+    #   for (i in 1:length(l)) {
+    #     string <- paste0(string, '<b>', i, ". ", "</b>")
+    #     l.i <- jsonlite::fromJSON(l[[i]])
+    #     if (!is.null(l.i$interactionID)) {
+    #       if (grepl("EBI-[0-9]+", l.i$interactionID)) {
+    #         l.i$interactionID = sprintf("<a href=https://www.ebi.ac.uk/intact/interaction/%s>%s</a>",
+    #                                     l.i$interactionID, l.i$interactionID)
+    #       } else if (grepl("CLE[0-9]+", l.i$interactionID)) {
+    #         link.id <- ex_between(l.i$`publicationID(s)`, "[", "]")[[1]]
+    #         publication <- ex_between(l.i$`publicationID(s)`, "<%", "[")[[1]]
+    #         publication <- gsub("%", "", publication)
+    #         l.i$`publicationID(s)` = sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
+    #                                          link.id, publication)
+    #       }
+    #     }
+    #     
+    #     for (j in paste(names(l.i), ":", l.i, "<br>")) {
+    #       string = paste0(string, j)
+    #     }
+    #   }
+    #   return(string)
+    # })
     
     # Links to PSP, UniProt, and CHEBI
     linksRow <- apply(rowDF, 1, function(row) {

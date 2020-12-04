@@ -126,7 +126,7 @@ observe({
                               value = value)  
     
   }
-  output$upID <- renderText({ input$uniProtID })
+  #output$upID <- renderText({ input$uniProtID })
   
   
 })
