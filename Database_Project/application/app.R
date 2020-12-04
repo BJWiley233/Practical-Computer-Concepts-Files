@@ -18,7 +18,7 @@ loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -64,6 +64,7 @@ drugBankBinding.query <- function(id) {
            WHERE j.uniProtID = '%s'", id)
 }
 
+## Data Dictionary
 schema.mysql <- read.table("~/JHU_Fall_2020/Biological_DBs/Project/data_dict.csv",
                            sep = ",", header = T)
 #https://stackoverflow.com/questions/33180058/coerce-multiple-columns-to-factors-at-once
@@ -114,7 +115,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 

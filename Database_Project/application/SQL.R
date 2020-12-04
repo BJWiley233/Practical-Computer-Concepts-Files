@@ -87,7 +87,9 @@ output$results <- DT::renderDataTable(datatable(
       "$(this.api().table().header()).css({'color': '#fff'});",
       "}"),
     autoWidth = T,
-    scrollX='800px'), 
+    scrollX='800px', 
+    scrollY = '500px',
+    pageLength = 50), 
   callback = JS('table.page(3).draw(false);'),
   escape = F
   )
@@ -119,7 +121,9 @@ output$schema <- DT::renderDataTable(datatable(
                               "return type === 'display' && data.length > 15 ?",
                               "'<span title=\"' + data + '\">' + data.substr(0, 15) + '...</span>' : data;",
                               "}"))),
-                        scrollX='400px'), 
+                        scrollX='400px', 
+                        scrollY = '500px',
+                        pageLength = 50), 
                       callback = JS('table.page(3).draw(false);'),
                       colnames = c("Element Name", "Table Name", "Description",
                                    "Source","Data Type", "Node or Edge",

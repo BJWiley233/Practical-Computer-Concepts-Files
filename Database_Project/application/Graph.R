@@ -22,6 +22,9 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                                       #SwissModel a {
                                                         color: #5b33ff;
                                                       }
+                                                      .has-feedback .form-control {
+                                                        padding-right: 0px;
+                                                      }
                                                       ")
                                       ),
   navbarPage("Graph and Data",
@@ -46,17 +49,17 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
              tabPanel(title="PDB Structures",
                       mainPanel(
                         fluidRow(column(7, DT::dataTableOutput("PDB_structures")),
-                                 
+                                 ## For 3D model by U of Pitt
                                  shinydashboard::box(title="3D Structure", width = 5, status="primary", solidHeader =TRUE, 
                                      uiOutput("structure_3d")),
-                                 column(2, textOutput("text2"))
-                                 ),
+                                 column(2, textOutput("text2"))),
                         fluidRow(column(8, htmlOutput("SwissModel"))),
                       )
              ),
              tabPanel(title="PDB Binding Sites and Drugs",
                       mainPanel(
-                        fluidRow(column(8, DT::dataTableOutput("binding_drug")))
+                        fluidRow(column(8, DT::dataTableOutput("binding_drug"),
+                                        style = "width:1200px"))
                       )
              )
 
@@ -302,7 +305,7 @@ observe({
             l$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
                                          x['Prot2UPID'],  l$interactionID)
           } else {
-            l.i$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+            l$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
                                          x['Prot2UPID'],  l$interactionID)
           }
         }
@@ -344,7 +347,8 @@ observe({
     
     
     output$data_table <- DT::renderDataTable(
-                              datatable(df3, style = "bootstrap", class = "compact",
+                            datatable(df3, style = "bootstrap", class = "compact",
+                                      filter = "top",
                                       options = list(
                                         initComplete = JS(
                                           "function(settings, json) {",
@@ -365,8 +369,8 @@ observe({
                                         columnDefs = list(
                                           list(className = 'dt-body-left'),
                                           list(width='325px', targets=12)),
-                                        pageLength = 10,
-                                        scrollY = '500px'
+                                        scrollY = '500px',
+                                        pageLength = 50
                                       ),
                                       escape = F
                               )
@@ -381,7 +385,7 @@ or select a different UniProt ID.")
   }
   
   ################################################################################################
-  ## NEW! strictly a substrates table even if user selects some sort of pathway
+  ## NEW!!! strictly a substrates table even if user selects some sort of pathway
   ## Ne4j query returns "row" type instead of "graph" type
   #' \link[app.R]{getSubstrates}
   Rows <- getSubstrates(input$uniProtID)
@@ -512,6 +516,7 @@ or select a different UniProt ID.")
     
     output$substrates_table <- DT::renderDataTable(
                                 datatable(rowDF2, style = "bootstrap", class = "compact",
+                                          filter = "top",
                                           options = list(
                                             initComplete = JS(
                                               "function(settings, json) {",
@@ -532,8 +537,8 @@ or select a different UniProt ID.")
                                             columnDefs = list(
                                               list(className = 'dt-body-left'),
                                               list(width='325px', targets=12)),
-                                            pageLength = 10,
-                                            scrollY = '500px'
+                                            scrollY = '500px',
+                                            pageLength = 50
                                           ),
                                           escape = F
                                 )
@@ -545,27 +550,30 @@ or select a different UniProt ID.")
   pdb.data <- loadData(structures.query(input$uniProtID))
   pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
                             pdb.data$pdbID, pdb.data$pdbID)
-  
+  scrolly = "500px"
   if (nrow(pdb.data) == 0) {
     url <- a(input$uniProtID, href=sprintf("https://swissmodel.expasy.org/repository/uniprot/%s", 
                                            input$uniProtID))
+    scrolly = "0px"
     output$SwissModel <- renderUI({  
-      tagList("There are no structures for your UniProt Protein.
-              Click link for Swiss-Model model of ", url)
+      HTML(paste0("There are no structures for your UniProt protein.","<br>",
+                     "Click link for Swiss-Model model of ", url))
     })
   }
  
   
   output$PDB_structures <- DT::renderDataTable(
                               datatable(pdb.data,  style = "bootstrap", class = "compact",
+                                        filter = "top",
                                         selection=list(mode = "single", target = "cell"),
                                         options = list(
                                           initComplete = JS(
                                             "function(settings, json) {",
                                             "$(this.api().table().header()).css({'color': '#fff'});",
-                                            "}")),
-                                        escape = F,
-                                        
+                                            "}"),
+                                          scrollY = scrolly,
+                                          pageLength = 25),
+                                        escape = F
                               )
   )
 
@@ -583,11 +591,14 @@ or select a different UniProt ID.")
     }
   })
   
+  pdb.drug.bind.data$ligandShort <- factor(pdb.drug.bind.data$ligandShort)
+  
   pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
                                       pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
   
   output$binding_drug <- DT::renderDataTable(
                               datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
+                                        filter = "top",
                                         options = list(
                                           initComplete = JS(
                                             "function(settings, json) {",
@@ -595,13 +606,17 @@ or select a different UniProt ID.")
                                             "}"),
                                           #https://rstudio.github.io/DT/options.html
                                           autoWidth = T,
+                                          width = "100%",
+                                          scrollX=T,
                                           targets = 10,
                                           render = JS(
                                             "function(data, type, row, meta) {",
                                             "return type === 'display' && data.length > 10 ?",
                                             "'<span title=\"' + data + '\">' + data.substr(0, 10) + '...</span>' : data;",
                                             "}")
-                                          ),
+                                          ,
+                                          scrollY = '500px',
+                                          pageLength = 50),
                                         colnames = c("UniProt Protein Chain", "PDB ID", "PDB Site ID", "Structure Residue #",
                                                      "UniProt Residue #", "Residue", "Residue Chain", "Ligand Residue #",
                                                      "Ligand Short", "Ligand Long", "Ligand Chain", "DrugBank ID"),
