@@ -74,6 +74,16 @@ class ProteinExample:
         altGeneNames = None if not protein['geneNamesAlternative'] else json.loads(protein['geneNamesAlternative'])
         altProtNames = None if not protein['alternateNames'] else json.loads(protein['alternateNames'])
         
+        #Test updating with Merops ID for proteases
+        """
+        https://neo4j.com/docs/java-reference/current/java-embedded/property-values/
+        NULL is not a valid property value. Setting a property to NULL 
+        is equivalent to deleting the property. 
+        """
+        meropsID = protein['meropsID'] if protein['meropsID'] else None
+        #meropsID = None if not protein['meropsID'] else protein['meropsID']
+        
+        # Rare case that geneNamePreferred is blank so use short entry name for Node label
         if protein['geneNamePreferred'] is None:
             protein['geneNamePreferred'] = protein['entryName']
         
@@ -83,7 +93,8 @@ class ProteinExample:
                 				  uniprotID: $uniprotID, 
                 				  organism: $organism, 
                 				  taxid: $taxid})
-                    ON CREATE SET a.proteinName = $proteinName,  
+                    ON CREATE SET a.proteinName = $proteinName,
+                                  a.meropsID = $meropsID,
                                   a.altGeneNames = CASE $altGeneNames
                                                      WHEN null
                                                      THEN NULL
@@ -96,9 +107,15 @@ class ProteinExample:
                                                      END,
                                   a.proteinFamily = $proteinFamily,
                                   a.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
-                	ON MATCH SET  a.proteinName =  CASE a.proteinName
+                	ON MATCH SET  a.meropsID     = CASE a.meropsID
+                                                     WHEN null
+                                                     THEN $meropsID
+                                                     ELSE a.meropsID
+                                                     END,
+                                  a.proteinName  = CASE a.proteinName
                                                      WHEN null
                                                      THEN $proteinName
+                                                     ELSE a.proteinName
                                                      END,                                                    
                                   a.altGeneNames = CASE a.altGeneNames
                                                      WHEN null
@@ -130,6 +147,7 @@ class ProteinExample:
                         organism=protein['organism'],
                         taxid=protein['taxid'],
                         proteinFamily=protein['headProteinFamily'],
+                        meropsID=protein['meropsID'], 
                         altGeneNames=altGeneNames,
                         altProtNames=altProtNames)
         try:
@@ -475,7 +493,7 @@ class ProteinExample:
                                              THEN $substrateUniprot
                                              ELSE $substrateGenePreferred
                                              END,
-                                  b.subFullName = $substrateName, 
+                                  b.proteinName = $substrateName, 
                                   b.altGeneNames = $subGeneAlt,
                 				  b.organism = $substrateOrganism,
                                   b.taxid = CASE $substrateTax
@@ -484,7 +502,12 @@ class ProteinExample:
                                               ELSE $substrateTax
                                               END,
                                   b.created = apoc.date.format(timestamp(),'ms','yyyy-MM-dd HH:mm:ss.sss','EST')
-                    ON MATCH SET  b.altGeneNames = CASE b.altGeneNames
+                    ON MATCH SET  b.proteinName  = CASE b.proteinName
+                                                     WHEN null
+                                                     THEN $substrateName
+                                                     ELSE b.proteinName
+                                                     END,  
+                                  b.altGeneNames = CASE b.altGeneNames
                                                      WHEN null
                                                      THEN $subGeneAlt
                                                      ELSE 
@@ -776,7 +799,7 @@ class ProteinExample:
                 return [res["a.name"], res["direction"], res["b.name"]] 
     
     # NotImplemented
-    def get_recursive_n_interactions(self, protein, n_edges):
+    def _get_recursive_n_interactions(self, protein, n_edges):
         """
         Implemented in Shiny App
         """   
@@ -792,72 +815,4 @@ class ProteinExample:
         for res in result:
                 print([res["Protein1"], res["Regulates"], res["Protein2"], res["pathLength"]])
           
-
-
-"""
-if __name__ == "__main__":
-    
-    import logging
-    from neo4j import GraphDatabase
-    from neo4j.exceptions import ServiceUnavailable
-    
-    # desktop version
-    #uri = "neo4j://localhost:11003"
-    # some times needs this
-    uri = "neo4j://localhost:7687"
-    user = "neo4j"
-    # you'll need a password after you start 
-    password = "Swimgolf1212**"
-    database = "protein-test"
-  
-    prot_db = ProteinExample(uri, user, password)
-        
-    prot_db.drop(database)
-    prot_db.create_db(database)
-    
-    proteins = [('A', 'kinase'),
-                ('B', 'phosphatase'),
-                ('C', 'kinase'),
-                ('D', 'kinase'),
-                ('E', 'kinase'),
-                ('F', 'phosphatase'),
-                ('G', 'transferase'),
-                ('H', 'transferase'),
-                ('T', 'methyl_transferase'),
-                ('M', 'methyl_transferase'),
-                ('L', 'phosphatase')]
-    prot_db.create_proteins(database, proteins)
-    
-    regulations = [('A', '-', 'B'),
-                   ('B', '-', 'C'),
-                   ('C', '+', 'D'),
-                   ('D', '-', 'E'),
-                   ('E', '+', 'F'),
-                   ('F', '-', 'G'),
-                   ('H', '-', 'T'),
-                   ('T', '-', 'M'),
-                   ('M', '+', 'C'),
-                   ('C', '-', 'L'),
-                   ('L', '+', 'A')]
-    prot_db.create_interactions(database, regulations)
-    
-    # delete
-    del_regulation = ('A', '-', 'B')
-    prot_db.delete_interaction(database, del_regulation[0], del_regulation[1], del_regulation[2])
-    del_regulation = ('L', '+', 'A')
-    prot_db.delete_interaction(database, del_regulation[0], del_regulation[1], del_regulation[2])
-    
-    # re add
-    regulation =  ('A', '-', 'B')
-    prot_db.create_interaction(database, regulation[0], regulation[1], regulation[2])     
-    regulation =  ('L', '+', 'A')
-    prot_db.create_interaction(database, regulation[0], regulation[1], regulation[2])  
-    
-    # The whole kit and kabuttle
-    print("\nHere is what you have been waiting for\n")
-    prot_db.get_recursive_n_interactions(database, 'C', 2)
-    
-    
-    
-"""
 

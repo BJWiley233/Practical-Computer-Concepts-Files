@@ -5,6 +5,9 @@ Created on Mon Nov  9 02:11:04 2020
 
 @author: coyote
 """
+
+##############################################################################
+##############################################################################
 ##############################################################################
 # Test queries for neo4j
 
@@ -148,7 +151,7 @@ LIMIT 10);
 # query uniprot to initially load neo4j
 query_up = """
     SELECT u.geneNamePreferred, u.uniProtID, u.proteinName, u.organism, u.entryName,
-    	u.taxid, u.geneNamesAlternative, u.alternateNames, u.headProteinFamily
+    	u.taxid, u.geneNamesAlternative, u.alternateNames, u.headProteinFamily, u.meropsID
     FROM proteinsUniprot u
     /*WHERE u.geneNamesAlternative IS NULL*/
     /*WHERE u.uniProtID IN (%s)*/;
