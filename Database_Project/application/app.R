@@ -5,6 +5,7 @@ library(shinythemes)
 library(shinyWidgets)
 library(dqshiny)
 library(DT)
+library(data.table)
 library(shinyjs)
 library(plotly)
 library(dplyr)
@@ -18,7 +19,7 @@ loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -65,10 +66,12 @@ drugBankBinding.query <- function(id) {
 }
 
 ## Data Dictionary
+# schema.mysql = fread("~/JHU_Fall_2020/Biological_DBs/Project/data_dict.csv",
+#                           sep=",", header = T)
 schema.mysql <- read.table("~/JHU_Fall_2020/Biological_DBs/Project/data_dict.csv",
-                           sep = ",", header = T)
+                           sep = ",", header = T, quote = "\"")
 #https://stackoverflow.com/questions/33180058/coerce-multiple-columns-to-factors-at-once
-cols <- c("MySQL.table.name", "Data.type", 
+cols <- c("MySQL.table.name", "Data.type",
           "Neo4j.node.or.edge..or.property.thereof.", "Neo4j.data.type")
 schema.mysql[cols] <- lapply(schema.mysql[cols], factor)
 
@@ -115,7 +118,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "**", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 

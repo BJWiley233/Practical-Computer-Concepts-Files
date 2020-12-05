@@ -35,14 +35,14 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
              tabPanel(title="Graph Data Table",
                       fluidRow(column(12, 
                                         div(DT::dataTableOutput("data_table"),
-                                            style = "font-size:95%;width:1200px")
+                                            style = "font-size:95%; width:1200px")
                                       )
                         )
              ),
              tabPanel(title="Substrates",
                       fluidRow(column(12, 
                                       div(DT::dataTableOutput("substrates_table"),
-                                          style = "font-size:95%;width:1200px")
+                                          style = "font-size:95%; width:1200px")
                                       )
                       )
              ),
@@ -377,7 +377,7 @@ observe({
     )
     ## no neo4j graph
   } else {
-    output$plot <- renderPlotly({ empty_plot("No data in neo4j for your protein!
+    output$plot <- renderPlotly({ empty_plot("No interaction data in neo4j for your protein!
 There may be structure data on other tabs.
 Check 'PDB Structures' or 'PDB Binding Sites and Drugs' tabs
 or select a different UniProt ID.")
@@ -639,7 +639,7 @@ or select a different UniProt ID.")
         tabPanel("3D Structure",
                  tags$head(tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js")),
                  tags$div(
-                   style="height: 400px; width: 700px: position: relative;",
+                   style="height: 400px; width: 700px; position: relative;",
                    class='viewer_3Dmoljs',
                    'data-pdb'=pdb,
                    'data-backgroundcolor'='0xffffff',
