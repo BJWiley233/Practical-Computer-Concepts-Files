@@ -19,7 +19,7 @@ loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "Swimgolf1212**",
+                          password = "**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -118,7 +118,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "Swimgolf1212**", isV4 = TRUE)
+                     password = "**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 
