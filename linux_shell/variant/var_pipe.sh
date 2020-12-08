@@ -1,8 +1,13 @@
 #! /usr/bin/bash
 
-### run like 
+################################################################################
+# Workflow for quantifying snps in BRCA1
+
+# run like 
 	#chmod +x var_pipe.sh
 	#./var_pipe.sh srr.ids refGene_BRCA1_exons_hg19_transcript1.bed
+################################################################################
+
 if [ $# -lt 2 ]; then
     echo "Need srr.ids and refGene_exons.bed files"
     exit 1
@@ -64,7 +69,8 @@ for id in "${mySRRs[@]}"; do
 	
 	
 	echo ${id};
-	bedtools intersect -a ${id}_paired.hg19.trim.filtered.vcf -b $2 | wc -l;
+	count=$(bedtools intersect -a ${id}_paired.hg19.trim.filtered.vcf -b $2 | wc -l);
+	echo "${id}\t${count}" >> results.txt
 
 done;
 
