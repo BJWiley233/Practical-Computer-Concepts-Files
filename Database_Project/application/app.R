@@ -19,7 +19,7 @@ loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -110,7 +110,9 @@ empty_plot <- function(title = NULL){
   return(p)
 } 
 
-
+############################################################################
+## Neo4j stuff
+############################################################################
 library(neo4r)
 library(httr)
 library(igraph)
@@ -118,7 +120,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "**", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 

@@ -69,11 +69,18 @@ get.data.on.submit <- eventReactive(input$sqlSubmit, {
     data.sql$uniProtIDKin <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>",
                                      data.sql$uniProtIDKin, data.sql$uniProtIDKin)
   }
+  
+  ## factor organism and headProteinFamily if selected
+  if ('organism' %in% colnames(data.sql)) {
+    data.sql$organism <- factor(data.sql$organism)
+  }
+  
+  if ('headProteinFamily' %in% colnames(data.sql)) {
+    data.sql$headProteinFamily <- factor(data.sql$headProteinFamily)
+  }
 
-  
-  
   data.sql
-  
+ 
 })
  
   
@@ -127,7 +134,7 @@ output$schema <- DT::renderDataTable(datatable(
                       callback = JS('table.page(3).draw(false);'),
                       colnames = c("Element Name", "Table Name", "Description",
                                    "Source","Data Type", "Node or Edge",
-                                   "Neo4j Elem. Name", "Neo4j Data Type"),
+                                   "Neo4j Elem. Name", "Neo4j Data Type", "Neo4j Parent Data Type"),
                       escape = F
   )
 )

@@ -288,8 +288,8 @@ observe({
                  "reaction", "entries")]
     
     ## list the entries
-    df3$entries <- sapply(df3$entries, function(x) {
-      l = jsonlite::fromJSON(x[[1]])
+    df3$entries <- apply(df3, 1, function(x) {
+      l = jsonlite::fromJSON(x['entries'][[1]])
       string = ""
       if (!is.null(l$interactionID)) {
         if (grepl("EBI-[0-9]+", l$interactionID)) {
@@ -301,12 +301,12 @@ observe({
             publication <- ex_between(l$`publicationID(s)`, "<%", "[")[[1]]
             publication <- gsub("%", "", publication)
             l$`publicationID(s)` <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
-                                              link.id, publication)
+                                            link.id, publication)
             l$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
-                                         x['Prot2UPID'],  l$interactionID)
+                                       x['uniprotID.y'],  l$interactionID)
           } else {
             l$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
-                                         x['Prot2UPID'],  l$interactionID)
+                                       x['uniprotID.y'],  l$interactionID)
           }
         }
       }
@@ -579,8 +579,10 @@ or select a different UniProt ID.")
 
   ################################################################################################
   ## binding sites and drugs
+  #O00311
   pdb.drug.bind.data <- loadData(drugBankBinding.query(input$uniProtID))
   
+  ## link to DrugBank
   pdb.drug.bind.data$drugBankID <- apply(pdb.drug.bind.data, 1, function(x) {
     if (is.na(x['drugBankID']) & !(is.na(x['ligandShort']))) {
       sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=%s'>DB Search<a/>", x['ligandShort'])
@@ -591,7 +593,15 @@ or select a different UniProt ID.")
     }
   })
   
-  pdb.drug.bind.data$ligandShort <- factor(pdb.drug.bind.data$ligandShort)
+  ## link to RCSB ligands
+  pdb.drug.bind.data$ligandShort <- ifelse(is.na(pdb.drug.bind.data$ligandShort), NA,
+                                           sprintf("<a href='https://www.rcsb.org/ligand/%s'>%s<a/>", 
+                                                   pdb.drug.bind.data$ligandShort,
+                                                   pdb.drug.bind.data$ligandShort))
+  
+  
+  
+  #pdb.drug.bind.data$ligandShort <- factor(pdb.drug.bind.data$ligandShort)
   
   pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
                                       pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
