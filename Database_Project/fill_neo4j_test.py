@@ -23,14 +23,14 @@ import json
 """
 This script also loads data into the MySQL data warehouse
 based on the issue that there was not gene name data for
-the MEROPS substrates for the 'name' or label of then nodes
+the MEROPS substrates for the 'name' or label of the nodes
 in Neo4j
 """
 ############################################################################
 
 
 userMySQL='root'
-passwordMySQL='Swimgolf1212**'
+passwordMySQL='**'
 hostMySQL='127.0.0.1'
 dbMySQL = 'protTest'
 
@@ -212,7 +212,7 @@ for idx, row in reviewed.iterrows():
 uri = 'neo4j://localhost:7687'
 user = 'neo4j'
 # you'll need a password after you start 
-password = 'Swimgolf1212**'
+password = '**'
 db = 'protTest'
 
 
