@@ -14,6 +14,10 @@ from neo4j.exceptions import ServiceUnavailable
 import numpy as np
 import json
 
+"""
+Driver for filling Neo4j database using the data queried from MySQL
+"""
+
 
 class ProteinExample:
 
@@ -21,17 +25,14 @@ class ProteinExample:
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
         self.database = None;
     
+    
     def close(self):
         self.driver.close()
+     
         
     def use_database(self, database):
         self.database=database
     
-    """
-    Get all nodes
-    MATCH (n)-[r]->(m)
-    RETURN n,r,m
-    """
 
     # create db function
     def create_db(self, db_name):
@@ -160,7 +161,11 @@ class ProteinExample:
             logging.error("{} raised an error: \n {}".format(query, exception))
             raise
     
+    
     def _delete_protein(self, uniprotID):
+        """
+        Not used in SubDB+
+        """
         if not self.database:
             return "Need to call ProteinExample.use_database"
         with self.driver.session(database=self.database) as session:
@@ -475,7 +480,7 @@ class ProteinExample:
         subGeneAlt = None if not interaction['subGeneAlt'] else json.loads(interaction['subGeneAlt'])
 
         # Only doing proteases from UniProt that have merops IDs
-        # so a will always be in database initially
+        # so will always be in data warehouse initially
         # if we cannot get subsrate info from Uniprot make the 
         # Uniprot id from Merops database the node name
         query = ("""
@@ -782,6 +787,7 @@ class ProteinExample:
 
 ###############################################################################
     # TODO: delete interactions
+    # Not Implemented
     def _delete_interaction(self, db, prot_a, up_or_down, prot_b):
         if up_or_down not in ["+", "-"]:
             return "up_or_down only takes '+' or '-'"
@@ -798,9 +804,12 @@ class ProteinExample:
             for res in result:
                 return [res["a.name"], res["direction"], res["b.name"]] 
     
-    # NotImplemented
+    # Not Implemented
     def _get_recursive_n_interactions(self, protein, n_edges):
         """
+        Notes
+        -------
+        Not Implemented \n
         Implemented in Shiny App
         """   
         with self.driver.session(database=self.database) as session:

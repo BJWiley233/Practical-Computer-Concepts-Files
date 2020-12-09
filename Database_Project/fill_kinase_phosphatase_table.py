@@ -122,7 +122,7 @@ psp_final["kin_protein_name"] = ""
 psp_final["sub_protein_name"] = ""
 psp_final[psp_final['SUB_ACC_ID']=='P63058_OBS']
 ###############################################################################
-## Want to get protein names for the PSP Dataset which didn't come with names
+## Want to get full protein names for the PSP Dataset which didn't come with names
 ns = {'up': 'http://uniprot.org/uniprot'}
 id_name = dict.fromkeys(pd.concat([psp_final['KIN_ACC_ID'], psp_final['SUB_ACC_ID']]))
 len(id_name)
@@ -169,6 +169,9 @@ psp_final["sub_protein_name"] = psp_final.apply(lambda x: id_name[x['SUB_ACC_ID'
 kinase_log = "kinase_not_entered.log"
 open(kinase_log, 'w').close()
 
+## SUB_GENE = geneNamePreferredSub: the lowercase for mouse/rat
+## SUBSTRATE = geneNameAltSub: alternate name or sometimes uppercase for mouse/rat
+
 for idx, row in psp_final.iterrows():
     print(idx)
     try:
@@ -189,23 +192,28 @@ for idx, row in psp_final.iterrows():
 
 
 
+
 ###############################################################################
-###############################################################################
+# DEPOD
 ###############################################################################
 ## Read in DEPOD data
 ppase = pd.read_excel("../data/PPase_protSubtrates_201903.xls", na_values=["N/A", "N/A "])
 ppase.columns
-ppase = ppase.replace({np.nan: None})
+#ppase = ppase.replace({np.nan: None})
 
 ppase['in_vivo'] = np.where(ppase['Assay/s to infer dephosphorylation'].str.match(".*vivo"), True, False)
 ppase['in_vitro'] = np.where(ppase['Assay/s to infer dephosphorylation'].str.match(".*vitro"), True, False)
 ppase[['Assay/s to infer dephosphorylation', 'in_vivo','in_vitro']]
 ppase_final = ppase.replace({np.nan: None})
+##############
+# how many sites known?
+sum([len(i) for i in ppase_final['Dephosphosites'].str.split(",") if i is not None])
+##############
 ppase_final["phos_protein_name"] = ""
 ppase_final["sub_protein_name"] = ""
 
 ###############################################################################
-## Want to get protein names for the DEPOD Dataset which didn't come with names
+## Want to get full protein names for the DEPOD Dataset which didn't come with names
 ns = {'up': 'http://uniprot.org/uniprot'}
 id_name_ppase = dict.fromkeys(pd.concat([ppase_final['Phosphatase accession numbers'], 
                                          ppase_final['Substrate accession numbers']]))

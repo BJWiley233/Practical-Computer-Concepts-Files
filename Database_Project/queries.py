@@ -6,10 +6,10 @@ Created on Mon Nov  9 02:11:04 2020
 @author: coyote
 """
 
-##############################################################################
-##############################################################################
+
 ##############################################################################
 # Test queries for neo4j
+##############################################################################
 
 # testing getting entries that overlap in merops and intact to test neo4j
 query_merops = """
@@ -142,11 +142,11 @@ JOIN
 LIMIT 10);
 """
 
-##############################################################################
-##############################################################################
+
 ##############################################################################
 # Final queries for neo4j
-# Commenting out query code for testing
+# Commenting out lines used for testing
+##############################################################################
 
 # query uniprot to initially load neo4j
 query_up = """
@@ -179,6 +179,7 @@ FROM protTest.intact i
 """
 
 # query merops to initially load neo4j
+# SEE merops_view.sql in SQL folder
 query_merops2 = """
 SELECT sel.cleavageID, sel.Ref, sel.cleavage_type, sel.Substrate_formula,
 	sel.Substrate_name as substrateName, m.geneNamePreferred as substrateGenePreferred,
