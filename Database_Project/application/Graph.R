@@ -40,10 +40,11 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                         )
              ),
              tabPanel(title="Substrates",
-                      fluidRow(column(12, 
+                      fluidRow(column(11, 
                                       div(DT::dataTableOutput("substrates_table"),
                                           style = "font-size:95%; width:1200px")
-                                      )
+                                      ),
+                               column(1, downloadButton("downloadSubstrateData", "Download"))
                       )
              ),
              tabPanel(title="PDB Structures",
@@ -293,19 +294,19 @@ observe({
       string = ""
       if (!is.null(l$interactionID)) {
         if (grepl("EBI-[0-9]+", l$interactionID)) {
-          l$interactionID = sprintf("<a href=https://www.ebi.ac.uk/intact/interaction/%s>%s</a>",
+          l$interactionID = sprintf("<a href='https://www.ebi.ac.uk/intact/interaction/%s' target='_blank'>%s</a>",
                                     l$interactionID, l$interactionID)
         } else if (grepl("CLE[0-9]+", l$interactionID)) {
           if (!is.null(l$`publicationID(s)`)) {
             link.id <- ex_between(l$`publicationID(s)`, "[", "]")[[1]]
             publication <- ex_between(l$`publicationID(s)`, "<%", "[")[[1]]
             publication <- gsub("%", "", publication)
-            l$`publicationID(s)` <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
+            l$`publicationID(s)` <- sprintf("<a href='https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s' target='_blank'>%s</a>",
                                             link.id, publication)
-            l$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+            l$interactionID <- sprintf("<a href='https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s' target='_blank'>%s</a>",
                                        x['uniprotID.y'],  l$interactionID)
           } else {
-            l$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+            l$interactionID <- sprintf("<a href='https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s' target='_blank'>%s</a>",
                                        x['uniprotID.y'],  l$interactionID)
           }
         }
@@ -320,20 +321,20 @@ observe({
     ##
     links <- apply(df3, 1, function(row) {
       if (grepl('PhosphoSitePlus', row[["entries"]])) {
-        row[["uniprotID.x"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
+        row[["uniprotID.x"]] <- sprintf("<a href='https://www.phosphosite.org/uniprotAccAction?id=%s' target='_blank'>%s</a>", 
                                         row[["uniprotID.x"]], row[["uniprotID.x"]])
-        row[["uniprotID.y"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>", 
+        row[["uniprotID.y"]] <- sprintf("<a href='https://www.phosphosite.org/uniprotAccAction?id=%s' target='_blank'>%s</a>", 
                                         row[["uniprotID.y"]], row[["uniprotID.y"]])
       } ## CHEBI
       else if (grepl('CHEBI', row[["uniprotID.y"]])) {
-        row[["uniprotID.x"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+        row[["uniprotID.x"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s' target='_blank'>%s</a>", 
                                       row[["uniprotID.x"]], row[["uniprotID.x"]])
-        row[["uniprotID.y"]] <- sprintf("<a href='https://www.ebi.ac.uk/chebi/searchId.do;?chebiId=%s'>%s</a>", 
+        row[["uniprotID.y"]] <- sprintf("<a href='https://www.ebi.ac.uk/chebi/searchId.do;?chebiId=%s' target='_blank'>%s</a>", 
                                       row[["uniprotID.y"]], row[["uniprotID.y"]])
       } else {
-        row[["uniprotID.x"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+        row[["uniprotID.x"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s' target='_blank'>%s</a>", 
                                         row[["uniprotID.x"]], row[["uniprotID.x"]])
-        row[["uniprotID.y"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+        row[["uniprotID.y"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s' target='_blank'>%s</a>", 
                                         row[["uniprotID.y"]], row[["uniprotID.y"]])
       }
       c(row[["uniprotID.x"]], row[["uniprotID.y"]])
@@ -423,6 +424,13 @@ or select a different UniProt ID.")
       }
     })
     
+    ## for download without hyperlinks
+    downloadSubs <- rowDF[,c(1:3, 5:9, 11:14)]
+    colnames(downloadSubs) <- c("Prot Gene Name", "Prot UniProt ID", "Prot Protein Name", "Prot taxid", "Prot organism",
+                          "Sub Gene Name", "Sub UniProt ID", "Sub Protein Name", "Sub taxid", "Sub organism",
+                          "Reaction type", "Reaction info")
+    
+    
     ## Add links to Relationships
     rowDF$`Relationship details` <- apply(rowDF, 1, function(x) {
       string = ""
@@ -433,7 +441,7 @@ or select a different UniProt ID.")
         if (!is.null(l.i$interactionID)) {
           ## intact
           if (grepl("EBI-[0-9]+", l.i$interactionID)) {
-            l.i$interactionID = sprintf("<a href=https://www.ebi.ac.uk/intact/interaction/%s>%s</a>",
+            l.i$interactionID = sprintf("<a href='https://www.ebi.ac.uk/intact/interaction/%s' target='_blank'>%s</a>",
                                         l.i$interactionID, l.i$interactionID)
             ## merops
           } else if (grepl("CLE[0-9]+", l.i$interactionID)) {
@@ -441,12 +449,12 @@ or select a different UniProt ID.")
               link.id <- ex_between(l.i$`publicationID(s)`, "[", "]")[[1]]
               publication <- ex_between(l.i$`publicationID(s)`, "<%", "[")[[1]]
               publication <- gsub("%", "", publication)
-              l.i$`publicationID(s)` <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
+              l.i$`publicationID(s)` <- sprintf("<a href='https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s' target='_blank'>%s</a>",
                                                 link.id, publication)
-              l.i$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+              l.i$interactionID <- sprintf("<a href='https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s' target='_blank'>%s</a>",
                                            x['Prot2UPID'],  l.i$interactionID)
             } else {
-              l.i$interactionID <- sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s>%s</a>",
+              l.i$interactionID <- sprintf("<a href='https://www.ebi.ac.uk/merops/cgi-bin/show_substrate?SpAcc=%s' target='_blank'>%s</a>",
                                            x['Prot2UPID'],  l.i$interactionID)
             }
           }
@@ -458,49 +466,24 @@ or select a different UniProt ID.")
       }
       return(string)
     })
-    # rowDF$`Relationship details` <- lapply(rowDF$`Relationship details`, function(x) {
-    #   string = ""
-    #   l <- jsonlite::fromJSON(x[[1]])
-    #   for (i in 1:length(l)) {
-    #     string <- paste0(string, '<b>', i, ". ", "</b>")
-    #     l.i <- jsonlite::fromJSON(l[[i]])
-    #     if (!is.null(l.i$interactionID)) {
-    #       if (grepl("EBI-[0-9]+", l.i$interactionID)) {
-    #         l.i$interactionID = sprintf("<a href=https://www.ebi.ac.uk/intact/interaction/%s>%s</a>",
-    #                                     l.i$interactionID, l.i$interactionID)
-    #       } else if (grepl("CLE[0-9]+", l.i$interactionID)) {
-    #         link.id <- ex_between(l.i$`publicationID(s)`, "[", "]")[[1]]
-    #         publication <- ex_between(l.i$`publicationID(s)`, "<%", "[")[[1]]
-    #         publication <- gsub("%", "", publication)
-    #         l.i$`publicationID(s)` = sprintf("<a href=https://www.ebi.ac.uk/merops/cgi-bin/refs?id=%s>%s</a>",
-    #                                          link.id, publication)
-    #       }
-    #     }
-    #     
-    #     for (j in paste(names(l.i), ":", l.i, "<br>")) {
-    #       string = paste0(string, j)
-    #     }
-    #   }
-    #   return(string)
-    # })
     
     # Links to PSP, UniProt, and CHEBI
     linksRow <- apply(rowDF, 1, function(row) {
       if (grepl('PhosphoSitePlus', row[["Relationship details"]])) {
-        row[["Prot1UPID"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>",
+        row[["Prot1UPID"]] <- sprintf("<a href='https://www.phosphosite.org/uniprotAccAction?id=%s' target='_blank'>%s</a>",
                                       row[["Prot1UPID"]], row[["Prot1UPID"]])
-        row[["Prot2UPID"]] <- sprintf("<a href=https://www.phosphosite.org/uniprotAccAction?id=%s>%s</a>",
+        row[["Prot2UPID"]] <- sprintf("<a href='https://www.phosphosite.org/uniprotAccAction?id=%s' target='_blank'>%s</a>",
                                       row[["Prot2UPID"]], row[["Prot2UPID"]])
       } ## CHEBI
       else if (grepl('CHEBI', row[["Prot2UPID"]])) {
-        row[["Prot1UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>", 
+        row[["Prot1UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s' target='_blank'>%s</a>", 
                                       row[["Prot1UPID"]], row[["Prot1UPID"]])
-        row[["Prot2UPID"]] <- sprintf("<a href='https://www.ebi.ac.uk/chebi/searchId.do;?chebiId=%s'>%s</a>", 
+        row[["Prot2UPID"]] <- sprintf("<a href='https://www.ebi.ac.uk/chebi/searchId.do;?chebiId=%s' target='_blank'>%s</a>", 
                                       row[["Prot2UPID"]], row[["Prot2UPID"]])
       } else {
-        row[["Prot1UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>",
+        row[["Prot1UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s' target='_blank'>%s</a>",
                                       row[["Prot1UPID"]], row[["Prot1UPID"]])
-        row[["Prot2UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s'>%s</a>",
+        row[["Prot2UPID"]] <- sprintf("<a href='https://www.uniprot.org/uniprot/%s' target='_blank'>%s</a>",
                                       row[["Prot2UPID"]], row[["Prot2UPID"]])
       }
       c(row[["Prot1UPID"]], row[["Prot2UPID"]])
@@ -544,16 +527,26 @@ or select a different UniProt ID.")
                                 )
     )
     
+    output$downloadSubstrateData <- downloadHandler(
+      filename = function() {
+        paste0(file.prefix(), "_", gsub(" ", "_", date()), "_", input$uniProtID, "_SUBSTRATES.csv")
+      },
+      content = function(file) {
+        
+        write.csv(downloadSubs, file, row.names = FALSE)
+      }
+    )
+    
   }
   ################################################################################################
   ## pdb structures tab
   pdb.data <- loadData(structures.query(input$uniProtID))
-  pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
+  pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s' target='_blank'>%s</a>", 
                             pdb.data$pdbID, pdb.data$pdbID)
   scrolly = "500px"
   if (nrow(pdb.data) == 0) {
     url <- a(input$uniProtID, href=sprintf("https://swissmodel.expasy.org/repository/uniprot/%s", 
-                                           input$uniProtID))
+                                           input$uniProtID), target='_blank')
     scrolly = "0px"
     output$SwissModel <- renderUI({  
       HTML(paste0("There are no structures for your UniProt protein.","<br>",
@@ -585,17 +578,18 @@ or select a different UniProt ID.")
   ## link to DrugBank
   pdb.drug.bind.data$drugBankID <- apply(pdb.drug.bind.data, 1, function(x) {
     if (is.na(x['drugBankID']) & !(is.na(x['ligandShort']))) {
-      sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=%s'>DB Search<a/>", x['ligandShort'])
+      sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=%s' target='_blank'>DB Search<a/>", 
+              x['ligandShort'])
     } else if (is.na(x['drugBankID']) & (is.na(x['ligandShort']))) {
-      sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query='>DB Search<a/>", "")
+      sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=' target='_blank'>DB Search<a/>", "")
     } else {
-      sprintf("<a href='https://go.drugbank.com/drugs/%s'>%s<a/>", x['drugBankID'], x['drugBankID'])
+      sprintf("<a href='https://go.drugbank.com/drugs/%s' target='_blank'>%s<a/>", x['drugBankID'], x['drugBankID'])
     }
   })
   
   ## link to RCSB ligands
   pdb.drug.bind.data$ligandShort <- ifelse(is.na(pdb.drug.bind.data$ligandShort), NA,
-                                           sprintf("<a href='https://www.rcsb.org/ligand/%s'>%s<a/>", 
+                                           sprintf("<a href='https://www.rcsb.org/ligand/%s' target='_blank'>%s<a/>", 
                                                    pdb.drug.bind.data$ligandShort,
                                                    pdb.drug.bind.data$ligandShort))
   
@@ -603,8 +597,9 @@ or select a different UniProt ID.")
   
   #pdb.drug.bind.data$ligandShort <- factor(pdb.drug.bind.data$ligandShort)
   
-  pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
+  pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s' target='_blank'>%s</a>",
                                       pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
+
   
   output$binding_drug <- DT::renderDataTable(
                               datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
@@ -658,102 +653,7 @@ or select a different UniProt ID.")
       })
     
   })
-    ################################################################################################
-    ## no neo4j graph
-#   } else {
-#     output$plot <- renderPlotly({ empty_plot("No data in neo4j for your protein!
-# There may be structure data on other tabs.
-# Check 'PDB Structures' or 'PDB Binding Sites and Drugs' tabs
-# or select a different UniProt ID.")
-#       })
-#     
-#     ## pdb structures tab
-#     pdb.data <- loadData(structures.query(input$uniProtID))
-#     pdb.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
-#                               pdb.data$pdbID, pdb.data$pdbID)
-#     
-#     ## if no structures link to Swiss-Model
-#     if (nrow(pdb.data) == 0) {
-#       url <- a(input$uniProtID, href=sprintf("https://swissmodel.expasy.org/repository/uniprot/%s", 
-#                                              input$uniProtID))
-#       output$SwissModel <- renderUI({  
-#         tagList("There are no structures for your UniProt Protein", tags$br(),
-#                 "Click link for Swiss-Model model of ", url)
-#       })
-#     }
-#     
-#     ################################################################################################
-#     observe ({
-#       req(input$PDB_structures_cells_selected)
-# 
-#       output$structure_3d <- renderUI({
-#         
-#         tabPanel("3D Structure",
-#                  tags$script(src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js"),
-#                  tags$div(
-#                    style="height: 400px; width: 700px: position: relative;",
-#                    class='viewer_3Dmoljs',
-#                    'data-pdb'=ex_between(pdb.data[input$PDB_structures_cells_selected],">","</a")[[1]],
-#                    'data-backgroundcolor'='0xffffff',
-#                    'data-style'='cartoon'))
-#         
-#       })
-#     })
-#     
-#     ################################################################################################
-#     output$PDB_structures <- DT::renderDataTable(
-#       datatable(pdb.data, style = "bootstrap", class = "compact",
-#                 selection=list(mode = "single", target = "cell"),
-#                 options = list(
-#                   initComplete = JS(
-#                     "function(settings, json) {",
-#                     "$(this.api().table().header()).css({'color': '#fff'});",
-#                     "}")),
-#                 escape = F,
-#                 
-#       )
-#     )
-# 
-#     ################################################################################################
-#     ## binding sites and drugs
-#     pdb.drug.bind.data <- loadData(drugBankBinding.query(input$uniProtID))
-#     
-#     pdb.drug.bind.data$drugBankID <- apply(pdb.drug.bind.data, 1, function(x) {
-#       if (is.na(x['drugBankID']) & !(is.na(x['ligandShort']))) {
-#         sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query=%s'>DB Search<a/>", x['ligandShort'])
-#       } else if (is.na(x['drugBankID']) & (is.na(x['ligandShort']))) {
-#         sprintf("<a href='https://go.drugbank.com/unearth/q?utf8=%%E2%%9C%%93&searcher=drugs&query='>DB Search<a/>", "")
-#       } else {
-#         sprintf("<a href='https://go.drugbank.com/drugs/%s'>%s<a/>", x['drugBankID'], x['drugBankID'])
-#       }
-#     })
-#     
-#     pdb.drug.bind.data$pdbID <- sprintf("<a href='https://www.rcsb.org/structure/%s'>%s</a>", 
-#                                         pdb.drug.bind.data$pdbID, pdb.drug.bind.data$pdbID)
-#     
-#     output$binding_drug <- DT::renderDataTable(
-#       datatable(pdb.drug.bind.data, style = "bootstrap", class = "compact",
-#                 options = list(
-#                   initComplete = JS(
-#                     "function(settings, json) {",
-#                     "$(this.api().table().header()).css({'color': '#fff'});",
-#                     "}"),
-#                   #https://rstudio.github.io/DT/options.html
-#                   autoWidth = T,
-#                   targets = 10,
-#                   render = JS(
-#                     "function(data, type, row, meta) {",
-#                     "return type === 'display' && data.length > 10 ?",
-#                     "'<span title=\"' + data + '\">' + data.substr(0, 10) + '...</span>' : data;",
-#                     "}")
-#                 ),
-#                 colnames = c("UniProt Protein Chain", "PDB ID", "PDB Site ID", "Structure Residue #",
-#                              "UniProt Residue #", "Residue", "Residue Chain", "Ligand Residue #",
-#                              "Ligand Short", "Ligand Long", "Ligand Chain", "DrugBank ID"),
-#                 escape = F
-#       )
-#     )
-#   }
+
 })
 
             

@@ -33,7 +33,7 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
                                 options = list(`actions-box` = TRUE))),
    
           column(3, autocomplete_input("geneNamePreferred", "Gene Name: (type to choose IDs)", 
-                                       options = dat$geneNamePreferred[!is.na(dat$geneNamePreferred)],
+                                       options = unique(dat$geneNamePreferred[!is.na(dat$geneNamePreferred)]),
                                        # https://stackoverflow.com/questions/57798381/how-to-reduce-space-between-label-and-choices-in-selectinput
                                        create = T), div(style = "margin-top:-15px"),
                  # https://rdrr.io/cran/shinybrms/src/inst/shinybrms_app/app.R
@@ -107,11 +107,11 @@ output$pageStub <- renderUI(fluidPage(theme = "slate.min.css",
 
 observe({
   update_autocomplete_input(session, "geneNamePreferred", "Gene Name: (type to choose IDs)",
-                            options = dat[dat$headProteinFamily %in% input$headProteinFamily &
+                            options = unique(dat[dat$headProteinFamily %in% input$headProteinFamily &
                                           dat$organism %in% input$proteinOrganism,
                                           "geneNamePreferred"][!is.na(dat[dat$headProteinFamily %in% input$headProteinFamily &
                                                                       dat$organism %in% input$proteinOrganism,
-                                                                      "geneNamePreferred"])]
+                                                                      "geneNamePreferred"])])
                             )
 
 

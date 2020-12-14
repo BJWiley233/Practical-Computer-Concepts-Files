@@ -19,7 +19,7 @@ loadData <- function(query) {
   db <- RMySQL::dbConnect(RMySQL::MySQL(),
                           db = "protTest",
                           username = "root",
-                          password = "**",
+                          password = "Swimgolf1212**",
                           host = "127.0.0.1")
   dat <- dbGetQuery(db, query)
   dbDisconnect(db)
@@ -66,8 +66,6 @@ drugBankBinding.query <- function(id) {
 }
 
 ## Data Dictionary
-# schema.mysql = fread("~/JHU_Fall_2020/Biological_DBs/Project/data_dict.csv",
-#                           sep=",", header = T)
 schema.mysql <- read.table("~/JHU_Fall_2020/Biological_DBs/Project/data_dict.csv",
                            sep = ",", header = T, quote = "\"")
 #https://stackoverflow.com/questions/33180058/coerce-multiple-columns-to-factors-at-once
@@ -120,7 +118,7 @@ library(rlist)
 
 con <- neo4j_api$new(url = "http://localhost:7474", 
                      db = "protTest", user = "neo4j", 
-                     password = "**", isV4 = TRUE)
+                     password = "Swimgolf1212**", isV4 = TRUE)
 status_code(GET("http://localhost:7474"))
 
 
@@ -211,11 +209,6 @@ getSubstrates <- function(UP.id) {
 }
 
 
-# PRKCD
-# Q05655
-# P56817
-#G <- getGraph('Q05655', direction="down", length=1, limit=10)
-#G <- getGraph("88888", direction="down", length=1, limit=10)
 
 # https://github.com/open-meta/uiStub/blob/master/app/old-faithful.R
 ui <- function(request) { uiOutput("uiStub") }
@@ -233,6 +226,7 @@ server <- function(input, output, session) {
                            "<a href='?Search'>Search</a> |",
                            "<a href='?SQL'>SQL</a> |",
                            "<a href='?Forum'>Forum</a> |",
+                           "<a href='?Demonstration'>Demonstration</a> |",
                            "<a href='?page3'>Nothing</a>",
                            "</h3>"))
       ),
@@ -240,7 +234,8 @@ server <- function(input, output, session) {
     )
   )
   
-  validFiles = c("RoadMap.R", "Search.R", "Graph.R", "Forum.R", "SQL.R")
+  validFiles = c("RoadMap.R", "Search.R", "Graph.R", "SQL.R",
+                 "Forum.R", "Demonstration.R")
   
   fname = isolate(session$clientData$url_search)
   if (nchar(fname)==0) { fname = "?RoadMap"}
