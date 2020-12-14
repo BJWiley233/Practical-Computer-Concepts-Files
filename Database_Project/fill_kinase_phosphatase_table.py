@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 
 
 user='root'
-password='**'
+password='Swimgolf1212**'
 host='127.0.0.1'
 db_name = "protTest"
 
@@ -88,6 +88,9 @@ for table_name in TABLES:
             print(err.msg)
 
 
+###############################################################################
+# PSP
+###############################################################################
 ## Read in PSP data
 psp = pd.read_csv("../data/PhosphoSitePlus_Substrates_of_Kinases/Kinase_Substrate_Dataset", 
                      sep="\t", skiprows=3)
@@ -169,12 +172,16 @@ psp_final["sub_protein_name"] = psp_final.apply(lambda x: id_name[x['SUB_ACC_ID'
 kinase_log = "kinase_not_entered.log"
 open(kinase_log, 'w').close()
 
-## SUB_GENE = geneNamePreferredSub: the lowercase for mouse/rat
-## SUBSTRATE = geneNameAltSub: alternate name or sometimes uppercase for mouse/rat
+## SUB_GENE (column 8 in data) = geneNamePreferredSub: 
+    ## the lowercase for mouse/rat (good!)
+## SUBSTRATE (column 5 in data) = geneNameAltSub: 
+    ## alternate name or sometimes uppercase for mouse/rat (don't like uppercase if mouse/rat)
 
 for idx, row in psp_final.iterrows():
     print(idx)
     try:
+        # uniProtIDKin, geneNamePreferredKin, protNamePreferredKin, kinTaxid, kinOrganism
+        # uniProtIDSub, geneNamePreferredSub, geneNameAltSub
         cursor.execute(
             "REPLACE INTO kinasePhosphoSitePlus VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             (row['KIN_ACC_ID'], row['GENE'], row['kin_protein_name'], row['kin_tax'], row['kin_organ'], 
@@ -192,7 +199,6 @@ for idx, row in psp_final.iterrows():
 
 
 
-
 ###############################################################################
 # DEPOD
 ###############################################################################
@@ -205,10 +211,10 @@ ppase['in_vivo'] = np.where(ppase['Assay/s to infer dephosphorylation'].str.matc
 ppase['in_vitro'] = np.where(ppase['Assay/s to infer dephosphorylation'].str.match(".*vitro"), True, False)
 ppase[['Assay/s to infer dephosphorylation', 'in_vivo','in_vitro']]
 ppase_final = ppase.replace({np.nan: None})
-##############
+######################
 # how many sites known?
 sum([len(i) for i in ppase_final['Dephosphosites'].str.split(",") if i is not None])
-##############
+######################
 ppase_final["phos_protein_name"] = ""
 ppase_final["sub_protein_name"] = ""
 

@@ -30,7 +30,7 @@ in Neo4j
 
 
 userMySQL='root'
-passwordMySQL='**'
+passwordMySQL='Swimgolf1212**'
 hostMySQL='127.0.0.1'
 dbMySQL = 'protTest'
 
@@ -107,6 +107,7 @@ WHERE s.Uniprot IS NOT NULL
 cursor = cnx.cursor()
 cursor.execute(query_merops3)
 merops_subs = cursor.fetchall()
+arr = [i[0] for i in merops_subs]
 len(merops_subs)
 merops_subs2 = [i[0][0:6] for i in merops_subs]
 up_tbl_cols = ["id", "reviewed", "entry name", "genes(PREFERRED)",
@@ -212,7 +213,7 @@ for idx, row in reviewed.iterrows():
 uri = 'neo4j://localhost:7687'
 user = 'neo4j'
 # you'll need a password after you start 
-password = '**'
+password = 'Swimgolf1212**'
 db = 'protTest'
 
 
