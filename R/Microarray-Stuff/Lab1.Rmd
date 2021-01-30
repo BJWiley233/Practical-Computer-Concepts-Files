@@ -1,0 +1,243 @@
+---
+title: "Lab1_Brian_Wiley"
+output:
+  pdf_document:
+header-includes:
+    - \usepackage {hyperref}
+    - \hypersetup {colorlinks = true, linkcolor = blue, urlcolor = blue}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+```
+
+### Brian Wiley
+### Lab 1: Basic R syntax/plots with data solutions
+### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#q7) [8.](#q8) [Bonus](#Bonus)
+
+#### GEO Summary
+Systemic lupus erythematosus (SLE) is an autoimmune disease with an important clinical and biological heterogeneity. B lymphocytes appear central to the development of SLE which is characterized by the production of a large variety of autoantibodies and hypergammaglobulinemia. In mice, immature B cells from spontaneous lupus prone animals are able to produce autoantibodies when transferred into immunodeficient mice, strongly suggesting the existence of intrinsic B cell defects during lupus. In order to approach these defects in humans, we compared the peripheral B cell transcriptomes of quiescent lupus patients to normal B cell transcriptomes. (HG-U133_Plus_2, GSE30153)
+
+
+##### **1.) Go to class website under Course Documents > Data Sets and download the SLE B cell data set (from Garaud et al).** {#q1}
+```{r}
+# No Code required
+# Set working directory to ~/JHU_Fall_2020/Data_Analysis/Datasets in setup above
+```
+
+
+##### **2.) Unzip the text file, and read into R (Hint: using the read.table() function with a “header=T” argument and “row.names=1” argument is one method to do this).** {#q2}
+```{r}
+sle.b.cell <- read.table(file="sle_b_cell.txt", header=T, row.names=1)
+head(sle.b.cell)
+```
+
+
+##### **3.) Look at the dimensions of the data.  There should be 26 samples.  If you have 27 samples, you still have the row names in the first data column, so retry 2 to set the row names to these.** {#q3}
+```{r}
+dim(sle.b.cell)
+```
+
+
+##### **4.) Print the sample names to screen.** {#q4}
+```{r}
+names(sle.b.cell)
+```
+
+
+##### **5.) Plot the second SLE patient sample versus the first normal control samples in an xy scatter plot.  Remember that the first argument is the x vector.  Label the x and y-axes as 'Normal' and 'SLE', respectively.  Title the plot, 'SLE B cell sample vs. Normal B cell sample – all probesets'.  Add grey grid lines with the function grid().** {#q5}
+```{r plotting}
+sle.2nd <- grep("sle", colnames(sle.b.cell))[2]
+ctrl.1st <- grep("control", colnames(sle.b.cell))[1]
+
+## standard graphics
+plot(sle.b.cell[, ctrl.1st], sle.b.cell[, sle.2nd], 
+     xlab="Normal", ylab="SLE", pch=19, cex=0.5, main="2nd SLE vs 1st Normal\n(basic plot)")
+grid()
+abline(coef=c(0, 1), col="green")
+
+## ggplot
+library(ggplot2)
+g <- ggplot(sle.b.cell, aes(x=sle.b.cell[, ctrl.1st], y=sle.b.cell[, sle.2nd])) + 
+  geom_point(cex=0.5) +
+  geom_abline(slope=1, col="green") +
+  xlab("Normal") + ylab("SLE") + 
+  ggtitle("2nd SLE vs 1st Normal\n(ggplot)") +
+  theme(plot.title=element_text(hjust = 0.5))
+g
+```
+
+
+##### **6.) Now do the same plot but pick only the first 20 probesets.  Use the pch=15 argument to change the shape and color the points blue with the col argument.** {#q6}
+```{r}
+plot(sle.b.cell[1:20, ctrl.1st], sle.b.cell[1:20, sle.2nd], 
+     xlab="Normal", ylab="SLE", pch=15, cex=1, 
+     col="blue", main="2nd SLE vs 1st Normal\nFirst 20 Probes")
+```
+
+
+##### **7.) Now plot the following gene in a gene profile plot, IGLJ3 (immunoglobulin lambda joining 3), which is probeset ID 211881_x_at.  This type of plot has the sample indices across the x-axis and the intensities on the y-axis, so you can see a profile of the gene across experiments or arrays.  First plot the ranges using the type=”n” argument and the plot() function, then add the genes with the lines() function call.  Add grid lines.  Hint: to plot just ranges of x and y vectors, use the range() function like so:** {#q7}
+
+`plot(range(1:26),range(dat[geneX,]),...`
+
+##### **Be sure to cast the gene vector to numeric before plotting.**
+```{r message=FALSE}
+## just confirming 211881_x_at is for IGLJ3, GSE30153 uses HG-U133_Plus_2
+## BiocManager::install("hgu133plus2.db")
+library(hgu133plus2.db)
+alias2probe <- as.list(hgu133plus2ALIAS2PROBE)
+print("211881_x_at" %in% alias2probe$IGLJ3)
+
+## plotting
+plot(range(1:26), range(sle.b.cell["211881_x_at", ]), 
+     pch="", main="IGLJ3 (immunoglobulin lambda joining 3)",
+     xlab="Samples", ylab="Intensity",
+     xaxp=c(1,26, 25), las=2)
+
+## just to show separation of SLE samples (1-17) from control samples (18-26)
+abline(v=tail(grep("sle", colnames(sle.b.cell)), 1) + 0.5, lty="dashed", col="red")
+## lines
+lines(1:26, as.numeric(sle.b.cell["211881_x_at", ]))
+```
+
+
+##### **8.) Finally, another way to visualize a gene profile across conditions is to graph a boxplot with a single distribution box per condition.  To do this, we need to create a factor vector that indicates the disease or normal condition like so:** {#q8}
+
+`f <- c(rep("SLE",17),rep("Control",9))`
+
+##### **Then use this vector with the expression vector for IGLJ3 in the boxplot function to create the graph.**
+
+Not required, but you can increase the plot info by using the `with()` function and `stripchart()` function to add points.  
+```{r}
+f <- c(rep("SLE",17),rep("Control",9))
+boxplot(as.numeric(sle.b.cell["211881_x_at", ])~f, 
+        main="IGLJ3 (immunoglobulin lambda joining 3)",
+        ylab="Intensity", xlab="Grouped Samples")
+stripchart(as.numeric(sle.b.cell["211881_x_at", ])~f, 
+           vertical=T, main="IGLJ3 (immunoglobulin lambda joining 3)",
+           pch=19, ylab="Intensity")
+```
+
+
+##### **Bonus, volcano plots with topTable of top 25 differently expressed genes. I already did some of this reading Bioconductor Case Studies by W. Huber last year** {#Bonus}
+```{r message=FALSE}
+
+boxplot(sle.b.cell) ## no outliers looks like RMA normilization done already
+range(sle.b.cell)
+## looks like Dr. Hobbs already did log2() as intensities range from 2-14
+#boxplot(log2(sle.b.cell))
+
+## factor does alpabetical order so switch Control columns to come first
+groups.sle <- as.factor(f)
+exprs <- sle.b.cell[, order(groups.sle)]
+groups.sle <- groups.sle[order(groups.sle)]
+pdata <- data.frame(group = groups.sle)
+rownames(pdata) <- names(exprs)
+
+names(exprs) <- groups.sle
+design <- model.matrix(~ group + 0, pdata)
+colnames(design) <- levels(groups.sle)
+
+library(limma)
+fit.sle <- lmFit(exprs, design)
+contrast_matr <- makeContrasts(Control-SLE, levels=design)
+fit2 <- contrasts.fit(fit.sle, contrast_matr)
+fit.eb <- eBayes(fit2)
+tT <- topTable(fit.eb, adjust="fdr", sort.by = "logFC", number=25)
+tT.probes <- rownames(tT)
+tT.probes.indices <- match(tT.probes, rownames(sle.b.cell))
+
+library(genefilter)
+data.tt <- rowttests(as.matrix(exprs), groups.sle)
+plot(data.tt$dm, -log10(data.tt$p.value), xlab="log-ratio",
+     ylab=expression(-log[10]~p), cex=0.5, pch=19)
+
+data.tt$dm[tT.probes.indices]
+
+tT$logFC
+## confirming topTable uses the same logFC that rowttests does :)
+all(round(data.tt$dm[tT.probes.indices], 5) == round(tT$logFC, 5))
+
+## color the points in tT
+plot(data.tt$dm, -log10(data.tt$p.value), xlab="log-ratio",
+     ylab=expression(-log[10]~p), cex=0.5, pch=19)
+points(data.tt$dm[tT.probes.indices], 
+       -log10(data.tt$p.value)[tT.probes.indices],
+       cex=1, pch=19, col="red")
+
+
+
+## Super Bonus
+## using function in case studies, make outside threshold cex=1, while topTable 25 also
+## cex=1, color red, and with alias names as labels for top 25 if alias exists
+
+# first revese alias2probe to probe2alias
+## aliases that have probes
+alias.values <- alias2probe[!is.na(alias2probe)]
+
+## reverse the many to many relationship
+probe2alias = list()
+for (alias in names(alias.values)) {
+  for (probe_id in alias.values[[alias]]) {
+    ## apparently don't need to initialize like in Python/Perl; see my post on SO
+    ## https://stackoverflow.com/questions/63661278/best-faster-way-to-reverse-many-to-many-relationship-list-in-r/63665422#63665422
+    probe2alias[[probe_id]] <- append(probe2alias[[probe_id]], alias)
+  }
+}
+
+## looks like some aliases are not in hgu133plus2ALIAS2PROBE
+missing <- rownames(tT)[sapply(probe2alias[rownames(tT)], is.null)]
+missing %in% alias2probe ## all false
+probe2alias[missing] ## these 4 are missing better use biomart
+
+library(biomaRt)
+ensembl = useEnsembl(biomart = "ensembl", 
+                     dataset = "hsapiens_gene_ensembl",
+                     host    = "www.ensembl.org")
+gene.symbs <- getBM(attributes = c("hgnc_symbol", "affy_hg_u133_plus_2"),
+                    filters = c("affy_hg_u133_plus_2"),
+                    values = rownames(tT),
+                    mart = ensembl)
+## what probes were missing from hgu133plus2ALIAS2PROBE?
+missing[missing %in% gene.symbs$affy_hg_u133_plus_2]
+## what probes are missing from both hgu133plus2ALIAS2PROBE and biomart
+missing[!(missing %in% gene.symbs$affy_hg_u133_plus_2)]
+## As you can see from search on http://biogps.org/#goto=welcome
+## "205033_s_at" & "203857_s_at" are there for DEFA & PDIA5 respectively
+## but "240118_at" & "243882_at" are not see "show members" in below
+## https://www.gsea-msigdb.org/gsea/msigdb/cards/SUH_COEXPRESSED_WITH_ID1_AND_ID2_UP
+## https://www.gsea-msigdb.org/gsea/msigdb/geneset_page.jsp?geneSetName=VECCHI_GASTRIC_CANCER_ADVANCED_VS_EARLY_UP
+
+
+library(dplyr)
+# probes can be mapped to multiple aliases so just keep first one
+# for plot but we can look up the others
+gene.symbs.unique <- gene.symbs %>% distinct(affy_hg_u133_plus_2, .keep_all = T)
+
+# now put in data.tt$hgnc_symbol for these top diff expr genes
+# merge breaks order even with sort=T see
+# https://www.r-statistics.com/2012/01/merging-two-data-frame-objects-while-preserving-the-rows-order/
+library(tibble)
+final.df <- left_join(rownames_to_column(data.tt),
+                      gene.symbs.unique,
+                      by = c("rowname" = "affy_hg_u133_plus_2"))
+
+## volcano plot with gene aliases for top 25
+## b l t r (bottom, left, top, right)
+par(mar=c(5,4.5,5,1))
+plot(final.df$dm, -log10(final.df$p.value), xlab="log-ratio",
+     ylab=expression(-log[10]~p), cex=0.5, pch=19)
+title(main="Control vs SLE\nTop 25 genes negatively down-regulated in control\ni.e. up regulated in SLE")
+points(final.df$dm[tT.probes.indices], 
+       -log10(final.df$p.value)[tT.probes.indices],
+       cex=1, pch=19, col="red")
+with(final.df[tT.probes.indices, ], 
+     text(-log10(p.value)~dm, labels=hgnc_symbol, pos=4, cex=1))
+
+## paper also indicates that RRM2, CAV1, FKBP11, TYMS, PDIA5, ELL2 are differential expressed
+## 2 Citations in paper for PRDM1
+print(gene.symbs.unique$hgnc_symbol)
+```
+
