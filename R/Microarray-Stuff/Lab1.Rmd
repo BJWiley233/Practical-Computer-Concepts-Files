@@ -9,235 +9,260 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "~/JHU_Fall_2020/Data_Analysis/Datasets")
+knitr::opts_knit$set(root.dir = "/media/coyote/5838-D2D1/JHU_2021/week1/Datasets")
 ```
 
 ### Brian Wiley
-### Lab 1: Basic R syntax/plots with data solutions
-### AS.410.671.81.FA20 Gene Expression Data Analysis and Visualization
-Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#q7) [8.](#q8) [Bonus](#Bonus)
+### Lab 1: Exon array data
+### AS.410.713.81.SP21 Advanced Genomics and Genetics Analyses
+Links to question:  [1.](#q1) [2.](#q2) [3.](#q3) [4.](#q4) [5.](#q5) [6.](#q6) [7.](#q7) [8.](#q8)
+<br></br>
 
-#### GEO Summary
-Systemic lupus erythematosus (SLE) is an autoimmune disease with an important clinical and biological heterogeneity. B lymphocytes appear central to the development of SLE which is characterized by the production of a large variety of autoantibodies and hypergammaglobulinemia. In mice, immature B cells from spontaneous lupus prone animals are able to produce autoantibodies when transferred into immunodeficient mice, strongly suggesting the existence of intrinsic B cell defects during lupus. In order to approach these defects in humans, we compared the peripheral B cell transcriptomes of quiescent lupus patients to normal B cell transcriptomes. (HG-U133_Plus_2, GSE30153)
+#### Summary
+This lab introduces concepts for analyzing exon array data.  The dataset that we are using has both exon- and gene-level summaries, separated into 2 distinct data matrices.  The data was taken from a study that was designed to investigate alternative splicing between pediatric patients that have experienced liver rejection after an organ transplant and pediatric patients that have not experienced such rejection.  These are blood samples taken from these patients, so the effect sizes are rather modest.  As a result, we will be a little more liberal in our exon probe filtering methods to retain as much information as possible.
+<br></br>
 
-
-##### **1.) Go to class website under Course Documents > Data Sets and download the SLE B cell data set (from Garaud et al).** {#q1}
+##### **1.) Obtain and load in the exon-rma-sketch.summary.txt, gene-rma-sketch.summary.txt, dabg.summary.txt, and HuEx-1_0-st-v2.na24.hg18.probeset_abbr.csv files into R.** {#q1}
+```{r }
+map <- read.csv("HuEx-1_0-st-v2.na24.hg18.probeset_abbr.csv", header = T, row.names = 1)
+e <- read.table("exon-rma-sketch.summary.txt", skip = 70, row.names = 1, header = T)
+g <- read.table("gene-rma-sketch.summary.txt", skip = 70, row.names = 1, header = T)
+p <- read.table("dabg.summary.txt", skip = 70, row.names = 1, header = T)
+map["2315941",]
+rownames(map[map$transcript_cluster_id=="2315918",])
+e[rownames(map[map$transcript_cluster_id=="2315918",]),]
+p["2315941",]
+```
 ```{r}
-# No Code required
-# Set working directory to ~/JHU_Fall_2020/Data_Analysis/Datasets in setup above
+map[map$transcript_cluster_id=="2315918",]
+g[, ]
+
+```
+<br></br>
+<br></br>
+
+##### **2.)Continue to follow code in the lecture, up to the line of: ** {#q2}
+ `#you should filter probes based on guidelines….`
+
+```{r }
+r <- c(1,0,1,1,1,0,1,1,1,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1)
+x <- intersect(dimnames(e)[[1]], dimnames(map)[[1]])
+e <- e[x,]
+p <- p[x,]
+map <- map[x,]
+u <- unique(as.character(map$transcript_cluster_id))
+u <- intersect(u,dimnames(g)[[1]])
+
+```
+
+<br></br>
+<br></br>
+##### **3.) Filter probes in the exon matrix using the detection above background (DAGB) p-values.  If >50% of the subjects in BOTH groups have a p-value > .05, remove this exon probe.  Note that this is a little more liberal than the thresholds that we explained in the lecture.  The effects are small for this dataset, so this is why we are being a little less conservative with our filtering.  How many exon probes remain after this filtering?  Subset the exon matrix by those probes that pass the filter. ** {#q3}
+
+<br></br>
+<br></br>
+163972 of the 287220 probes from the DABG did NOT have both groups with 50% of p-values > 0.05 
+and passed the filter.
+```{r }
+## use ragged array to get percent of p-values above 0.05 for each group
+percent.above.p05 <- apply(p, 1, function(x) tapply(x, r, function(y) sum(y > 0.05)/length(y)))
+both.greater.than50 <- apply(t(percent.above.p05), 1, function(x) all(x > 0.5))
+#both.greater.than50[row.names(map.fail[map.fail$transcript_cluster_id == clust, ])]
+## how many kept
+sum(!both.greater.than50)
+
+## are exon probes for 'dabg' and 'exons' in same order
+all(row.names(p) == row.names(e))
+
+## since 'dabg' is 287329 in length and 'e' is 287200 in length cannot just use boolean array
+#exon.probes.keep <- names(both.greater.than50)[which(!both.greater.than50)]
+# sanity
+#length(exon.probes.keep) == sum(!both.greater.than50)
+#exons.pass <- e[exon.probes.keep, ]
+exons.pass = e[!both.greater.than50, ]
+dim(exons.pass)
 ```
 
 
-##### **2.) Unzip the text file, and read into R (Hint: using the read.table() function with a “header=T” argument and “row.names=1” argument is one method to do this).** {#q2}
-```{r}
-sle.b.cell <- read.table(file="sle_b_cell.txt", header=T, row.names=1)
-head(sle.b.cell)
+##### **4.) Go back to the annotation table (i.e. map) and subset it by the shorter set of exon probes that you will now be using.  Get the unique transcript cluster IDs from this new annotation table and intersect them with the gene matrix.  You should now have a shorter u variable.  How many unique transcript cluster IDs do you have? ** {#q4}
+
+<br></br>
+<br></br>
+There are now 16659 unique transcript clusters.
+```{r }
+#sanity
+all(row.names(map) == row.names(e))
+
+map.pass <- map[!both.greater.than50, ]
+map.fail <- map[both.greater.than50, ]
+new.u <- unique(as.character(map.pass$transcript_cluster_id))
+new.u <- intersect(new.u,dimnames(g)[[1]])
+cat("New u length: ", length(new.u), "\n")
+cat("Old u length: ", length(u))
 ```
 
 
-##### **3.) Look at the dimensions of the data.  There should be 26 samples.  If you have 27 samples, you still have the row names in the first data column, so retry 2 to set the row names to these.** {#q3}
+##### **5.) Now, using the code in the lecture, write a loop that loops through all values of the variable u (unique transcript cluster ID).  In each loop iteration, you need to:** {#q5}
+<br></br>    
+<br></br>          
+        a. Get the correct mapping between the ith transcript cluster ID and the exon probe IDs
+        b. Subset the gene and exon matrices by the appropriate transcript cluster ID or exon probe IDs
+        c. Call the exon.ni function
+        d. Store the output p-values, test statistics, and CIs from this function for each transcript cluster ID (and exon probe IDs)
+For this loop, you also need to add an if statement to only conduct this calculation when you have at least 2 rows in the d.exon matrix (i.e. at least 2 exon probe IDs for a single transcript cluster ID).  This loop will take up to an hour to run (depending on your computer speed), so plan accordingly.** 
+
 ```{r}
-dim(sle.b.cell)
-```
-
-
-##### **4.) Print the sample names to screen.** {#q4}
-```{r}
-names(sle.b.cell)
-```
-
-
-##### **5.) Plot the second SLE patient sample versus the first normal control samples in an xy scatter plot.  Remember that the first argument is the x vector.  Label the x and y-axes as 'Normal' and 'SLE', respectively.  Title the plot, 'SLE B cell sample vs. Normal B cell sample – all probesets'.  Add grey grid lines with the function grid().** {#q5}
-```{r plotting}
-sle.2nd <- grep("sle", colnames(sle.b.cell))[2]
-ctrl.1st <- grep("control", colnames(sle.b.cell))[1]
-
-## standard graphics
-plot(sle.b.cell[, ctrl.1st], sle.b.cell[, sle.2nd], 
-     xlab="Normal", ylab="SLE", pch=19, cex=0.5, main="2nd SLE vs 1st Normal\n(basic plot)")
-grid()
-abline(coef=c(0, 1), col="green")
-
-## ggplot
-library(ggplot2)
-g <- ggplot(sle.b.cell, aes(x=sle.b.cell[, ctrl.1st], y=sle.b.cell[, sle.2nd])) + 
-  geom_point(cex=0.5) +
-  geom_abline(slope=1, col="green") +
-  xlab("Normal") + ylab("SLE") + 
-  ggtitle("2nd SLE vs 1st Normal\n(ggplot)") +
-  theme(plot.title=element_text(hjust = 0.5))
+t.two <- function(x,sam,v=F) {
+  x <- as.numeric(x)
+  out <- t.test(as.numeric(x[sam]),as.numeric(x[!sam]),alternative="two.sided",var.equal=v)
+  o <- as.numeric(c(out$statistic,out$p.value,out$conf.int[1],out$conf.int[2]))
+  names(o) <- c("test_statistic","pv","lower_ci","upper_ci")
+  return(o)
+}
+ni <- e["2315941",]
 g
-```
-
-
-##### **6.) Now do the same plot but pick only the first 20 probesets.  Use the pch=15 argument to change the shape and color the points blue with the col argument.** {#q6}
-```{r}
-plot(sle.b.cell[1:20, ctrl.1st], sle.b.cell[1:20, sle.2nd], 
-     xlab="Normal", ylab="SLE", pch=15, cex=1, 
-     col="blue", main="2nd SLE vs 1st Normal\nFirst 20 Probes")
-```
-
-
-##### **7.) Now plot the following gene in a gene profile plot, IGLJ3 (immunoglobulin lambda joining 3), which is probeset ID 211881_x_at.  This type of plot has the sample indices across the x-axis and the intensities on the y-axis, so you can see a profile of the gene across experiments or arrays.  First plot the ranges using the type=”n” argument and the plot() function, then add the genes with the lines() function call.  Add grid lines.  Hint: to plot just ranges of x and y vectors, use the range() function like so:** {#q7}
-
-`plot(range(1:26),range(dat[geneX,]),...`
-
-##### **Be sure to cast the gene vector to numeric before plotting.**
-```{r message=FALSE}
-## just confirming 211881_x_at is for IGLJ3, GSE30153 uses HG-U133_Plus_2
-## BiocManager::install("hgu133plus2.db")
-library(hgu133plus2.db)
-alias2probe <- as.list(hgu133plus2ALIAS2PROBE)
-print("211881_x_at" %in% alias2probe$IGLJ3)
-
-## plotting
-plot(range(1:26), range(sle.b.cell["211881_x_at", ]), 
-     pch="", main="IGLJ3 (immunoglobulin lambda joining 3)",
-     xlab="Samples", ylab="Intensity",
-     xaxp=c(1,26, 25), las=2)
-
-## just to show separation of SLE samples (1-17) from control samples (18-26)
-abline(v=tail(grep("sle", colnames(sle.b.cell)), 1) + 0.5, lty="dashed", col="red")
-## lines
-lines(1:26, as.numeric(sle.b.cell["211881_x_at", ]))
-```
-
-
-##### **8.) Finally, another way to visualize a gene profile across conditions is to graph a boxplot with a single distribution box per condition.  To do this, we need to create a factor vector that indicates the disease or normal condition like so:** {#q8}
-
-`f <- c(rep("SLE",17),rep("Control",9))`
-
-##### **Then use this vector with the expression vector for IGLJ3 in the boxplot function to create the graph.**
-
-Not required, but you can increase the plot info by using the `with()` function and `stripchart()` function to add points.  
-```{r}
-f <- c(rep("SLE",17),rep("Control",9))
-boxplot(as.numeric(sle.b.cell["211881_x_at", ])~f, 
-        main="IGLJ3 (immunoglobulin lambda joining 3)",
-        ylab="Intensity", xlab="Grouped Samples")
-stripchart(as.numeric(sle.b.cell["211881_x_at", ])~f, 
-           vertical=T, main="IGLJ3 (immunoglobulin lambda joining 3)",
-           pch=19, ylab="Intensity")
-```
-
-
-##### **Bonus, volcano plots with topTable of top 25 differently expressed genes. I already did some of this reading Bioconductor Case Studies by W. Huber last year** {#Bonus}
-```{r message=FALSE}
-
-boxplot(sle.b.cell) ## no outliers looks like RMA normilization done already
-range(sle.b.cell)
-## looks like Dr. Hobbs already did log2() as intensities range from 2-14
-#boxplot(log2(sle.b.cell))
-
-## factor does alpabetical order so switch Control columns to come first
-groups.sle <- as.factor(f)
-exprs <- sle.b.cell[, order(groups.sle)]
-groups.sle <- groups.sle[order(groups.sle)]
-pdata <- data.frame(group = groups.sle)
-rownames(pdata) <- names(exprs)
-
-names(exprs) <- groups.sle
-design <- model.matrix(~ group + 0, pdata)
-colnames(design) <- levels(groups.sle)
-
-library(limma)
-fit.sle <- lmFit(exprs, design)
-contrast_matr <- makeContrasts(Control-SLE, levels=design)
-fit2 <- contrasts.fit(fit.sle, contrast_matr)
-fit.eb <- eBayes(fit2)
-tT <- topTable(fit.eb, adjust="fdr", sort.by = "logFC", number=25)
-tT.probes <- rownames(tT)
-tT.probes.indices <- match(tT.probes, rownames(sle.b.cell))
-
-library(genefilter)
-data.tt <- rowttests(as.matrix(exprs), groups.sle)
-plot(data.tt$dm, -log10(data.tt$p.value), xlab="log-ratio",
-     ylab=expression(-log[10]~p), cex=0.5, pch=19)
-
-data.tt$dm[tT.probes.indices]
-
-tT$logFC
-## confirming topTable uses the same logFC that rowttests does :)
-all(round(data.tt$dm[tT.probes.indices], 5) == round(tT$logFC, 5))
-
-## color the points in tT
-plot(data.tt$dm, -log10(data.tt$p.value), xlab="log-ratio",
-     ylab=expression(-log[10]~p), cex=0.5, pch=19)
-points(data.tt$dm[tT.probes.indices], 
-       -log10(data.tt$p.value)[tT.probes.indices],
-       cex=1, pch=19, col="red")
-
-
-
-## Super Bonus
-## using function in case studies, make outside threshold cex=1, while topTable 25 also
-## cex=1, color red, and with alias names as labels for top 25 if alias exists
-
-# first revese alias2probe to probe2alias
-## aliases that have probes
-alias.values <- alias2probe[!is.na(alias2probe)]
-
-## reverse the many to many relationship
-probe2alias = list()
-for (alias in names(alias.values)) {
-  for (probe_id in alias.values[[alias]]) {
-    ## apparently don't need to initialize like in Python/Perl; see my post on SO
-    ## https://stackoverflow.com/questions/63661278/best-faster-way-to-reverse-many-to-many-relationship-list-in-r/63665422#63665422
-    probe2alias[[probe_id]] <- append(probe2alias[[probe_id]], alias)
-  }
+exon.ni <- function(genex, exonx, rx) {
+  ni <- t(t(exonx)-genex)
+  ttest <- t(apply(ni,1,t.two,sam=as.logical(rx),v=F))
+  return(ttest)
 }
 
-## looks like some aliases are not in hgu133plus2ALIAS2PROBE
-missing <- rownames(tT)[sapply(probe2alias[rownames(tT)], is.null)]
-missing %in% alias2probe ## all false
-probe2alias[missing] ## these 4 are missing better use biomart
 
-library(biomaRt)
-ensembl = useEnsembl(biomart = "ensembl", 
-                     dataset = "hsapiens_gene_ensembl",
-                     host    = "www.ensembl.org")
-gene.symbs <- getBM(attributes = c("hgnc_symbol", "affy_hg_u133_plus_2"),
-                    filters = c("affy_hg_u133_plus_2"),
-                    values = rownames(tT),
-                    mart = ensembl)
-## what probes were missing from hgu133plus2ALIAS2PROBE?
-missing[missing %in% gene.symbs$affy_hg_u133_plus_2]
-## what probes are missing from both hgu133plus2ALIAS2PROBE and biomart
-missing[!(missing %in% gene.symbs$affy_hg_u133_plus_2)]
-## As you can see from search on http://biogps.org/#goto=welcome
-## "205033_s_at" & "203857_s_at" are there for DEFA & PDIA5 respectively
-## but "240118_at" & "243882_at" are not see "show members" in below
-## https://www.gsea-msigdb.org/gsea/msigdb/cards/SUH_COEXPRESSED_WITH_ID1_AND_ID2_UP
-## https://www.gsea-msigdb.org/gsea/msigdb/geneset_page.jsp?geneSetName=VECCHI_GASTRIC_CANCER_ADVANCED_VS_EARLY_UP
+ex <- row.names(map[map$transcript_cluster_id == new.u[1], ])
+d.exon <- e[ex, ]
+d.gene <- g[new.u[1],]
+ni.out <- exon.ni(genex=as.numeric(d.gene), exonx=d.exon, rx=r)
+class(ni.out)
 
 
-library(dplyr)
-# probes can be mapped to multiple aliases so just keep first one
-# for plot but we can look up the others
-gene.symbs.unique <- gene.symbs %>% distinct(affy_hg_u133_plus_2, .keep_all = T)
+## keep track of single exon clusters for fun
+single.exons <- c()
+j=1
 
-# now put in data.tt$hgnc_symbol for these top diff expr genes
-# merge breaks order even with sort=T see
-# https://www.r-statistics.com/2012/01/merging-two-data-frame-objects-while-preserving-the-rows-order/
-library(tibble)
-final.df <- left_join(rownames_to_column(data.tt),
-                      gene.symbs.unique,
-                      by = c("rowname" = "affy_hg_u133_plus_2"))
+## empty matrix for summary statistics
+## need 5 for adding the cluster id column in loop
+exon.ni.mat <- matrix(,ncol = 5)
 
-## volcano plot with gene aliases for top 25
-## b l t r (bottom, left, top, right)
-par(mar=c(5,4.5,5,1))
-plot(final.df$dm, -log10(final.df$p.value), xlab="log-ratio",
-     ylab=expression(-log[10]~p), cex=0.5, pch=19)
-title(main="Control vs SLE\nTop 25 genes negatively down-regulated in control\ni.e. up regulated in SLE")
-points(final.df$dm[tT.probes.indices], 
-       -log10(final.df$p.value)[tT.probes.indices],
-       cex=1, pch=19, col="red")
-with(final.df[tT.probes.indices, ], 
-     text(-log10(p.value)~dm, labels=hgnc_symbol, pos=4, cex=1))
 
-## paper also indicates that RRM2, CAV1, FKBP11, TYMS, PDIA5, ELL2 are differential expressed
-## 2 Citations in paper for PRDM1
-print(gene.symbs.unique$hgnc_symbol)
+##timeit
+ptm <- proc.time()
+for (clust in new.u) {
+  ex <- row.names(map.pass[map.pass$transcript_cluster_id == clust, ])
+  #row.names(map[map$transcript_cluster_id == clust, ])
+  #row.names(map.fail[map.fail$transcript_cluster_id == clust, ])
+  if (length(ex) < 2) {
+    print(clust)
+    single.exons[j] <- clust
+    j = j + 1
+    next
+  }
+  d.exon <- exons.pass[ex, ]
+  d.gene <- g[clust, ]
+  ni.out <- exon.ni(genex=as.numeric(d.gene), exonx=d.exon, rx=r)
+  ## add cluster id column
+  ni.out.with.cluster <- cbind(ni.out, as.numeric(clust))
+  exon.ni.mat <- rbind(exon.ni.mat, ni.out.with.cluster)
+}
+total.time <- proc.time() - ptm
+## remove empty first row
+exon.ni.mat <- exon.ni.mat[-1,]
+colnames(exon.ni.mat) <- c("test_statistic","pv","lower_ci","upper_ci","cluster")
+## how many minutes
+total.time/60
 ```
 
+
+##### **6) Sort the matrix where you stored all of the summary statistics by p-value and get the transcript cluster ID with the lowest p-value.** {#q6}
+```{r}
+head(exon.ni.mat)
+dim(exon.ni.mat)
+sorted <- exon.ni.mat[order(exon.ni.mat[,'pv']),]
+head(sorted)
+cluster <- sorted[,'cluster'][1]
+lowest.p.exon <- row.names(sorted)[1]
+
+```
+
+
+##### **7) Sort the matrix where you stored all of the summary statistics by p-value and get the transcript cluster ID with the lowest p-value.** {#q7}
+
+```{r, fig.width=8, fig.height=8}
+plot.exons <- function(exonx,genex,rx,ti) {
+  ## for legend inside plot
+  n <- nrow(exonx)
+  rr <- rx
+  rx <- rep(rx,nrow(exonx))
+  rx[rx==1] <- "A"
+  rx[rx==0] <- "B"
+  rx <- as.factor(rx)
+  ni <- t(t(exonx)-genex)
+  exonx <- as.data.frame(t(ni))
+  ex.stack <- stack(exonx)
+  d <- data.frame(ex.stack,rx)
+  names(d) <- c("exon_values","exon_id","class")
+  d$exon_id <- as.factor(d$exon_id)
+  d$class <- as.factor(d$class)
+  genex.title <- as.character(map[match(ti,as.character(map$transcript_cluster_id)),"gene_assignment"])
+  
+  # plot(c(.5,(ncol(exonx)+.5)),range(d[,1]),type="n",axes=F,xlab="",ylab="")
+  # boxplot(exon_values~exon_id,add=T,subset=d$class=="A",d,col="salmon",border='red',cex.axis=.75,las=2,ylab='Log2 normalized intensity',main=paste("Gene ID:",ti,"\n",genex.title),boxwex=0.4)
+  # boxplot(exon_values~exon_id,subset=d$class=="B",d,add=T,col="green",border='darkgreen',axes=F,boxwex=0.4,
+  # at=c(1:ncol(exonx))+0.1)
+  
+  
+  library(ggplot2)
+  ## plot significant value asterisks
+  library(ggsignif)
+  ##https://stackoverflow.com/questions/55674679/how-to-add-significance-bar-between-subgroups-of-box-plot
+  p.values <- t(apply(ni,1,t.two,sam=as.logical(rr),v=F))[,'pv']
+  labels <- symnum(p.values, corr = FALSE, cutpoints = c(0,  .001,.01,.05, 1), symbols = c("***","**","*",""))
+  y.values <- sapply(split(d, d$exon_id), 
+         function(x){max(sapply(split(x, x$class), 
+                                function(xx){boxplot(xx$exon_values, plot=F)$stats[5, ]}))})+.7
+  n.s <- p.values > .05
+  
+  gg <- ggplot(d, aes(x=exon_id, y=exon_values, fill = class, color = class)) +
+    geom_boxplot() +
+    scale_fill_manual(values=c("salmon", "green", "black"), labels = c("disease", "normal")) +
+    scale_color_manual(values=c("red", "darkgreen", "black"), labels = c("disease", "normal")) +
+    ylab(expression(paste("Log"[2], " normalized intensity"))) +
+    ggtitle(paste("Gene ID:",ti,"\n",genex.title)) +
+    theme(axis.text.x=element_text(angle=90),
+          plot.title = element_text(hjust = 0.5)) +
+    geom_signif(y_position = y.values[!n.s], annotations = labels[!n.s],  xmin = unique(d$exon_id)[!n.s], xmax = unique(d$exon_id)[!n.s], tip_length = 0, color = "black", textsize=6, show.legend = T)  +
+    annotate("text", x=n-2, y=max(d$exon_values), label = "
+  * p < .05
+ ** p < .01
+*** p < .001",
+             family = "DejaVu Sans Mono")
+    
+  gg
+
+  
+  ##another way to add signficant asterisks
+  # library(ggpubr)
+  # stat.test <- compare_means(exon_values ~ class, data = d, group.by = "exon_id",
+  #                            method = "t.test")
+  # 
+  # bp <- ggboxplot(d, x = "exon_id", y = "exon_values",
+  #               fill = "class", color = "class",
+  #               add.params = list(group = "class"), title = paste("Gene ID:",ti,"\n",genex.title))
+  # bp + stat_pvalue_manual(
+  #   stat.test[c(1,2,3,4,5,8)], x = "exon_id", y.values[stat.test$p<.05],
+  #   label = "p.signif", hide.ns = T,
+  #   position = position_dodge(0.8)) +
+  #   theme(axis.text.x=element_text(angle=90),
+  #           plot.title = element_text(hjust = 0.5))
+  
+}
+
+ex <- row.names(map[map$transcript_cluster_id == cluster, ])
+## all exons and not just those that passed DABG < 50% of samples
+d.exon <- e[ex,]
+d.gene <- g[as.character(cluster),]
+plot.exons(exonx=d.exon,genex=as.numeric(d.gene),rx=r,ti=cluster)
+
+
+
+
+```
