@@ -1,0 +1,94 @@
+Mar-15 14:52:57.482 [main] DEBUG nextflow.cli.Launcher - $> nextflow -log cellranger_queue.log run scrna.nf -profile awsbatch -bucket-dir 's3://wiley-data/data/single_cell/' -work-dir 's3://wiley-data/data/single_cell/'
+Mar-15 14:52:57.802 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 23.02.1-edge
+Mar-15 14:52:57.855 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/home/coyote/.nextflow/plugins; core-plugins: nf-amazon@1.15.0,nf-azure@0.15.1,nf-codecommit@0.1.3,nf-console@1.0.5,nf-ga4gh@1.0.4,nf-google@1.7.0,nf-tower@1.5.10,nf-wave@0.7.2
+Mar-15 14:52:57.875 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Mar-15 14:52:57.877 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Mar-15 14:52:57.888 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Mar-15 14:52:57.925 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Mar-15 14:52:57.991 [main] DEBUG nextflow.config.ConfigBuilder - Found config home: /home/coyote/.nextflow/config
+Mar-15 14:52:57.997 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /home/coyote/AWS/nextflow.config
+Mar-15 14:52:58.002 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/coyote/.nextflow/config
+Mar-15 14:52:58.003 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/coyote/AWS/nextflow.config
+Mar-15 14:52:58.196 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `awsbatch`
+Mar-15 14:52:59.526 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `awsbatch`
+Mar-15 14:52:59.761 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [standard, awsbatch]
+Mar-15 14:52:59.801 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declararion
+Mar-15 14:52:59.827 [main] INFO  nextflow.cli.CmdRun - Launching `scrna.nf` [scruffy_bassi] DSL2 - revision: ef84c6d80e
+Mar-15 14:52:59.829 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins declared=[nf-amazon@1.15.0]
+Mar-15 14:52:59.830 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[nf-amazon@1.15.0]
+Mar-15 14:52:59.830 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[nf-amazon@1.15.0]
+Mar-15 14:52:59.830 [main] DEBUG nextflow.plugin.PluginUpdater - Installing plugin nf-amazon version: 1.15.0
+Mar-15 14:52:59.850 [main] INFO  org.pf4j.AbstractPluginManager - Plugin 'nf-amazon@1.15.0' resolved
+Mar-15 14:52:59.850 [main] INFO  org.pf4j.AbstractPluginManager - Start plugin 'nf-amazon@1.15.0'
+Mar-15 14:52:59.984 [main] DEBUG nextflow.plugin.BasePlugin - Plugin started nf-amazon@1.15.0
+Mar-15 14:53:00.037 [main] DEBUG nextflow.file.FileHelper - > Added 'S3FileSystemProvider' to list of installed providers [s3]
+Mar-15 14:53:00.059 [main] DEBUG nextflow.secret.LocalSecretsProvider - Secrets store: /home/coyote/.nextflow/secrets/store.json
+Mar-15 14:53:00.065 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@5c441290] - activable => nextflow.secret.LocalSecretsProvider@5c441290
+Mar-15 14:53:00.206 [main] DEBUG nextflow.Session - Session UUID: 8843ef02-d7c4-468b-96f5-bd55eb94ae13
+Mar-15 14:53:00.206 [main] DEBUG nextflow.Session - Run name: scruffy_bassi
+Mar-15 14:53:00.207 [main] DEBUG nextflow.Session - Executor pool size: 4
+Mar-15 14:53:00.227 [main] DEBUG nextflow.file.FileHelper - Creating a file system instance for provider: S3FileSystemProvider
+Mar-15 14:53:00.237 [main] DEBUG nextflow.Global - Using AWS credentials defined in nextflow config file
+Mar-15 14:53:00.247 [main] DEBUG nextflow.file.FileHelper - AWS S3 config details: {secret_key=M/qRzg.., max_connections=20, upload_storage_class=INTELLIGENT_TIERING, storage_encryption=AES256, s3Acl=BucketOwnerFullControl, max_error_retry=5, access_key=AKIARA.., region=us-east-2, connection_timeout=10000}
+Mar-15 14:53:00.897 [main] DEBUG com.upplication.s3fs.AmazonS3Client - Setting S3 canned ACL=bucket-owner-full-control [BucketOwnerFullControl]
+Mar-15 14:53:00.897 [main] DEBUG com.upplication.s3fs.AmazonS3Client - Setting S3 SSE storage encryption algorithm=AES256
+Mar-15 14:53:00.940 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=12; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Mar-15 14:53:00.954 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 23.02.1-edge build 5845
+  Created: 26-02-2023 18:43 UTC (13:43 EDT)
+  System: Linux 5.15.0-67-generic
+  Runtime: Groovy 3.0.15 on OpenJDK 64-Bit Server VM 11.0.18+10-post-Ubuntu-0ubuntu122.04
+  Encoding: UTF-8 (UTF-8)
+  Process: 18106@coyote-HP-250-G5-Notebook-PC [127.0.1.1]
+  CPUs: 4 - Mem: 7.7 GB (125.6 MB) - Swap: 8 GB (7.7 GB)
+Mar-15 14:53:02.296 [main] DEBUG nextflow.file.FileHelper - Can't check if specified path is NFS (1): s3://wiley-data/data/single_cell
+
+Mar-15 14:53:02.296 [main] DEBUG nextflow.Session - Work-dir: s3://wiley-data/data/single_cell [null]
+Mar-15 14:53:02.297 [main] DEBUG nextflow.Session - Bucket-dir: s3://wiley-data/data/single_cell
+Mar-15 14:53:02.298 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/coyote/AWS/bin
+Mar-15 14:53:02.341 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[AwsBatchExecutor]
+Mar-15 14:53:02.360 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Mar-15 14:53:02.499 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 5; maxThreads: 1000
+Mar-15 14:53:02.529 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Mar-15 14:53:02.674 [main] DEBUG nextflow.Session - Session start
+Mar-15 14:53:02.688 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow started -- trace file: /home/coyote/AWS/pipeline_trace.txt
+Mar-15 14:53:03.067 [Actor Thread 2] DEBUG nextflow.trace.WebLogObserver - Successfully sent message to http://localhost/nflogs -- received status code 200.
+Mar-15 14:53:03.537 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Mar-15 14:53:03.789 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:Sample_Alignment` matches labels `Sample_Alignment` for process with name sample_alignment
+Mar-15 14:53:03.795 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: awsbatch
+Mar-15 14:53:03.795 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'awsbatch'
+Mar-15 14:53:03.799 [main] DEBUG nextflow.executor.Executor - [warm up] executor > awsbatch
+Mar-15 14:53:03.826 [main] DEBUG nextflow.util.ThrottlingExecutor - Creating throttling executor with opts: nextflow.util.ThrottlingExecutor$Options(poolName:AWSBatch-executor, limiter:RateLimiter[stableRate=50.0qps], poolSize:20, maxPoolSize:20, queueSize:5000, maxRetries:10, keepAlive:1m, autoThrottle:true, errorBurstDelay:1s, rampUpInterval:100, rampUpFactor:1.2, rampUpMaxRate:1.7976931348623157E308, backOffFactor:2.0, backOffMinRate:0.0166666667, retryDelay:1s)
+Mar-15 14:53:03.834 [main] DEBUG nextflow.util.ThrottlingExecutor - Creating throttling executor with opts: nextflow.util.ThrottlingExecutor$Options(poolName:AWSBatch-reaper, limiter:RateLimiter[stableRate=50.0qps], poolSize:20, maxPoolSize:20, queueSize:5000, maxRetries:10, keepAlive:1m, autoThrottle:true, errorBurstDelay:1s, rampUpInterval:100, rampUpFactor:1.2, rampUpMaxRate:1.7976931348623157E308, backOffFactor:2.0, backOffMinRate:0.0166666667, retryDelay:1s)
+Mar-15 14:53:03.836 [main] DEBUG n.cloud.aws.batch.AwsBatchExecutor - Creating parallel monitor for executor 'awsbatch' > pollInterval=10s; dumpInterval=5m
+Mar-15 14:53:03.943 [main] DEBUG n.cloud.aws.batch.AwsBatchExecutor - [AWS BATCH] Executor options=AwsOptions(cliPath:/home/ec2-user/miniconda/bin/aws, storageClass:INTELLIGENT_TIERING, storageEncryption:AES256, storageKmsKeyId:null, remoteBinDir:null, region:us-east-2, maxParallelTransfers:4, maxTransferAttempts:5, delayBetweenAttempts:10s, retryMode:standard, maxSpotAttempts:5, debug:null, fetchInstanceType:false, jobRole:null, logsGroup:null, volumes:[/tmp:/tmp:rw], shareIdentifier:0, schedulingPriority:0, s3Acl:bucket-owner-full-control, awsCli:/home/ec2-user/miniconda/bin/aws --region us-east-2)
+Mar-15 14:53:04.064 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: sample_alignment
+Mar-15 14:53:04.066 [main] DEBUG nextflow.Session - Igniting dataflow network (2)
+Mar-15 14:53:04.082 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > sample_alignment
+Mar-15 14:53:04.083 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Mar-15 14:53:04.084 [main] DEBUG nextflow.Session - Session await
+Mar-15 14:53:05.630 [AWSBatch-executor-1] DEBUG n.c.aws.batch.AwsBatchTaskHandler - [AWS BATCH] [AWS BATCH] Found job definition name=nf-oandrefonseca-scaligners-1-0:6; container=oandrefonseca/scaligners:1.0
+Mar-15 14:53:06.036 [AWSBatch-executor-1] DEBUG n.c.aws.batch.AwsBatchTaskHandler - [AWS BATCH] submitted > job=dbb1207f-a59c-4681-bc52-e6dcc06a4f3a; work-dir=s3://wiley-data/data/single_cell/59/80c8e323435e828c70baeccbea957b
+Mar-15 14:53:06.036 [AWSBatch-executor-1] INFO  nextflow.Session - [59/80c8e3] Submitted process > sample_alignment (Processing L002)
+Mar-15 14:53:06.058 [Actor Thread 4] DEBUG nextflow.trace.WebLogObserver - Successfully sent message to http://localhost/nflogs -- received status code 200.
+Mar-15 14:57:14.019 [Actor Thread 4] DEBUG nextflow.trace.WebLogObserver - Successfully sent message to http://localhost/nflogs -- received status code 200.
+Mar-15 14:58:13.865 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor awsbatch > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 1; name: sample_alignment (Processing L002); status: RUNNING; exit: -; error: -; workDir: s3://wiley-data/data/single_cell/59/80c8e323435e828c70baeccbea957b]
+Mar-15 15:03:13.875 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor awsbatch > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 1; name: sample_alignment (Processing L002); status: RUNNING; exit: -; error: -; workDir: s3://wiley-data/data/single_cell/59/80c8e323435e828c70baeccbea957b]
+Mar-15 15:08:13.884 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor awsbatch > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 1; name: sample_alignment (Processing L002); status: RUNNING; exit: -; error: -; workDir: s3://wiley-data/data/single_cell/59/80c8e323435e828c70baeccbea957b]
+Mar-15 15:13:13.896 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor awsbatch > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 1; name: sample_alignment (Processing L002); status: RUNNING; exit: -; error: -; workDir: s3://wiley-data/data/single_cell/59/80c8e323435e828c70baeccbea957b]
+Mar-15 15:14:54.379 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: sample_alignment (Processing L002); status: COMPLETED; exit: 0; error: -; workDir: s3://wiley-data/data/single_cell/59/80c8e323435e828c70baeccbea957b]
+Mar-15 15:14:55.359 [main] DEBUG nextflow.Session - Session await > all processes finished
+Mar-15 15:14:55.425 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Mar-15 15:14:55.430 [Actor Thread 3] DEBUG nextflow.trace.WebLogObserver - Successfully sent message to http://localhost/nflogs -- received status code 200.
+Mar-15 15:14:55.439 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=1; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=2h 11m 11s; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=8; peakMemory=114 GB; ]
+Mar-15 15:14:55.440 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow completed -- saving trace file
+Mar-15 15:14:55.500 [Actor Thread 5] DEBUG nextflow.trace.WebLogObserver - Successfully sent message to http://localhost/nflogs -- received status code 200.
+Mar-15 15:14:55.597 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Mar-15 15:14:55.598 [main] INFO  org.pf4j.AbstractPluginManager - Stop plugin 'nf-amazon@1.15.0'
+Mar-15 15:14:55.598 [main] DEBUG nextflow.plugin.BasePlugin - Plugin stopped nf-amazon
+Mar-15 15:14:55.664 [main] DEBUG nextflow.util.ThreadPoolManager - Thread pool 'FileTransfer' shutdown completed (hard=false)
+Mar-15 15:14:55.670 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
