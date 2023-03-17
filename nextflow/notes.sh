@@ -1,5 +1,5 @@
 # account-id
-068851915804
+****804
 
 # coyote PW
 ## not **
@@ -8,13 +8,7 @@
 #for coyote.pem
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNhqRGuqtayAVEKOh7QtQW8gyIFtXUv8itwjJkIrCWUmRD4Thzug+YyLv888mF2rctVI1oSXzFE2j++lQnAAT9GpuwDKBc9jnszA/bD8WS+IZBAFFBbArgAr7+gLcmBXoGhC6hZyjC7pa9aXTBoGvohk7wJhqGD+ao16/uIZU6NgJBhgkFicPuVJnSEVmrsBOpcRIqbFHPoCGlZ7AAYy97QjRfO96JLjV6+vdrs9hdHelBFeOQCSl7px7wNhld5Pc7iRrGVfnnxbL8Tm8cY6vEFyK9z++anVoxtAc0oPWrGXmkN3AS3aw6vhT5s0M7fK4NxWrfgsCsMs//jTdG+Hrt
 
-ssh -i "~/AWS/coyote.pem" coyote@ec2-3-141-199-24.us-east-2.compute.amazonaws.com
-ssh -i "~/AWS/coyote.pem" ubuntu@ec2-3-141-199-24.us-east-2.compute.amazonaws.com
 
-ssh -i "~/AWS/coyote.pem" ubuntu@ec2-18-118-1-159.us-east-2.compute.amazonaws.com
-ssh -i "~/AWS/coyote.pem" coyote@ec2-18-118-1-159.us-east-2.compute.amazonaws.com
-
-ssh -i "~/AWS/coyote.pem" coyote@i-012f77ff146b8fb07
 
 sudo usermod -aG docker ${USER}
 
@@ -148,8 +142,8 @@ aws s3api list-objects-v2 --bucket "$bucket" \
 
 
 [default]
-aws_access_key_id = AKIARAB7E3QOAGWUIYNP
-aws_secret_access_key = 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
+aws_access_key_id = ***YNP
+aws_secret_access_key = ***bNrANBsWuxSynCdLuGk1H2KdhCDQ+7jOZg+c5wkF
 
 aws_session_token=IQoJb3JpZ2luX2VjEL///////////wEaCXVzLWVhc3QtMiJIMEYCIQC97u9/gWgpJeqYYyHR4LBvLZM78Enw1uS9+7fg2ncmUAIhAIvSkUqe0+U+DaITMFGO4/k7vy78wx2iHc9UfSvX45YzKu8CCHgQABoMMDY4ODUxOTE1ODA0Igz2fR+vr7+TFtHrknkqzAKHi3wIv+4XU1UcSOpnZxKIqH3agpBYp7iIhap7x/w6qjS5wrESGT+gLBkWzfWXxyKrYaXRknEHvYuj76ga7+ZqgmpEf0o4vmHV8HV0LKR1u1/DBxuNng40JEFWJnTjSUT01Lc3M7HFSGAkmOwjKhBvQlQSlzvf6yUVhRzkMDSYAldYpyMIZBEMMmAHDzqZbGqtbY9znBsteqil1xTMR7NKfZCQCPL1Rz00vIjh+Ni/AconqxlMGEt8yq+CKy1E4+pSPfQA5xpDqE6vyy3co0e4pePwd9B/vyjT5XwyOkdSMPZGasRfzVHNI2jPM9Hw0t1YChShMEPL579q6rfwcxrJoIqXtwBK9bY0pE3EoS5cCh/b2wsBrqT5M4hjJgACh2S2IuKaH9YlEbd7AWRwrWWe/EGLCEf/CoaGDAt0crQKc3WUC+/3oaT70oo1WjCdk62gBjqmAa23saGqLPj6GfOhTW8/La39GfzVhM8r4idmt72isyF+1thHKlSQiNdDSd7D1mPzRVwH2euwIGZcaHfvsY78Jgx/okZGNkT+i7CVNZ79qx7SZFN8rT47iWIjqgLct5ZQU1qRB+3VAFVtm+aWq8rRNpGuXCneqHQ8Z8hPUsYY0XCXBErPsAgx4EBj02fDcqniUZWQ5bNDY5chW2fY9IcHPSgO1yQyXV8=
 
