@@ -1,4 +1,4 @@
-#### Assignments for "[ESR 1: Development of a computational methodology to detect allosteric pathways in proteins and application in drug discovery](https://euraxess.ec.europa.eu/worldwide/india/europe-14-phd-positions-available-msca-itn-project-allodd-drug-discovery)"
+### Assignments for "[ESR 1: Development of a computational methodology to detect allosteric pathways in proteins and application in drug discovery](https://euraxess.ec.europa.eu/worldwide/india/europe-14-phd-positions-available-msca-itn-project-allodd-drug-discovery)"
 
 ##### Assignment 3
 You are going to test your skills in a machine learning classification problem. You are going
