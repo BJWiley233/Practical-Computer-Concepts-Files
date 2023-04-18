@@ -1,0 +1,37 @@
+; LINES STARTING WITH ';' ARE COMMENTS
+title		    = Minimization	; Title of run
+
+; Parameters describing what to do, when to stop and what to save
+integrator	    = steep		; Algorithm (cg = conjugate gradient)
+emtol		    = 100.0  	; Stop minimization when the maximum force < 10.0 kJ/mol
+emstep          = 0.001      ; Energy step size
+nsteps		    = 500000	  	; Maximum number of (minimization) steps to perform
+
+; Parameters describing how to find the neighbors of each atom and how to calculate the interactions
+nstlist		    = 1		        ; Frequency to update the neighbor list and long range forces
+cutoff-scheme   = Verlet
+ns_type		    = grid		    ; Method to determine neighbor list (simple, grid)
+rlist		    = 1.8		    ; Cut-off for making neighbor list (short range forces)
+coulombtype	    = PME		    ; Treatment of long range electrostatic interactions
+rcoulomb	    = 1.8		    ; long range electrostatic cut-off
+vdwtype         = cutoff
+vdw-modifier    = force-switch
+rvdw-switch     = 1.0
+rvdw		    = 1.8		    ; long range Van der Waals cut-off
+pbc             = xyz 		    ; Periodic Boundary Conditions
+DispCorr        = no
+;FREE
+free-energy             = yes
+sc-alpha                 = 0.5
+sc-coul                  = yes       ; linear interpolation of Coulomb (none in this case)
+sc-power                 = 1
+sc-sigma                 = 0.3
+nstdhdl                  = 10
+init-lambda-state       = 0
+vdw-lambdas             = 0.00 0.45 0.52 0.56 0.58 0.60 0.62 0.64 0.67 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+coul-lambdas            = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00
+calc_lambda_neighbors   = 1
+couple-moltype          = 6ZZ
+couple-intramol         = no
+couple-lambda0          = vdw-q
+couple-lambda1          = none

@@ -1,0 +1,42 @@
+; LINES STARTING WITH ';' ARE COMMENTS
+title		    = Minimization	; Title of run
+;define                  = -DPOSRES_CRYSTAL_WATER
+
+; Parameters describing what to do, when to stop and what to save
+integrator	    = cg		; Algorithm (cg = conjugate gradient)
+;integrator = steep
+emtol		    = 100.0  	; Stop minimization when the maximum force < 10.0 kJ/mol
+emstep          = 0.005      ; Energy step size
+nstcgsteep      = 100
+nsteps		    = 50000	  	; Maximum number of (minimization) steps to perform
+
+; Parameters describing how to find the neighbors of each atom and how to calculate the interactions
+nstlist		    = 1		        ; Frequency to update the neighbor list and long range forces
+cutoff-scheme   = Verlet
+ns_type		    = grid		    ; Method to determine neighbor list (simple, grid)
+rlist		    = 1.5		    ; Cut-off for making neighbor list (short range forces)
+coulombtype	    = PME		    ; Treatment of long range electrostatic interactions
+rcoulomb	    = 1.5		    ; long range electrostatic cut-off
+vdwtype         = cutoff
+vdw-modifier    = force-switch
+rvdw-switch     = 1.0
+rvdw		    = 1.5		    ; long range Van der Waals cut-off
+pbc             = xyz 		    ; Periodic Boundary Conditions
+DispCorr        = no
+;FREE
+free-energy             = yes
+sc-alpha                 = 0.5
+sc-coul                  = yes       ; linear interpolation of Coulomb (none in this case)
+sc-power                 = 1
+sc-sigma                 = 0.3
+nstdhdl                  = 10
+init-lambda-state       = 0
+;                            0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25
+vdw-lambdas             = 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 0.95 0.90 0.85 0.80 0.75 0.70 0.67 0.64 0.62 0.60 0.58 0.56 0.52 0.45 0.00
+coul-lambdas            = 1.00 0.90 0.80 0.70 0.60 0.50 0.40 0.30 0.20 0.10 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+restraint-lambdas       = 0.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 
+calc_lambda_neighbors   = 1
+couple-moltype          = 1LT
+couple-intramol         = no 
+couple-lambda0          = vdw-q
+couple-lambda1          = none

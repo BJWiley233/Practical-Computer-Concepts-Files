@@ -1,0 +1,63 @@
+integrator          = md
+nsteps              = 12500000 ; 50 ns
+dt                  = .004
+comm-mode           = linear
+nstcomm             = 5
+
+; CONSTRAINTS
+constraints         = all-bonds
+lincs_iter          = 2
+lincs_order         = 6
+
+; NEIGHBORSEARCHING PARAMETERS
+ns_type             = grid
+nstlist             = 10
+rlist               = 1.1 ; rlist==rvdw==rcoulomb for FEP
+pbc                 = xyz 
+cutoff-scheme       = Verlet
+
+; ELECTROSTATICS
+coulombtype         = pme
+rcoulomb            = 1.1 ; needs to match
+fourierspacing      = 0.12
+fourier_nx          = 0 
+fourier_ny          = 0 
+fourier_nz          = 0 
+pme_order           = 4
+ewald_rtol          = 1e-5
+ewald_geometry      = 3d
+optimize_fft        = yes
+
+; VDW
+vdw-type            = cut-off
+rvdw                = 1.1 ;  needs to match 
+DispCorr            = EnerPres
+
+; Output control
+nstxout             = 0
+nstvout             = 0
+nstfout             = 0
+nstlog              = 0
+nstxtcout           = 5000   ; 20 ps
+;xtc-grps            = Prot-Masses
+energygrps          = System
+nstenergy           = 5000   ; 20 ps
+nstcalcenergy       = 1
+
+verlet-buffer-drift = -1
+Tcoupl              = v-rescale
+tau_t               = 0.1
+tc-grps             = System
+ref_t               = 310
+ld_seed             = -1
+
+Pcoupl              = Parrinello-Rahman
+Pcoupltype          = isotropic
+tau_p               = 1
+compressibility     = 4.5e-5
+ref_p               = 1.0
+refcoord-scaling    = all
+
+gen_vel             = yes
+gen_temp            = 310.0
+
